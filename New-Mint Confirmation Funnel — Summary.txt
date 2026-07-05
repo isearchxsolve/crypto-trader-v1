@@ -1,0 +1,51 @@
+## New-Mint Confirmation Funnel — Summary
+
+### What was shipped
+
+Converted the new-mint detector from a T+0 entry trigger (which was buying the creator's exit liquidity) into a **watchlist → delayed confirmation funnel**. Three changes, all in `routes.ts`, all env-tunable, no trade-behavior change to the GMGN feeds:
+
+1. **LEGENDARY bypass killed** — new mints now carry a neutral score (`NEW_MINT_SCORE=0`, tier `NEW_MINT`) and route through the **normal gates** instead of skipping them.
+2. **90s confirmation delay** — detected mints are watchlisted with a timestamp instead of entered immediately, so the creator dump can pass before we evaluate.
+3. **Survival gate at confirmation** — a mint only becomes an entry attempt if, after the delay, it shows:
+   - DexScreener pair exists, price > 0, liquidity ≥ **$25k**,
+   - net **m5 buyers > sellers**,
+   - and m5 change ≥ **−5%** (not in freefall).
+
+   One-shot per mint, expires after 10 min, every drop logs its reason.
+
+### What I deliberately did NOT do (and why)
+
+- **Did not lower the cost gate** — your own data shows the scalp trades are −EV even at zero buffer (3.76% cost vs 1–2% peak). The gate is the messenger, not the blocker; the $25k floor + buy-pressure confirmation fix the real problem upstream.
+
+- **Did not build [Pump.fun](http://Pump.fun) bonding-curve detection** — it's the only place real 5–10x upside lives, but it's a sub-second, bot-saturated race that a 6s poll can't win and a micro-wallet can't survive at 99% rug rates. It needs its own scoped initiative, not a bolt-on.
+
+### Verification
+
+Real `tsc` + esbuild both clean; no errors reference any new code (only the pre-existing line-1772 strict-null noise your project config resolves).
+
+---
+
+## What to monitor next
+
+**1. The funnel flow (first ~5 min after restart)**
+
+- `[NEW-MINT] … watchlisted (confirm in 90s)` should fire at detection.
+- ~90s later, each should resolve to exactly one of:
+  - `[NEW-MINT] CONFIRM … → normal-gate entry` (survivor), or
+  - `[NEW-MINT] DROP … <reason>` (dump/rug/illiquid).
+
+- **Expect mostly DROPs and very few CONFIRMs** — that's the correct, healthy outcome given the −EV reality. Lots of CONFIRMs would mean the gate is too loose.
+
+**2. The DROP reason distribution** — this tells you what to tune:
+
+- Mostly `no DexScreener pair … (never listed / died)` → tokens dying before 90s; the delay is correctly filtering garbage.
+- Mostly `liq < floor $25000` → your detected mints are sub-$25k pools; confirms micro-cap territory, leave the floor as-is.
+- Mostly `net sellers m5` / `m5 … freefall` → still dumping at +90s; consider a longer delay (`NEW_MINT_ENTRY_DELAY_MS`).
+
+**3. What happens to CONFIRMs at the normal gates** — watch whether confirmed mints then get blocked by `[GOLD-ENTRY] SKIP` or the cost/score gates. If every CONFIRM still dies at the cost gate, that's the final proof that new-mint trading isn't viable at this wallet size — and the answer is bigger positions/capital, not looser gates.
+
+**4. Outcome of any actual entries** — for any new-mint trade that fills, track peak % vs the prior baseline (your two earlier entries peaked +1.81% / +1.36%). The question to answer: **does waiting 90s for confirmed survivors produce meaningfully higher peaks than entering at T+0?** That's the whole thesis of this change.
+
+**5. Heartbeat health (carried over)** — `[NEW-MINT-DIAG] heartbeat … okPrograms=2/2` should still appear ~every 60s, confirming detection is alive underneath the new funnel.
+
+Once you have a run with a few dozen watchlist resolutions, send me the DROP/CONFIRM logs and I'll tune the four thresholds to your actual token flow.

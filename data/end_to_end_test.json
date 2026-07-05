@@ -1,0 +1,14 @@
+{
+  "total": 100,
+  "open": 0,
+  "closed": 100,
+  "wins": 98,
+  "losses": 2,
+  "win_rate": 98.0,
+  "avg_win_pct": 20.774858500146205,
+  "avg_loss_pct": -6.89478314486554,
+  "balance_sol": 176.119761,
+  "total_pnl_sol": 175.119761,
+  "consecutive_wins": 0,
+  "peak_balance": 176.119761
+}

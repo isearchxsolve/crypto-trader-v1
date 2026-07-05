@@ -1,0 +1,15 @@
+# /etc/systemd/system/trading-failsafe.service
+[Unit]
+Description=Trading Failsafe Watchdog
+After=network-online.target
+
+[Service]
+WorkingDirectory=/opt/bot
+EnvironmentFile=/opt/bot/.env
+ExecStart=/usr/bin/node failsafe.cjs
+# Watchdog must always come back; it is the last line of defense
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

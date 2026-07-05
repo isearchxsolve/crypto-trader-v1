@@ -1,0 +1,6 @@
+- [ ] `spec.md` scopes the first enhancement phase to server-side risk hardening and TDD
+- [ ] `tasks.md` covers circuit-breaker, token safety, and exposure guard work
+- [ ] The plan requires automated tests before the extracted logic is wired into the engine flow
+- [ ] The plan keeps the startup flow compatible with the existing engine runtime
+- [ ] The spec stays focused on `server/` instead of broad unrelated platform changes
+- [ ] The change defines a clear next-step TDD slice rather than claiming impossible guarantees

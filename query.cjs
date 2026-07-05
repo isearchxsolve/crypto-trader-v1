@@ -1,0 +1,1 @@
+const { Client } = require('pg'); const c = new Client('postgres://postgres:postgres@localhost:5432/crypto_db'); c.connect().then(()=>c.query(SELECT id, token_symbol, pnl, peak_pnl, exit_reason, closed_at FROM trades WHERE token_symbol = 'CAFE' ORDER BY id DESC LIMIT 3)).then(r=>{console.log(r.rows); c.end()});

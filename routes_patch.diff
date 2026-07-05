@@ -1,0 +1,2362 @@
+diff --git a/crypto-trader-v1_1/server/routes.ts b/crypto-trader-v1_1/server/routes.ts
+index 38774609..d6cbdfa3 100644
+--- a/crypto-trader-v1_1/server/routes.ts
++++ b/crypto-trader-v1_1/server/routes.ts
+@@ -2,43 +2,42 @@ import type { Express } from "express";
+ import type { Server } from "http";
+ import { storage } from "./storage";
+ import { api } from "@shared/routes";
+-import { JupiterService, createJupiterService, SOL_MINT, MIN_FEE_BUFFER_SOL,getLatencyLog  } from "./jupiter";
++import { JupiterService, createJupiterService, SOL_MINT, MIN_FEE_BUFFER_SOL, getLatencyLog, clearLatencyLog } from "./jupiter"; // FIX #1: added clearLatencyLog import (was incorrectly re-imported via require() at line 3260)
++import { log } from "./logger";
+ 
+-// ΓöÇΓöÇ MULTIPLIER & STAGING CACHES ΓöÇΓöÇ
++// "" MULTIPLIER & STAGING CACHES ""
+ const SEARCH_QUERIES = ["raydium sol", "pump-fun trending", "solana usdc", "meteora sol"];
+ const watchlistCache = new Map<string, { pair: DexScreenerPair, firstSeen: number }>();
+ const WATCHLIST_MAX_AGE_MS = 15 * 60_000; // Keep on watch for 15 mins
+ 
+ const MAX_SINGLE_TRADE_PCT  = 0.55; // single-trade hard ceiling as % of remaining balance
+ const MIN_VIABLE_TRADE_SOL  = 0.003; // lowered from 0.008 to match minPositionSize for 0.05 SOL micro-wallet
+-// FIX: lowered from 7.0 to 2.0 to stop "FINAL EDGE SKIP" on tokens with 3ΓÇæ4% margin
+-const MIN_EDGE_PCT          = 5.0;
++// FIX: lowered from 7.0 ΓåÆ 5.0 ΓåÆ 2.0: at MIN_EDGE_PCT=5, scores of 90 with a ~6% Jupiter impact
++// produce edge Γëê 4.2% and are incorrectly skipped. 2.0 matches the original intent.
++const MIN_EDGE_PCT          = 2.0;
+ const MIN_TRADE_SIZE_SOL    = 0.003;
+ const EXECUTION_TIMEOUT_MS  = 30_000; // Global timeout per trade
+ 
+ const ADMIN_SECRET = process.env.ADMIN_SECRET?.trim() || null;
+ 
+ // Warn at module load time so the operator sees it immediately in startup logs.
+-// The warning fires once ΓÇö not on every request ΓÇö to avoid log spam.
++// The warning fires once " not on every request " to avoid log spam.
+ if (!ADMIN_SECRET) {
+-  console.warn(
+-    "[SECURITY] ADMIN_SECRET env var is not set ΓÇö all admin endpoints " +
+-    "are publicly accessible. Set ADMIN_SECRET before going live."
+-  );
++  log.warn("[SECURITY] ADMIN_SECRET env var is not set -- all admin endpoints are publicly accessible. Set ADMIN_SECRET before going live.");
+ }
+ 
+ function requireAdmin(req: any, res: any): boolean {
+   if (!ADMIN_SECRET) return true;
+   const provided = req.headers["x-admin-secret"] ?? req.body?.adminSecret;
+   if (provided !== ADMIN_SECRET) {
+-    res.status(403).json({ error: "Forbidden ΓÇö invalid admin secret" });
++    res.status(403).json({ error: "Forbidden -- invalid admin secret" });
+     return false;
+   }
+   return true;
+ }
+ 
+ async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, operationName: string): Promise<T> {
+-  let timer: ReturnType<typeof setTimeout>;
++  let timer: NodeJS.Timeout | undefined; // FIX #12: ReturnType<typeof setTimeout> resolves to `number` in browser TS configs -- NodeJS.Timeout is the correct Node.js type
+   const timeoutPromise = new Promise<never>((_, reject) => {
+     timer = setTimeout(() => reject(new Error(`${operationName} timed out after ${timeoutMs}ms`)), timeoutMs);
+   });
+@@ -56,14 +55,14 @@ const JUPITER_SUPPORTED_DEXES = new Set([
+   "cropper", "stepn", "invariant", "dooar", "sencha", "saros", "whirlpool",
+ ]);
+ 
+-const JUPITER_INDEX_DELAY_MS = 20_000; // Reduced 75sΓåÆ60sΓåÆ45sΓåÆ30s: widens entry window for fresh pools
++const JUPITER_INDEX_DELAY_MS = 20_000; // Reduced 75s'60s'45s'30s: widens entry window for fresh pools
+ // high-scorers aged out of Jupiter block but had already pumped past viable edge check. 60s is safely
+ // above the real Jupiter indexing floor (~45s) while catching momentum before impact blows the edge.
+ // After a confirmed buy, Solana RPC nodes can take 30-90s to propagate the new ATA balance.
+ // During this window getTokenBalance() legitimately returns 0 even though tokens were received.
+ // We suppress all desync-close logic for this many ms after a trade opens to prevent
+ // false DESYNC_AUTO_CLOSE events on fresh buys.
+-const DESYNC_GRACE_PERIOD_MS = 180_000; // Extended 90sΓåÆ180s: live testing showed Helius RPC takes >90s to propagate fresh ATAs
++const DESYNC_GRACE_PERIOD_MS = 180_000; // Extended 90s'180s: live testing showed Helius RPC takes >90s to propagate fresh ATAs
+ 
+ interface DexScreenerPair {
+   chainId: string;
+@@ -82,7 +81,7 @@ interface DexScreenerPair {
+   pairCreatedAt?: number;
+ }
+ 
+-// ΓöÇΓöÇ ANTI-BAN: STRICT DEXSCREENER QUEUE ΓöÇΓöÇ
++// "" ANTI-BAN: STRICT DEXSCREENER QUEUE ""
+ // Forces ALL requests into a single-file line to mathematically prevent WAF IP Bans.
+ class RequestQueue {
+     private queue: (() => Promise<void>)[] = [];
+@@ -128,7 +127,7 @@ async function throttledDexScreenerFetch(url: string, timeoutMs: number = 8000):
+             const resp = await fetch(url, { signal: AbortSignal.timeout(timeoutMs) });
+             if (!resp.ok) {
+                 if (resp.status === 429 || resp.status === 403) {
+-                    console.warn(`[RATE LIMIT] DexScreener WAF blocked request (${resp.status}). Pausing entire queue for 10 seconds to shed heat...`);
++                    log.warn(`[RATE LIMIT] DexScreener WAF blocked request`, { status: resp.status });
+                     await new Promise(r => setTimeout(r, 10000));
+                 }
+                 throw new Error(`HTTP ${resp.status}`);
+@@ -150,7 +149,7 @@ let engineSettings = {
+   stopLoss: -8,                 // Slightly wider stop to avoid getting wicked out by MEV
+ 
+   // -- Conviction Gates --
+-  minScoreToTrade: 90,          // Only elite, hyper-momentum setups
++  minScoreToTrade: 88,          // Adjusted to tighten up B+ setups after losses
+   
+   // -- SNIPER Mode Calibration --
+   sniperMinScore: 70,
+@@ -162,12 +161,12 @@ let engineSettings = {
+   // stopLoss: -6,
+   maxHoldSeconds: 420, 
+   maxOpenPositions: 1,          // MANDATORY: Only 1 position at a time
+-  startingBalance: 0.0090,      // UPDATED for your current balance
++  startingBalance: 0.01,        // Updated to match current wallet balance (0.01 SOL)
+   scanIntervalMs: 30000, 
+   priceCheckIntervalMs: 1000,   // ACCELERATED: Catch peaks faster to offset fees
+ 
+   // -- Conviction Gates (Lowered for current market) --
+-  // minScoreToTrade: 85,          // was 85 ΓåÆ matches actual B+ setups
++  // minScoreToTrade: 85,          // was 85 ' matches actual B+ setups
+   mlServiceUrl: "http://localhost:5001",
+   mlWeight: 0.10, 
+   scoreWeight: 0.90, 
+@@ -178,7 +177,7 @@ let engineSettings = {
+   partialTpThreshold: 15, 
+ 
+   // -- Sizing Strategy (Calibrated) --
+-  minPositionSize: 0.003,       // was 0.012 ΓåÆ matches MIN_TRADE_SIZE_SOL
++  minPositionSize: 0.003,       // was 0.012 ' matches MIN_TRADE_SIZE_SOL
+   maxPositionSize: 0.015,      // THE CAP: Limits exposure to ~50% of total wallet
+   
+   // -- SNIPER Mode Calibration --
+@@ -227,7 +226,7 @@ let engineSettings = {
+ let liveCandidatesCache: any[] = [], lastScanTime = 0;
+ let isFetchingCandidates = false; // <-- The Anti-Spam Lock
+ 
+-// ΓöÇΓöÇ Shadow mode ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++// "" Shadow mode """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+ // Runs alongside paper mode. For every token the bot WOULD buy, we:
+ //   1. Fetch a real Jupiter quote (real slippage + route)
+ //   2. Record the quoted entry price
+@@ -246,7 +245,7 @@ export interface ShadowTrade {
+   quoteDurationMs:  number;          // how long the quote took
+   quoteAgeAtBuyMs:  number;          // quote age when "buy" was placed
+   routeHops:        number;          // number of hops in Jupiter route
+-  routeLabel:       string;          // e.g. "RaydiumΓåÆOrca"
++  routeLabel:       string;          // e.g. "Raydium'Orca"
+   sizeSol:          number;
+   openedAt:         number;          // timestamp
+   closedAt?:        number;
+@@ -256,7 +255,7 @@ export interface ShadowTrade {
+   shadowPnlPct?:    number;
+   pnlGapPct?:       number;          // paperPnlPct - shadowPnlPct = your paper inflation
+   exitReason?:      string;
+-  outAmountRaw?:    string;   // Jupiter buy-quote outAmount (raw token units) ΓÇö used for shadow exit quote
++  outAmountRaw?:    string;   // Jupiter buy-quote outAmount (raw token units)  -- used for shadow exit quote
+ }
+ 
+ let shadowModeEnabled = true;        // set false to disable without redeploying
+@@ -301,7 +300,7 @@ async function openShadowTrade(
+     const routeLabels     = (quote.routePlan ?? [])
+       .map((s: any) => s.swapInfo?.label ?? "?")
+       .slice(0, 4)
+-      .join("ΓåÆ") || "direct";
++      .join("'") || "direct";
+     const routeHops       = (quote.routePlan ?? []).length;
+     const quoteAgeAtBuy   = Date.now() - (quote._fetchedAt ?? Date.now());
+ 
+@@ -320,13 +319,9 @@ async function openShadowTrade(
+       outAmountRaw:     quote.outAmount ?? undefined,  // stored for real exit quote in closeShadowTrade
+     };
+     shadowOpenTrades.set(id, rec);
+-    console.log(
+-      `[SHADOW] OPEN #${id} $${tokenSymbol} | impact:${impactPct.toFixed(2)}% ` +
+-      `paperEntry:$${paperPrice.toFixed(8)} shadowEntry:$${shadowEntryPrice.toFixed(8)} ` +
+-      `route:${routeLabels}(${routeHops}hop) quoteFetch:${quoteDurMs}ms`
+-    );
++    log.info(`[SHADOW] OPEN`, { id, tokenSymbol, impactPct, paperEntryPrice: paperPrice, shadowEntryPrice, route: routeLabels, routeHops, quoteFetchMs: quoteDurMs });
+   } catch (e: any) {
+-    console.warn(`[SHADOW] Quote failed for $${tokenSymbol}: ${e.message}`);
++    log.warn(`[SHADOW] Quote failed`, { tokenSymbol, error: e.message });
+   }
+ }
+ 
+@@ -392,12 +387,12 @@ async function closeShadowTrade(
+   const gapStr = pnlGapPct >= 0
+     ? `paper beats shadow by +${pnlGapPct.toFixed(2)}% (paper inflation)`
+     : `shadow beats paper by ${Math.abs(pnlGapPct).toFixed(2)}%`;
+-  console.log(
++  log.info(
+     `[SHADOW] CLOSE #${match.id} $${match.tokenSymbol} | ` +
+     `paper:${paperPnlPct.toFixed(2)}% shadow:${shadowPnlPct.toFixed(2)}% | ${gapStr} | ${exitReason}`
+   );
+ }
+-// ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++// """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+ let tradedAddresses = new Map<string, number>();
+ let stoppedOutAddresses = new Map<string, number>();
+ const hardBlockedAddresses = new Map<string, number>();
+@@ -433,7 +428,7 @@ let lastDailyReset = new Date().toDateString();
+ let peakBalance = engineSettings.startingBalance;
+ let circuitBreakerActive = false;
+ let lastLossCooldownEnd = 0;
+-let lastMiniCooldownEnd = 0; // 2-loss mini-cooldown (3 min) ΓÇö shorter than the 3-loss gate
++let lastMiniCooldownEnd = 0; // 2-loss mini-cooldown (3 min)  -- shorter than the 3-loss gate
+ let totalTradesAllTime = 0;
+ let engineStartTime = Date.now();
+ let mlCheckerInterval: ReturnType<typeof setInterval> | null = null;
+@@ -444,26 +439,26 @@ let reservedCapital = 0;
+ let pendingBuys = new Map<string, number>();
+ let recentlyAttemptedBuys = new Map<string, number>();
+ // Tracks consecutive on-chain zero-balance reads per trade id.
+-// A single zero read can be RPC lag ΓÇö require 3 in a row before closing as desync.
++// A single zero read can be RPC lag " require 3 in a row before closing as desync.
+ // Cleared immediately when a non-zero read comes in.
+ const zeroBalanceStrikes = new Map<number, number>();
+ const ZERO_STRIKES_REQUIRED = 3;
+ // Tracks consecutive unfetchable price reads per trade id (fetchTokenPriceForExit returns 0).
+-// This happens when a pair is delisted or migrated from DexScreener ΓÇö the trade then skips
++// This happens when a pair is delisted or migrated from DexScreener " the trade then skips
+ // all exit logic indefinitely, including MAX_HOLD. After ZERO_PRICE_STRIKES_REQUIRED
+ // consecutive zero-price cycles (~30s), force-close at last known DB price so a dead
+ // feed can never permanently freeze a position open.
+ const zeroPriceStrikes = new Map<number, number>();
+ const ZERO_PRICE_STRIKES_REQUIRED = 30; // 30s at 1000ms priceCheckIntervalMs
+ // FIX: sellFailureStrikes and MAX_SELL_FAILURES were used in the live sell-failure
+-// handler but never declared ΓÇö caused ReferenceError crashing the position manager
++// handler but never declared " caused ReferenceError crashing the position manager
+ // on the first failed live sell attempt.
+ const sellFailureStrikes = new Map<number, number>();
+ const MAX_SELL_FAILURES = 3;
+ // Tracks how many times each token address has been BOUGHT in the current session.
+ // Prevents fee bleed from repeatedly entering the same token (e.g. $ANIME 6x in 28min).
+ // In live mode each failed re-entry costs real Jupiter priority fees even if the trade
+-// itself breaks even. Cap: score < 90 ΓåÆ max 2 entries per token per session.
++// itself breaks even. Cap: score < 90 ' max 2 entries per token per session.
+ const sessionTokenBuyCount = new Map<string, number>();
+ // FIX B: Track how many stop-losses each token has accumulated this session.
+ // A token that stopped out once might be unlucky; one that stopped out twice is
+@@ -471,50 +466,50 @@ const sessionTokenBuyCount = new Map<string, number>();
+ // blackout from slReentryDelayMs to REPEAT_LOSER_BLOCK_MS (4 hours) so the bot
+ // stops bleeding priority fees re-entering the same bad setup repeatedly.
+ const tokenStopLossCount = new Map<string, number>();
+-const REPEAT_LOSER_BLOCK_MS = 8 * 60 * 60_000; // 8 hours (was 4h ΓÇö extended to stop re-entering same rug)
++const REPEAT_LOSER_BLOCK_MS = 8 * 60 * 60_000; // 8 hours (was 4h  -- extended to stop re-entering same rug)
+ // POST-LOSS COOLDOWN: After ANY loss on a token, block re-entry for this many ms.
+-// Prevents the common pattern of win ΓåÆ loss (re-entry) ΓåÆ loss (re-entry again) seen
++// Prevents the common pattern of win ' loss (re-entry) ' loss (re-entry again) seen
+ // with $Mantis, $ROCKET, $VDOR etc. where the bot chases a token that just reversed.
+-// Separate from slReentryDelayMs (SL-only, 15min) ΓÇö this applies to ALL loss exits.
++// Separate from slReentryDelayMs (SL-only, 15min) " this applies to ALL loss exits.
+ const POST_LOSS_COOLDOWN_MS = 8 * 60 * 1000; // 8 minutes
+ // 2-loss mini-cooldown: shorter pause before the 3-loss 10-min one.
+ // After 2 consecutive losses the market has already shown 2 hostile fills;
+ // waiting 3 minutes before the next entry gives price action time to stabilise
+ // and prevents adding a third loss while still in the same adverse move.
+ const MINI_LOSS_COOLDOWN_MS = 3 * 60_000; // 3 minutes
+-const tokenLastLossMs = new Map<string, number>(); // tokenAddress ΓåÆ timestamp of last loss exit
++const tokenLastLossMs = new Map<string, number>(); // tokenAddress ' timestamp of last loss exit
+ // SYMBOL-BASED POST-LOSS COOLDOWN: blocks re-entry on the same token symbol even when the
+ // contract address has changed (e.g. $PORNHUB migrated to a new address after a rug).
+-// Address-only gates are bypassed entirely in that case ΓÇö this closes the gap.
+-const tokenSymbolLastLossMs = new Map<string, number>(); // symbol ΓåÆ timestamp of last loss exit
+-const SYMBOL_LOSS_COOLDOWN_MS = 8 * 60_000; // 8 minutes ΓÇö matches POST_LOSS_COOLDOWN_MS (was 4 min, too short for migrated contracts)
++// Address-only gates are bypassed entirely in that case " this closes the gap.
++const tokenSymbolLastLossMs = new Map<string, number>(); // symbol ' timestamp of last loss exit
++const SYMBOL_LOSS_COOLDOWN_MS = 8 * 60_000; // 8 minutes  -- matches POST_LOSS_COOLDOWN_MS (was 4 min, too short for migrated contracts)
+ // SYMBOL-BASED SESSION CONCENTRATION: caps same-symbol entries regardless of contract address.
+-// Prevents patterns like $Pilots entering 3├ù from three different contract addresses while
++// Prevents patterns like $Pilots entering 3-- from three different contract addresses while
+ // the address-based sessionTokenBuyCount shows 0 for each one.
+-const sessionSymbolBuyCount = new Map<string, number>(); // symbol ΓåÆ entry count this session
+-// Lifecycle logging helpers ΓÇö structured output for production validation.
++const sessionSymbolBuyCount = new Map<string, number>(); // symbol ' entry count this session
++// Lifecycle logging helpers " structured output for production validation.
+ // Adds zero logic overhead and is safe to remove at any time.
+-const lifecycleLastLogMs = new Map<number, number>(); // trade.id ΓåÆ last LIFECYCLE:HOLD timestamp
+-const trailActivatedLogged = new Set<number>();        // trade.id ΓåÆ TRAIL:ACTIVATED already emitted
++const lifecycleLastLogMs = new Map<number, number>(); // trade.id ' last LIFECYCLE:HOLD timestamp
++const trailActivatedLogged = new Set<number>();        // trade.id ' TRAIL:ACTIVATED already emitted
+ const LIFECYCLE_HOLD_INTERVAL_MS = 30_000;             // heartbeat every 30s per trade
+ // FIX LIQ_CO: warn-once guard so the "entry liquidity missing" message is logged
+ // exactly once per trade instead of every priceCheckIntervalMs (1000ms) forever.
+ const liqCoWarnedTrades = new Set<number>();
+ // FIX PRICE_SANITY SPAM + STUCK TRADE: tracks consecutive PRICE_SANITY rejections per
+-// trade. A single bad-feed tick is transient and self-corrects in 1ΓÇô3 cycles. But a
++// trade. A single bad-feed tick is transient and self-corrects in 1"3 cycles. But a
+ // token that stays below PRICE_RATIO_MIN for 30+ consecutive cycles (~30 seconds) has
+-// almost certainly rugged ΓÇö the price IS real, not a feed error.
++// almost certainly rugged " the price IS real, not a feed error.
+ // After PRICE_SANITY_FORCE_CLOSE_CYCLES sustained downward rejections:
+-//   ΓÇó paper: closes immediately at the rug price
+-//   ΓÇó live:  attempts a 30%-slippage sell (async, non-blocking), then closes the DB
++//    paper: closes immediately at the rug price
++//    live:  attempts a 30%-slippage sell (async, non-blocking), then closes the DB
+ //            record regardless of sell outcome so the position is never permanently stuck.
+-// Upward spikes (ratio > PRICE_RATIO_MAX) are NOT force-closed ΓÇö they are typically
++// Upward spikes (ratio > PRICE_RATIO_MAX) are NOT force-closed " they are typically
+ // feed errors that self-correct, and closing on a spike would lock in a false loss.
+-const priceSanityRejections  = new Map<number, number>(); // trade.id ΓåÆ consecutive rejection count
++const priceSanityRejections  = new Map<number, number>(); // trade.id ' consecutive rejection count
+ const priceSanityWarnOnce    = new Set<number>();          // warn-once guard per trade
+-const PRICE_SANITY_FORCE_CLOSE_CYCLES = 7;                // FIX #1: reduced 30ΓåÆ3 cycles (3s). 30s held rugged tokens open for the entire drain window.
+-// FIX #3: raised 3ΓåÆ7 cycles (7s). 3s proved insufficient ΓÇö DexScreener stale-price
+-// glitches routinely persist 3ΓÇô6s, causing PRICE_SANITY_FORCE_CLOSE to fire on live
++const PRICE_SANITY_FORCE_CLOSE_CYCLES = 7;                // FIX #1: reduced 30'3 cycles (3s). 30s held rugged tokens open for the entire drain window.
++// FIX #3: raised 3'7 cycles (7s). 3s proved insufficient " DexScreener stale-price
++// glitches routinely persist 3"6s, causing PRICE_SANITY_FORCE_CLOSE to fire on live
+ // tokens that had NOT rugged (e.g. $RALLY: entry $0.013899, exit at -99%, price
+ // recovered to $0.012780 within seconds). 7 consecutive sub-1%-of-entry readings
+ // (7s at priceCheckIntervalMs=1000ms) is still fast enough to catch a real rug
+@@ -522,18 +517,18 @@ const PRICE_SANITY_FORCE_CLOSE_CYCLES = 7;                // FIX #1: reduced 30
+ // FIX SYMBOL_SL: tracks the last time a symbol exited via SL/LIQ_COLLAPSE so that
+ // a relaunch on a NEW contract address is still blocked for the full slReentryDelayMs.
+ // Separate from tokenSymbolLastLossMs (which covers all losses at SYMBOL_LOSS_COOLDOWN_MS).
+-const tokenSymbolSlBlockMs = new Map<string, number>(); // symbol ΓåÆ timestamp of last SL/LIQ exit
++const tokenSymbolSlBlockMs = new Map<string, number>(); // symbol ' timestamp of last SL/LIQ exit
+ const SYMBOL_SL_COOLDOWN_MS = 15 * 60_000; // mirrors slReentryDelayMs
+ 
+ const tokenPriceCache = new Map<string, { price: number; pair: DexScreenerPair | null; ts: number }>();
+ const jupiterQuoteCache = new Map<string, { quote: any; ts: number }>();
+-const QUOTE_CACHE_TTL_MS = 4_000; // FIX 4: was 2000 ΓÇö too short, causes rate-limit hits and trade delays
++const QUOTE_CACHE_TTL_MS = 4_000; // FIX 4: was 2000  -- too short, causes rate-limit hits and trade delays
+ 
+ setInterval(() => {
+   const now = Date.now();
+   for (const [k, v] of tokenPriceCache) if (now - v.ts > 1500) tokenPriceCache.delete(k);
+   for (const [k, v] of jupiterQuoteCache) if (now - v.ts > QUOTE_CACHE_TTL_MS) jupiterQuoteCache.delete(k);
+-}, 1_500); // match tokenPriceCache TTL ΓÇö 5s interval let entries linger up to 6.5s
++}, 1_500); // match tokenPriceCache TTL -- 5s interval let entries linger up to 6.5s
+ 
+ function getCachedQuote(key: string): any | null {
+   const entry = jupiterQuoteCache.get(key);
+@@ -555,7 +550,7 @@ async function resetDailyStats() {
+       dailyStartBalance = await getEffectiveBalance();
+     }
+     lastDailyReset = today;
+-    if (!circuitBreakerActive) console.log(`[RISK] Daily stats reset | Start balance: ${dailyStartBalance.toFixed(3)} SOL`);
++    if (!circuitBreakerActive) log.info(`[RISK] Daily stats reset`, { startBalance: dailyStartBalance.toFixed(3) });
+   }
+ }
+ 
+@@ -613,7 +608,7 @@ async function getOpenUnrealizedPnl(): Promise<number> {
+   const openTrades = await storage.getOpenTrades();
+   let total = 0;
+   for (const t of openTrades) {
+-    // FIX: same ghost-trade guard as getEffectiveBalance ΓÇö only include trades
++    // FIX: same ghost-trade guard as getEffectiveBalance " only include trades
+     // actively tracked in memory. Ghost DB rows from previous sessions inflate
+     // unrealizedPnl, which can falsely trip the DAILY_LOSS_LIMIT circuit breaker
+     // before any trade in the current session has even executed.
+@@ -647,7 +642,7 @@ async function checkCircuitBreakers(): Promise<{ canTrade: boolean; reason: stri
+     // FIX UI-PEAK: sync to DB so the frontend reads the correct peak on every cycle.
+     // Without this the UI drawdown display reads a stale DB value (e.g. old paper peak
+     // 0.093 SOL) and shows a false 28.6% drawdown even though in-memory peak is correct.
+-    // Fire-and-forget ΓÇö canTrade must not block on a DB write.
++    // Fire-and-forget " canTrade must not block on a DB write.
+     storage.updateBotStats({ peakBalance: peakBalance.toFixed(4) }).catch(() => {});
+   }
+   const drawdownPct = peakBalance > 0 ? ((peakBalance - effectiveBal) / peakBalance) * 100 : 0;
+@@ -657,7 +652,7 @@ async function checkCircuitBreakers(): Promise<{ canTrade: boolean; reason: stri
+   }
+   if (Date.now() < lastMiniCooldownEnd) {
+     const remaining = Math.ceil((lastMiniCooldownEnd - Date.now()) / 1000);
+-    return { canTrade: false, reason: `MINI_LOSS_COOLDOWN (${remaining}s remaining ΓÇö 2 consecutive losses)` };
++    return { canTrade: false, reason: `MINI_LOSS_COOLDOWN (${remaining}s remaining " 2 consecutive losses)` };
+   }
+   if (Date.now() < lastLossCooldownEnd) {
+     const remaining = Math.ceil((lastLossCooldownEnd - Date.now()) / 1000);
+@@ -682,9 +677,9 @@ function sanitizeNum(v: any, fallback = 0): number { const n = Number(v); return
+  * Returns the compound size multiplier for the current portfolio value.
+  *
+  * Formula (boost on):  min(compoundMaxMultiplier, max(1, (portfolio/ref)^power))
+- *   ΓÇó At portfolio = compoundRefSol  ΓåÆ multiplier = 1  (matches legacy behaviour)
+- *   ΓÇó At portfolio > compoundRefSol  ΓåÆ multiplier grows super-linearly (power > 1)
+- *   ΓÇó At portfolio < compoundRefSol  ΓåÆ clamped at 1 so we never size DOWN vs legacy
++ *    At portfolio = compoundRefSol  ' multiplier = 1  (matches legacy behaviour)
++ *    At portfolio > compoundRefSol  ' multiplier grows super-linearly (power > 1)
++ *    At portfolio < compoundRefSol  ' clamped at 1 so we never size DOWN vs legacy
+  *
+  * Boost off:  always returns 1 so the rest of the sizing pipeline is unchanged.
+  *
+@@ -754,7 +749,7 @@ async function getMLBatchPredictions(tokenMetrics: Record<string, number>[]): Pr
+     // use whatever predictions arrived, not discard all. Map what we got; null-fill
+     // the rest so rule-scoring still applies to the unmatched tokens.
+     if (preds.length !== validIndices.length) {
+-      console.warn(`[ML] Batch mismatch: expected ${validIndices.length}, got ${preds.length} ΓÇö using partial results`);
++      log.warn(`[ML] Batch mismatch`, { expected: validIndices.length, got: preds.length });
+     }
+     const results: ({ pumpProb: number; dumpRisk: number; version: string } | null)[] = tokenMetrics.map(() => null);
+     for (let j = 0; j < Math.min(preds.length, validIndices.length); j++) {
+@@ -832,12 +827,12 @@ function scoreToken(
+   const volScore = volMomentum >= 3.0 ? 15 : volMomentum >= 2.0 ? 12 : volMomentum >= 1.5 ? 9 : volMomentum >= 1.0 ? 6 : volMomentum >= 0.5 ? 3 : 0;
+   const priceScore = priceChange5m >= 10 ? 15 : priceChange5m >= 7 ? 12 : priceChange5m >= 5 ? 10 : priceChange5m >= 3 ? 8 : priceChange5m >= 1.5 ? 5 : priceChange5m > 0 ? 2 : Math.max(-10, Math.floor(priceChange5m));
+   const txScore = txVelocity5m >= 50 ? 10 : txVelocity5m >= 30 ? 8 : txVelocity5m >= 20 ? 6 : txVelocity5m >= 10 ? 4 : txVelocity5m >= 5 ? 2 : 0;
+-  // OLD version gave <60s tokens max freshness (10pts) ΓÇö prime SNIPER window.
++  // OLD version gave <60s tokens max freshness (10pts) " prime SNIPER window.
+   // New version penalised them with 0, indirectly blocking sub-minute entries
+   // via the score gate rather than through the explicit SNIPER safety checks.
+-  // Restore: <60s ΓåÆ 10, then taper. Safety for ultra-fresh tokens is handled
++  // Restore: <60s ' 10, then taper. Safety for ultra-fresh tokens is handled
+   // by sniperMinLiquidity, rugcheck, sell-side preflight and the isMicroCapToken
+-  // 0.02 SOL size cap ΓÇö not by artificially deflating the score here.
++  // 0.02 SOL size cap " not by artificially deflating the score here.
+   const ageScore = ageSeconds < 60 ? 10 : ageSeconds <= 300 ? 8 : ageSeconds <= 600 ? 6 : ageSeconds <= 1800 ? 4 : ageSeconds <= 3600 ? 2 : 0;
+   const bp1hScore = bp1h >= 0.60 ? 5 : bp1h >= 0.55 ? 3 : bp1h >= 0.50 ? 1 : 0;
+   let fdvScore = 0;
+@@ -852,7 +847,7 @@ function scoreToken(
+   }
+   const metrics = { liq, ageSeconds, bp5m, bp1h, volMomentum, priceChange5m, priceChange1h, txVelocity5m, vol5m, vol1h, fdv, h1buys: h1b, h1sells: h1s, m5buys: m5b, m5sells: m5s, buyPressure5m: bp5m, buyPressure1h: bp1h };
+ 
+-  // MicroΓÇæwallet mode: lower score thresholds slightly to allow recovery trades
++  // Micro'wallet mode: lower score thresholds slightly to allow recovery trades
+   const effSniperScore = isMicroWallet ? 58 : engineSettings.sniperMinScore;
+   const effMgScore     = isMicroWallet ? 58 : engineSettings.mgMinScore;
+   const effHwrScore    = isMicroWallet ? 60 : engineSettings.hwrMinScore;
+@@ -883,12 +878,12 @@ function scoreToken(
+   if (candidates.length > 0) {
+     // MODE SELECTION: prefer the highest-minScore qualifying mode (HWR > MG > SNIPER).
+     // A higher minScore means stricter qualification criteria = higher conviction signal.
+-    // SNIPER is only chosen when it is the sole qualifying mode ΓÇö it exists to handle
++    // SNIPER is only chosen when it is the sole qualifying mode " it exists to handle
+     // brand-new thin pools where HWR/MG data hasn't accumulated yet, not to override
+     // better-qualified modes just because the token is young.
+     //
+     // SLIPPAGE NOTE: when HWR/MG win over SNIPER on a young token, their tighter
+-    // slippage (2ΓÇô4%) is appropriate because those tokens already meet the HWR/MG
++    // slippage (2"4%) is appropriate because those tokens already meet the HWR/MG
+     // liquidity floors (hwrMinLiquidity: 8000) that make wide slippage unnecessary.
+     // Pure-SNIPER tokens (only SNIPER qualifies) still get SNIPER's wider slippage.
+     // Tie-break: on equal minScore prefer MG/HWR over SNIPER (strictly greater than).
+@@ -900,7 +895,7 @@ function scoreToken(
+ 
+ function getScoreBasedTP(score: number): number {
+   // FIX X-2: tiers must increase monotonically with score. Old code returned 80%
+-  // for both 70ΓÇô79 AND 80ΓÇô89 (identical), and the <70 default was also 80%,
++  // for both 70"79 AND 80"89 (identical), and the <70 default was also 80%,
+   // meaning every score below 90 got the same exit. Proper ladder:
+   if (score >= 90) return 100;
+   if (score >= 80) return  90;
+@@ -950,7 +945,7 @@ async function checkTokenSafetyHeuristicsOnly(tokenAddress: string, pair: DexScr
+ function getScoreBasedMaxHold(score: number, currentPnlPct: number, currentBuyPressure: number): number {
+   if (!engineSettings.dynamicHoldEnabled) return engineSettings.maxHoldSeconds;
+   let base = score >= 85 ? 900 : score >= 75 ? 720 : score >= 65 ? 540 : engineSettings.maxHoldSeconds;
+-  // FIX W-1: differentiated multipliers ΓÇö both branches previously used 1.4├ù,
++  // FIX W-1: differentiated multipliers " both branches previously used 1.4--,
+   // making the stricter condition (>20% PNL, >0.60 BP) completely redundant.
+   if (currentPnlPct > 20 && currentBuyPressure > 0.60) base = Math.round(base * 1.6);
+   else if (currentPnlPct > 10 && currentBuyPressure > 0.55) base = Math.round(base * 1.4);
+@@ -1028,7 +1023,7 @@ function geckoPoolToDexPair(pool: any): DexScreenerPair | null {
+       pairCreatedAt,
+     };
+   } catch (e) { 
+-    console.warn("[GECKO] Failed to convert pool:", (e as Error).message); 
++    log.warn("[GECKO] Failed to convert pool", { error: (e as Error).message }); 
+     return null; 
+   }
+ }
+@@ -1037,13 +1032,15 @@ async function batchFetchDexPairs(addresses: string[]): Promise<Map<string, DexS
+   const result = new Map<string, DexScreenerPair>();
+   if (addresses.length === 0) return result;
+   for (let i = 0; i < addresses.length; i += 30) {
+-    if (i > 0) await new Promise(r => setTimeout(r, 300));
++    // FIX: Use throttledDexScreenerFetch instead of raw fetch() so all DexScreener
++    // requests go through the single-file RequestQueue (max ~2.8 req/s). The old
++    // code bypassed the queue entirely, allowing burst requests that could trigger
++    // DexScreener WAF IP bans during high-activity scans. The manual 300ms sleep
++    // is removed since throttledDexScreenerFetch enforces a 350ms minimum gap.
+     const chunk = addresses.slice(i, i + 30);
+     try {
+       const url = `https://api.dexscreener.com/latest/dex/tokens/${chunk.join(",")}`;
+-      const resp = await fetch(url, { signal: AbortSignal.timeout(5000) });
+-      if (!resp.ok) continue;
+-      const data = await resp.json();
++      const data = await throttledDexScreenerFetch(url, 5000);
+       const pairs: DexScreenerPair[] = data.pairs || [];
+       for (const addr of chunk) {
+         // FIX U-3: apply wash-trade filter identical to fetchTokenPrice.
+@@ -1168,7 +1165,7 @@ async function fetchDexScreenerCandidates(isMicroWallet: boolean = false): Promi
+             liquidity: { usd: liq },
+             volume: { m5: vol5m, h1: vol5m * 12 },
+             pairCreatedAt: bToken.first_seen ? bToken.first_seen * 1000 : undefined,
+-            dexId: "birdseye",
++            dexId: "birdeye",
+             pairAddress: bToken.address,
+             txns: {},
+             priceChange: { m5: bToken.priceChange5m || 0, h1: bToken.priceChange1h || 0 },
+@@ -1234,7 +1231,7 @@ async function fetchDexScreenerCandidates(isMicroWallet: boolean = false): Promi
+     results.sort((a, b) => b.score - a.score);
+     
+     if (results.length > 0) {
+-      console.log(`[SCAN] Discovery: ${results.length} candidates found.`);
++      log.info(`[SCAN] Discovery`, { candidatesFound: results.length });
+     }
+     
+     liveCandidatesCache = results;
+@@ -1243,7 +1240,7 @@ async function fetchDexScreenerCandidates(isMicroWallet: boolean = false): Promi
+     return results;
+ 
+   } catch (e) {
+-    console.error("[SCAN] Discovery engine error:", e);
++    log.error("[SCAN] Discovery engine error", { error: (e as Error).message });
+     lastScanTime = now;
+     isFetchingCandidates = false;
+     return liveCandidatesCache;
+@@ -1259,7 +1256,11 @@ async function checkTokenSafety(tokenAddress: string, pair: DexScreenerPair): Pr
+   }
+   
+   if (Date.now() < rugcheckHeuristicsOnlyUntil) {
+-    return { safe: false, reason: "rugcheck_circuit_breaker_active_strict_block" };
++    // FIX: Circuit breaker is open -- use heuristics-only mode instead of blocking ALL trades.
++    // Old behaviour: safe=false for every token while rugcheck.xyz is down, halting all trading.
++    // New behaviour: fall through to local safety checks so the bot can still trade safely.
++    log.warn(`[RUGCHECK] Circuit breaker active -- using heuristics-only for ${tokenAddress.slice(0, 8)}...`);
++    return checkTokenSafetyHeuristicsOnly(tokenAddress, pair);
+   }
+ 
+   const liq = pair.liquidity?.usd || 0, fdv = pair.fdv || 0, createdAt = pair.pairCreatedAt || Date.now();
+@@ -1307,8 +1308,24 @@ async function checkTokenSafety(tokenAddress: string, pair: DexScreenerPair): Pr
+     
+     return { safe: true, reason: "ok" };
+     
+-  } catch (e) {
+-    return { safe: false, reason: "rugcheck_timeout_blocked" };
++  } catch (e: any) {
++    // FIX: Increment circuit-breaker timeout counter and fall back to heuristics.
++    // Old behaviour: silently returned safe=false without incrementing rugcheckTimeoutCount,
++    // so 3+ consecutive timeouts never opened the circuit breaker, and every single timeout
++    // blocked the trade without any fallback -- even when the API was merely slow.
++    const now = Date.now();
++    if (now - rugcheckTimeoutWindowStart > 60_000) {
++      rugcheckTimeoutCount = 0;
++      rugcheckTimeoutWindowStart = now;
++    }
++    rugcheckTimeoutCount++;
++    if (rugcheckTimeoutCount >= 3) {
++      rugcheckHeuristicsOnlyUntil = now + 5 * 60_000;
++      log.warn(`[RUGCHECK] Circuit breaker tripped (${rugcheckTimeoutCount} timeouts in 60s) -- heuristics-only for 5 min`);
++    } else {
++      log.warn(`[RUGCHECK] Timeout for ${tokenAddress.slice(0, 8)}... (${rugcheckTimeoutCount}/3 before circuit breaker) -- using heuristics`);
++    }
++    return checkTokenSafetyHeuristicsOnly(tokenAddress, pair);
+   }
+ }
+ 
+@@ -1346,7 +1363,7 @@ async function runScanCycle() {
+     const currentBalance = await getEffectiveBalance();
+     const isMicroWallet = currentBalance < 0.05;
+     if (isMicroWallet) {
+-      console.log(`[SCAN] Micro-Wallet Mode Active (Bal: ${currentBalance.toFixed(4)} SOL)`);
++      log.info(`[SCAN] Micro-Wallet Mode Active`, { balance: currentBalance.toFixed(4) });
+     }
+ 
+     const openTrades = await storage.getOpenTrades();
+@@ -1358,7 +1375,7 @@ async function runScanCycle() {
+     const pauseSample = momentumCandidates.length >= 5 ? momentumCandidates : top10;
+     const avgVolumeLast10 = pauseSample.reduce((sum, c) => sum + parseFloat(c.volume5m as string || "0"), 0) / Math.max(1, pauseSample.length);
+     if (pauseSample.length >= 5 && avgVolumeLast10 < 75) { 
+-        console.log(`[PAUSE] Low market activity (avg 5m vol $${avgVolumeLast10.toFixed(0)} < $75, n=${pauseSample.length} active candidates) ΓÇö skipping cycle`); 
++        log.info(`[PAUSE] Low market activity " skipping cycle`, { avgVolume5m: avgVolumeLast10.toFixed(0), activeCandidates: pauseSample.length });
+         return; 
+     }
+     
+@@ -1367,7 +1384,7 @@ async function runScanCycle() {
+     
+     const minViableBalance = 0.005 + engineSettings.minPositionSize;
+     if (effectiveBalance < minViableBalance) { 
+-        console.log(`[RISK] Insufficient usable balance (effective ${effectiveBalance.toFixed(4)} SOL < ${minViableBalance.toFixed(4)} required) ΓÇö skipping cycle`); 
++        log.info(`[RISK] Insufficient usable balance " skipping cycle`, { effectiveBalance: effectiveBalance.toFixed(4), required: minViableBalance.toFixed(4) });
+         return; 
+     }
+     
+@@ -1377,7 +1394,7 @@ async function runScanCycle() {
+     
+     if (openTrades.length >= cycleMaxPositions) return;
+     if (sellingInProgress.size > 0) { 
+-        console.log(`[SCAN] Deferring new buys ΓÇö ${sellingInProgress.size} sell(s) in progress`); 
++        log.info(`[SCAN] Deferring new buys`, { sellsInProgress: sellingInProgress.size });
+         return; 
+     }
+     
+@@ -1388,7 +1405,7 @@ async function runScanCycle() {
+         ? Math.min(...monitoredTrades.map((t: any) => parseFloat(t.pnl || "0")))
+         : 0;
+       if (worstOpenPnl <= -5) { 
+-          console.log(`[SCAN] Skipping new entries ΓÇö worst open position at ${worstOpenPnl.toFixed(1)}%.`); 
++          log.info(`[SCAN] Skipping new entries`, { worstOpenPnl: worstOpenPnl.toFixed(1) });
+           return; 
+       }
+     }
+@@ -1403,63 +1420,63 @@ async function runScanCycle() {
+     for (const candidate of candidates) {
+       const addr = candidate.tokenAddress;
+       if (boughtThisCycle.has(addr)) continue;
+-      if (pendingBuys.has(addr)) { console.log(`[SCAN] Skipping $${candidate.tokenSymbol} ΓÇö buy already pending`); continue; }
+-      if (recentlyAttemptedBuys.has(addr)) { console.log(`[SCAN] Skipping $${candidate.tokenSymbol} ΓÇö recently attempted and failed`); continue; }
++      if (pendingBuys.has(addr)) { log.info(`[SCAN] Skipping " buy already pending`, { tokenSymbol: candidate.tokenSymbol }); continue; }
++      if (recentlyAttemptedBuys.has(addr)) { log.info(`[SCAN] Skipping " recently attempted and failed`, { tokenSymbol: candidate.tokenSymbol }); continue; }
+       
+       const lastTraded = tradedAddresses.get(addr);
+       if (lastTraded) {
+         const elapsed = Date.now() - lastTraded;
+         const REENTRY_HARD_FLOOR_MS = 30_000;
+         if (elapsed < REENTRY_HARD_FLOOR_MS) {
+-            console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Re-entry hard floor (traded ${Math.round(elapsed/1000)}s ago)`);
++            log.info(`[GATE] SKIP " Re-entry hard floor`, { tokenSymbol: candidate.tokenSymbol, elapsedSec: Math.round(elapsed/1000) });
+             continue;
+         }
+         const isStoppedOut = stoppedOutAddresses.has(addr);
+         const highScoreAgain = candidate.score >= 85 && !isStoppedOut;
+         if (elapsed < engineSettings.reentryDelayMs && !highScoreAgain) {
+-            console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Re-entry delay active.`);
++            log.info(`[GATE] SKIP " Re-entry delay active`, { tokenSymbol: candidate.tokenSymbol });
+             continue;
+         }
+       }
+       
+       const lastLossTime = tokenLastLossMs.get(addr);
+       if (lastLossTime && (Date.now() - lastLossTime) < POST_LOSS_COOLDOWN_MS) {
+-          console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Token in post-loss cooldown.`);
++          log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Token in post-loss cooldown.`);
+           continue;
+       }
+       
+       const sessionCount = sessionTokenBuyCount.get(addr) ?? 0;
+       if (sessionCount >= 2) {
+-          console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Max session entries reached.`);
++          log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Max session entries reached.`);
+           continue;
+       }
+       
+       const sym = candidate.tokenSymbol;
+       const symLastLossTime = tokenSymbolLastLossMs.get(sym);
+       if (symLastLossTime && (Date.now() - symLastLossTime) < SYMBOL_LOSS_COOLDOWN_MS) {
+-          console.log(`[GATE] SKIP $${sym} ΓÇö Symbol in post-loss cooldown.`);
++          log.info(`[GATE] SKIP $${sym} " Symbol in post-loss cooldown.`);
+           continue;
+       }
+       
+       const symSlBlockTime = tokenSymbolSlBlockMs.get(sym);
+       if (symSlBlockTime && (Date.now() - symSlBlockTime) < SYMBOL_SL_COOLDOWN_MS) {
+-          console.log(`[GATE] SKIP $${sym} ΓÇö Symbol in SL cooldown.`);
++          log.info(`[GATE] SKIP $${sym} " Symbol in SL cooldown.`);
+           continue;
+       }
+       
+       const symSessionCount = sessionSymbolBuyCount.get(sym) ?? 0;
+       if (symSessionCount >= 2) {
+-          console.log(`[GATE] SKIP $${sym} ΓÇö Symbol session limit reached.`);
++          log.info(`[GATE] SKIP $${sym} " Symbol session limit reached.`);
+           continue;
+       }
+       
+       if (hardBlockedAddresses.has(addr)) {
+-          console.log(`[GATE] SKIP $${sym} ΓÇö Token is on the hard-block list.`);
++          log.info(`[GATE] SKIP $${sym} " Token is on the hard-block list.`);
+           continue;
+       }
+       const lastStopped = stoppedOutAddresses.get(addr);
+       if (lastStopped && (Date.now() - lastStopped) < engineSettings.slReentryDelayMs) {
+-          console.log(`[GATE] SKIP $${sym} ΓÇö Token SL re-entry delay active.`);
++          log.info(`[GATE] SKIP $${sym} " Token SL re-entry delay active.`);
+           continue;
+       }
+       if (openAddresses.has(addr)) continue;
+@@ -1468,7 +1485,7 @@ async function runScanCycle() {
+       
+       const { price, pair } = await fetchTokenPrice(candidate.tokenAddress);
+       if (!pair || price <= 0) {
+-          console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Invalid price or pair data.`);
++          log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Invalid price or pair data.`);
+           continue;
+       }
+       
+@@ -1477,24 +1494,24 @@ async function runScanCycle() {
+       const txSells5m = pair.txns?.m5?.sells ?? 0;
+       const txTotal5m = txBuys5m + txSells5m;
+       if (vol5mCheck < 75 || txTotal5m < 3) {
+-          console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Insufficient 5m activity (Vol: $${vol5mCheck.toFixed(0)}, Tx: ${txTotal5m})`);
++          log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Insufficient 5m activity (Vol: $${vol5mCheck.toFixed(0)}, Tx: ${txTotal5m})`);
+           continue;
+       }
+       
+       const pairDex = (pair.dexId || candidate.dex || "").toLowerCase();
+       if (!JUPITER_SUPPORTED_DEXES.has(pairDex)) { 
+-          console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Unsupported DEX: ${pairDex}`);
++          log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Unsupported DEX: ${pairDex}`);
+           hardBlockedAddresses.set(addr, Date.now()); 
+           continue; 
+       }
+       if (PUMPFUN_DEXES.has(pairDex) && openPumpfunCount >= 1) {
+-          console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Pumpfun concentration limit reached.`);
++          log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Pumpfun concentration limit reached.`);
+           continue;
+       }
+       
+       const poolAgeMs = pair.pairCreatedAt ? Date.now() - pair.pairCreatedAt : 0;
+       if (poolAgeMs < JUPITER_INDEX_DELAY_MS) {
+-          console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Pool too young (${Math.floor(poolAgeMs/1000)}s), awaiting Jupiter index.`);
++          log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Pool too young (${Math.floor(poolAgeMs/1000)}s), awaiting Jupiter index.`);
+           continue;
+       }
+       
+@@ -1503,7 +1520,7 @@ async function runScanCycle() {
+         const priceDrift = Math.abs((price - scanPrice) / scanPrice) * 100;
+         const driftLimit = candidate.qualifiedMode === "SNIPER" ? 30 : candidate.qualifiedMode === "MG" ? 25 : 20;
+         if (priceDrift > driftLimit) { 
+-            console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Price drifted ${priceDrift.toFixed(1)}% since scan (Limit: ${driftLimit}%)`);
++            log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Price drifted ${priceDrift.toFixed(1)}% since scan (Limit: ${driftLimit}%)`);
+             tradedAddresses.set(addr, Date.now()); 
+             continue; 
+         }
+@@ -1531,11 +1548,11 @@ async function runScanCycle() {
+       const effectiveMinScore = getEffectiveMinScore();
+       
+       if (!scoring.qualifiedMode || scoring.combinedScore < effectiveMinScore || scoring.sizeSol < cycleMinSize) {
+-        console.log(`[SCORE_GATE] SKIP $${candidate.tokenSymbol} ΓÇö Score: ${scoring.combinedScore} (Min: ${effectiveMinScore}) | Mode: ${scoring.qualifiedMode ?? "none"} | Size: ${scoring.sizeSol.toFixed(4)} (Min: ${cycleMinSize})`);
++        log.info(`[SCORE_GATE] SKIP $${candidate.tokenSymbol} " Score: ${scoring.combinedScore} (Min: ${effectiveMinScore}) | Mode: ${scoring.qualifiedMode ?? "none"} | Size: ${scoring.sizeSol.toFixed(4)} (Min: ${cycleMinSize})`);
+         continue;
+       }
+       if (status.mode !== "AUTO" && scoring.qualifiedMode !== status.mode) {
+-          console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Mode mismatch (${scoring.qualifiedMode} != ${status.mode})`);
++          log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Mode mismatch (${scoring.qualifiedMode} != ${status.mode})`);
+           continue;
+       }
+       
+@@ -1546,12 +1563,12 @@ async function runScanCycle() {
+       const liq = pair.liquidity?.usd || 0;
+ 
+       if (liq === 0) {
+-          console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Zero liquidity reported.`);
++          log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Zero liquidity reported.`);
+           continue;
+       }
+       const MIN_BUY_LIQ_USD = scoring.qualifiedMode === "HWR" ? engineSettings.hwrMinLiquidity : engineSettings.sniperMinLiquidity; 
+       if (liq < MIN_BUY_LIQ_USD) {
+-          console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Live liq $${liq.toFixed(0)} < minimum $${MIN_BUY_LIQ_USD}`);
++          log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Live liq $${liq.toFixed(0)} < minimum $${MIN_BUY_LIQ_USD}`);
+           continue;
+       }
+       
+@@ -1563,7 +1580,7 @@ async function runScanCycle() {
+       scoring.sizeSol = parseFloat(targetSize.toFixed(4));
+       
+       if (scoring.sizeSol < MIN_TRADE_SIZE_SOL) {
+-          console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Dust trade size (${scoring.sizeSol.toFixed(4)} SOL)`);
++          log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Dust trade size (${scoring.sizeSol.toFixed(4)} SOL)`);
+           continue; 
+       }
+ 
+@@ -1571,20 +1588,20 @@ async function runScanCycle() {
+       const tradeSizeUsd = scoring.sizeSol * solPriceForLiq;
+       const dynamicMinLiq = tradeSizeUsd * 80;
+       if (liq < dynamicMinLiq) {
+-          console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Pool liq $${liq.toFixed(0)} < dynamic floor $${dynamicMinLiq.toFixed(0)} (needs 80x depth)`);
++          log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Pool liq $${liq.toFixed(0)} < dynamic floor $${dynamicMinLiq.toFixed(0)} (needs 80x depth)`);
+           continue;
+       }
+       
+       const maxTotalExposure = Math.max(engineSettings.maxPositionSize * 2, totalPortfolioSol * 0.40);
+       if (totalExposureSol + scoring.sizeSol > maxTotalExposure) {
+-          console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Max total exposure reached.`);
++          log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Max total exposure reached.`);
+           continue;
+       }
+       
+       const txCosts = calcTransactionCosts(liq, scoring.sizeSol);
+       const entryTotalCostSol = scoring.sizeSol * (1 + (txCosts.entrySlippagePct + txCosts.entryFeePct) / 100);
+       if (entryTotalCostSol < MIN_VIABLE_TRADE_SOL) {
+-          console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Trade too small after fees (${entryTotalCostSol.toFixed(4)} SOL)`);
++          log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Trade too small after fees (${entryTotalCostSol.toFixed(4)} SOL)`);
+           continue;
+       }
+       
+@@ -1592,7 +1609,7 @@ async function runScanCycle() {
+         const freshSolBal = await jupiterService!.getWalletBalance().catch(() => remainingBalance);
+         const safeBalance = Math.max(0, freshSolBal - reservedCapital);
+         if (safeBalance < scoring.sizeSol + MIN_FEE_BUFFER_SOL) {
+-          console.log(`[RISK] SKIP $${candidate.tokenSymbol} ΓÇö Safe balance ${safeBalance.toFixed(4)} SOL < trade size + fee buffer`);
++          log.info(`[RISK] SKIP $${candidate.tokenSymbol} " Safe balance ${safeBalance.toFixed(4)} SOL < trade size + fee buffer`);
+           recentlyAttemptedBuys.set(addr, Date.now());
+           continue;
+         }
+@@ -1601,7 +1618,7 @@ async function runScanCycle() {
+       
+       const safety = await checkTokenSafety(candidate.tokenAddress, pair);
+       if (!safety.safe) {
+-        console.log(`[SAFETY] BLOCKED $${candidate.tokenSymbol} ΓÇö ${safety.reason}`);
++        log.info(`[SAFETY] BLOCKED $${candidate.tokenSymbol} " ${safety.reason}`);
+         if (safety.reason.startsWith("rugcheck_danger") || safety.reason.startsWith("rugcheck_score_low") || safety.reason.startsWith("insider_ownership_detected") || safety.reason.startsWith("low_liq_depth_ratio")) {
+             hardBlockedAddresses.set(addr, Date.now());
+         }
+@@ -1618,10 +1635,10 @@ async function runScanCycle() {
+ 
+       if (currentScore >= 85 && currentScore < 92 && !hasSocials && !isPumpFunCandidate) {
+           if (!watchlistCache.has(addr)) {
+-              console.log(`[WATCHLIST] Staging $${candidate.tokenSymbol} ΓÇö Waiting for socials/metadata to validate mid-tier score.`);
++              log.info(`[WATCHLIST] Staging $${candidate.tokenSymbol} " Waiting for socials/metadata to validate mid-tier score.`);
+               watchlistCache.set(addr, { pair, firstSeen: Date.now() });
+           } else {
+-              console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Still on watchlist (awaiting socials).`);
++              log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Still on watchlist (awaiting socials).`);
+           }
+           continue;
+       }
+@@ -1630,7 +1647,7 @@ async function runScanCycle() {
+       if (scoring.qualifiedMode === "SNIPER") {
+         const bp5mNum = parseFloat(candidate.buyPressure5m || "0");
+         if ((candidate.priceChange5m || 0) > 7 && bp5mNum < 0.50) {
+-            console.log(`[TIMING] SKIP $${candidate.tokenSymbol} ΓÇö SNIPER momentum cooling.`);
++            log.info(`[TIMING] SKIP $${candidate.tokenSymbol} " SNIPER momentum cooling.`);
+             continue;
+         }
+       }
+@@ -1648,14 +1665,14 @@ async function runScanCycle() {
+           executionQuote._fetchedAt = Date.now();
+           setCachedQuote(quoteCacheKey, executionQuote);
+         } catch (quoteErr: any) { 
+-            console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Buy-side quote failed.`);
++            log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Buy-side quote failed.`);
+             recentlyAttemptedBuys.set(addr, Date.now()); 
+             continue; 
+         }
+         
+         const impactPct = parseFloat(executionQuote?.priceImpactPct ?? "0");
+         if (impactPct > preflightImpactLimit) { 
+-            console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Buy impact ${impactPct.toFixed(2)}% exceeds limit ${preflightImpactLimit}%`);
++            log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Buy impact ${impactPct.toFixed(2)}% exceeds limit ${preflightImpactLimit}%`);
+             recentlyAttemptedBuys.set(addr, Date.now()); 
+             continue; 
+         }
+@@ -1668,7 +1685,7 @@ async function runScanCycle() {
+                 );
+                 
+                 if (!sellCheckQuote || !sellCheckQuote.outAmount) {
+-                    console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö NO SELL ROUTE (token likely has no exit liquidity).`);
++                    log.info(`[GATE] SKIP $${candidate.tokenSymbol} " NO SELL ROUTE (token likely has no exit liquidity).`);
+                     hardBlockedAddresses.set(addr, Date.now()); 
+                     recentlyAttemptedBuys.set(addr, Date.now());
+                     continue;
+@@ -1679,19 +1696,19 @@ async function runScanCycle() {
+                 
+                 // Hard block if we lose >15% of value just by entering and exiting.
+                 if (roundTripPct < 85) { 
+-                    console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö High round-trip friction: ${ (100 - roundTripPct).toFixed(1) }% loss on simulation.`);
++                    log.info(`[GATE] SKIP $${candidate.tokenSymbol} " High round-trip friction: ${ (100 - roundTripPct).toFixed(1) }% loss on simulation.`);
+                     recentlyAttemptedBuys.set(addr, Date.now());
+                     continue;
+                 }
+                 
+                 const sellImpactPct = parseFloat(sellCheckQuote.priceImpactPct ?? "0");
+                 if (sellImpactPct > 10) {
+-                    console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Sell-side impact too high (${sellImpactPct.toFixed(2)}%).`);
++                    log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Sell-side impact too high (${sellImpactPct.toFixed(2)}%).`);
+                     recentlyAttemptedBuys.set(addr, Date.now());
+                     continue;
+                 }
+             } catch (e) {
+-                console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Sell-side preflight failed to simulate.`);
++                log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Sell-side preflight failed to simulate.`);
+                 recentlyAttemptedBuys.set(addr, Date.now());
+                 continue;
+             }
+@@ -1700,7 +1717,7 @@ async function runScanCycle() {
+       
+       const preflight = executionQuote ? { priceImpactPct: parseFloat(executionQuote.priceImpactPct ?? "0"), outAmount: executionQuote.outAmount ?? "0", routeInfo: "direct" } : null;
+       if (isLiveBuy && !preflight) { 
+-          console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö No valid Jupiter quote for impact estimation.`);
++          log.info(`[GATE] SKIP $${candidate.tokenSymbol} " No valid Jupiter quote for impact estimation.`);
+           recentlyAttemptedBuys.set(addr, Date.now()); 
+           continue; 
+       }
+@@ -1717,13 +1734,13 @@ async function runScanCycle() {
+             const microCapLamports = Math.floor(scoring.sizeSol * 1e9);
+             const freshQuote = await jupiterService!.fetchQuote(SOL_MINT, candidate.tokenAddress, microCapLamports, [newSlippageBps]);
+             if (!freshQuote) {
+-                console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö No quote at micro-cap slippage.`);
++                log.info(`[GATE] SKIP $${candidate.tokenSymbol} " No quote at micro-cap slippage.`);
+                 continue;
+             }
+             executionQuote = freshQuote;
+             executionQuote._fetchedAt = Date.now();
+           } catch { 
+-              console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Micro-cap quote fetch failed.`);
++              log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Micro-cap quote fetch failed.`);
+               recentlyAttemptedBuys.set(addr, Date.now()); 
+               continue; 
+           }
+@@ -1736,14 +1753,14 @@ async function runScanCycle() {
+         const QUOTE_MAX_AGE_MS = 4000;
+         const quoteAge = executionQuote?._fetchedAt ? Date.now() - executionQuote._fetchedAt : 9999;
+         if (quoteAge > QUOTE_MAX_AGE_MS) { 
+-            console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Quote stale (${quoteAge}ms old).`);
++            log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Quote stale (${quoteAge}ms old).`);
+             recentlyAttemptedBuys.set(addr, Date.now()); 
+             continue; 
+         }
+         
+         const impactPct = parseFloat(executionQuote?.priceImpactPct ?? "0");
+         if (impactPct > slippageBps / 100) { 
+-            console.log(`[GATE] SKIP $${candidate.tokenSymbol} ΓÇö Impact ${impactPct.toFixed(2)}% exceeds slippage.`);
++            log.info(`[GATE] SKIP $${candidate.tokenSymbol} " Impact ${impactPct.toFixed(2)}% exceeds slippage.`);
+             recentlyAttemptedBuys.set(addr, Date.now()); 
+             continue; 
+         }
+@@ -1752,7 +1769,7 @@ async function runScanCycle() {
+         const finalRoundTripCost = finalEstimatedImpact * 1.3 + engineSettings.txFeePercent * 2 + 1.0;
+         const finalEdge = scoreBasedExpectedMove - finalRoundTripCost;
+         if (finalEdge < MIN_EDGE_PCT) { 
+-            console.log(`[EDGE SKIP] $${candidate.tokenSymbol} ΓÇö Edge ${finalEdge.toFixed(2)}% < ${MIN_EDGE_PCT}% minimum.`);
++            log.info(`[EDGE SKIP] $${candidate.tokenSymbol} " Edge ${finalEdge.toFixed(2)}% < ${MIN_EDGE_PCT}% minimum.`);
+             recentlyAttemptedBuys.set(addr, Date.now()); 
+             continue; 
+         }
+@@ -1765,7 +1782,7 @@ async function runScanCycle() {
+           if (!preTradeRisk.canTrade) {
+             pendingBuys.delete(addr);
+             reservedCapital -= entryTotalCostSol;
+-            console.warn(`[CIRCUIT_BREAKER] ≡ƒ¢æ PRE-TRADE BLOCK $${candidate.tokenSymbol} ΓÇö Breaker tripped mid-cycle.`);
++            log.warn(`[CIRCUIT_BREAKER] ' PRE-TRADE BLOCK $${candidate.tokenSymbol} " Breaker tripped mid-cycle.`);
+             break; 
+           }
+         }
+@@ -1775,7 +1792,7 @@ async function runScanCycle() {
+           await new Promise(r => setTimeout(r, 150));
+           buyResult = await jupiterService!.buyToken(candidate.tokenAddress, scoring.sizeSol, slippageBps, executionQuote ?? undefined, preflightImpactLimit);
+         } catch (err: any) {
+-          console.log(`[LIVE ERROR] Buy failed for $${candidate.tokenSymbol}: ${err?.message}`);
++          log.info(`[LIVE ERROR] Buy failed for $${candidate.tokenSymbol}: ${err?.message}`);
+           recentlyAttemptedBuys.set(addr, Date.now());
+         } finally {
+           pendingBuys.delete(addr);
+@@ -1783,7 +1800,7 @@ async function runScanCycle() {
+         }
+         if (!buyResult) { continue; }
+         if (!buyResult.success) { 
+-            console.log(`[LIVE FAILED] Buy failed for $${candidate.tokenSymbol}.`);
++            log.info(`[LIVE FAILED] Buy failed for $${candidate.tokenSymbol}.`);
+             recentlyAttemptedBuys.set(addr, Date.now()); 
+             tradedAddresses.set(addr, Date.now()); 
+             failedTradesThisCycle++; 
+@@ -1821,11 +1838,12 @@ async function runScanCycle() {
+         sessionSymbolBuyCount.set(candidate.tokenSymbol, (sessionSymbolBuyCount.get(candidate.tokenSymbol) ?? 0) + 1);
+       } else {
+         if (paperBalance < entryTotalCostSol) break;
++        if (entryTotalCostSol < MIN_VIABLE_TRADE_SOL) { log.info(`[PAPER] SKIP dust trade $${candidate.tokenSymbol} -- ${entryTotalCostSol.toFixed(4)} SOL below MIN_VIABLE_TRADE_SOL`); continue; } // FIX #7: paper path was missing the MIN_VIABLE_TRADE_SOL guard that exists in the live path
+         const paperEstimatedImpact = estimatedImpact;
+         const paperRoundTripCost = paperEstimatedImpact * 1.3 + engineSettings.txFeePercent * 2 + 1.0;
+         const paperEdge = scoreBasedExpectedMove - paperRoundTripCost;
+         if (paperEdge < MIN_EDGE_PCT) {
+-            console.log(`[PAPER EDGE SKIP] $${candidate.tokenSymbol} ΓÇö Score edge ${paperEdge.toFixed(2)}% below ${MIN_EDGE_PCT}% minimum.`);
++            log.info(`[PAPER EDGE SKIP] $${candidate.tokenSymbol} " Score edge ${paperEdge.toFixed(2)}% below ${MIN_EDGE_PCT}% minimum.`);
+             continue;
+         }
+         
+@@ -1865,7 +1883,7 @@ async function runScanCycle() {
+       const displayBalance = (status.tradingMode === "live" && jupiterService) ? (await jupiterService.getWalletBalance().catch(() => paperBalance)).toFixed(4) : paperBalance.toFixed(3);
+       await storage.updateBotStats({ walletBalance: displayBalance, totalTrades: allTrades.length, openPositions: currentOpenCount, winRate: wr, lastSignal: `BUY $${candidate.tokenSymbol} via ${scoring.qualifiedMode} (Score: ${scoring.combinedScore})` });
+     }
+-  } catch (e) { console.error("[SCANNER] Error:", e); } finally { pendingBuys.clear(); reservedCapital = 0; scanLock = false; }
++  } catch (e) { log.error("[SCANNER] Error", { error: String(e) }); } finally { pendingBuys.clear(); reservedCapital = 0; scanLock = false; }
+ }
+ 
+ async function initBalanceFromDB() {
+@@ -1873,7 +1891,7 @@ async function initBalanceFromDB() {
+   const status = await storage.getBotStatus();
+   const storedBalance = parseFloat(status.walletBalance || "0");
+   // LIVE-MODE GUARD: when trading mode is live, walletBalance in DB tracks the
+-  // real on-chain SOL amount written by live sell/buy paths ΓÇö it must NOT be
++  // real on-chain SOL amount written by live sell/buy paths " it must NOT be
+   // restored into paperBalance, which is paper-mode-only accounting. Doing so
+   // set paperBalance = 0.0000 SOL after a live reset (blocking all paper trades)
+   // OR to the real wallet high-water mark (inflating paper sizing). In live mode
+@@ -1882,76 +1900,76 @@ async function initBalanceFromDB() {
+   //
+   // ANOMALY PLAUSIBILITY CAP: a bad DexScreener price feed can credit thousands of
+   // SOL to paperBalance in a single paper trade (e.g. $48HOURS: +28578%). The paper
+-  // exit cap (Math.min(500, ΓÇª)) prevents new anomalies, but a stale DB balance
++  // exit cap (Math.min(500, )) prevents new anomalies, but a stale DB balance
+   // from before that cap was applied would still restore here. If storedBalance
+-  // exceeds startingBalance by more than 200├ù it is almost certainly corrupted ΓÇö
++  // exceeds startingBalance by more than 200-- it is almost certainly corrupted "
+   // a genuine feed anomaly produces 1000x+ gains in a single trade, while legitimate
+   // compounding at 80%+ win rate proved capable of 24x in a single session
+-  // ($12 SOL from $0.5 start). 20├ù was too low ΓÇö it fired on real gains and wiped
+-  // an entire session of compounding on restart. 200├ù safely catches only true anomalies.
++  // ($12 SOL from $0.5 start). 20-- was too low " it fired on real gains and wiped
++  // an entire session of compounding on restart. 200-- safely catches only true anomalies.
+   const PLAUSIBILITY_MULTIPLIER = 200;
+   const isLiveMode = status.tradingMode === "live" && jupiterService !== null;
+   const isAnomalous = storedBalance > engineSettings.startingBalance * PLAUSIBILITY_MULTIPLIER;
+ 
+   // FIX LIVE-PEAK: In live mode, fetch the actual on-chain wallet balance so we have a
+   // real reference for the stale-peak guard below. paperBalance in live mode is set to
+-  // startingBalance (a sentinel ΓÇö live trading never uses it), so using it as the 1.2├ù
+-  // reference caused the guard to compare e.g. storedPeak 0.056 vs 0.05*1.2=0.060 ΓåÆ
+-  // guard fails ΓåÆ peakBalance stays at 0.056 SOL. But the real wallet has 0.040 SOL ΓåÆ
+-  // drawdown = (0.056-0.040)/0.056 = 28.6% ΓåÆ circuit breaker trips before trade #1.
++  // startingBalance (a sentinel " live trading never uses it), so using it as the 1.2--
++  // reference caused the guard to compare e.g. storedPeak 0.056 vs 0.05*1.2=0.060 '
++  // guard fails ' peakBalance stays at 0.056 SOL. But the real wallet has 0.040 SOL '
++  // drawdown = (0.056-0.040)/0.056 = 28.6% ' circuit breaker trips before trade #1.
+   // With the live wallet balance as reference (0.040*1.2=0.048 < 0.056) the guard fires
+   // and resets peakBalance to the real wallet amount, giving 0% drawdown on startup.
+   let liveWalletBalOnInit = 0;
+   if (isLiveMode) {
+-    for (let attempt = 0; attempt < 3 && liveWalletBalOnInit <= 0; attempt++) {
++    for (let attempt = 0; attempt < 5 && liveWalletBalOnInit <= 0; attempt++) {
+       liveWalletBalOnInit = await jupiterService!.getWalletBalance().catch(() => 0);
+-      if (liveWalletBalOnInit <= 0 && attempt < 2) await new Promise(r => setTimeout(r, 800));
++      if (liveWalletBalOnInit <= 0 && attempt < 4) await new Promise(r => setTimeout(r, 2000));
+     }
+     if (liveWalletBalOnInit > 0) {
+-      console.log(`[ENGINE] Live mode ΓÇö fetched on-chain balance: ${liveWalletBalOnInit.toFixed(4)} SOL`);
++      log.info(`[ENGINE] Live mode " fetched on-chain balance: ${liveWalletBalOnInit.toFixed(4)} SOL`);
+     } else {
+       // RPC cold-start: fall back to DB walletBalance, then startingBalance.
+       liveWalletBalOnInit = storedBalance > 0 ? storedBalance : engineSettings.startingBalance;
+-      console.warn(`[ENGINE] Live mode ΓÇö RPC returned 0 on init, using fallback balance: ${liveWalletBalOnInit.toFixed(4)} SOL`);
++      log.warn(`[ENGINE] Live mode " RPC returned 0 on init, using fallback balance: ${liveWalletBalOnInit.toFixed(4)} SOL`);
+     }
+   }
+ 
+   if (isLiveMode) {
+     paperBalance = engineSettings.startingBalance;
+-    console.log(`[ENGINE] Live mode ΓÇö paper baseline held at startingBalance: ${paperBalance.toFixed(3)} SOL (live wallet: ${liveWalletBalOnInit.toFixed(4)} SOL)`);
++    log.info(`[ENGINE] Live mode " paper baseline held at startingBalance: ${paperBalance.toFixed(3)} SOL (live wallet: ${liveWalletBalOnInit.toFixed(4)} SOL)`);
+   } else if (storedBalance > 0 && !isAnomalous) {
+     paperBalance = storedBalance;
+-    console.log(`[ENGINE] Restored wallet balance from DB: ${paperBalance.toFixed(3)} SOL`);
++    log.info(`[ENGINE] Restored wallet balance from DB: ${paperBalance.toFixed(3)} SOL`);
+   } else if (isAnomalous) {
+     paperBalance = engineSettings.startingBalance;
+-    console.warn(`[ENGINE] DB walletBalance ${storedBalance.toFixed(3)} SOL exceeds ${PLAUSIBILITY_MULTIPLIER}├ù startingBalance ΓÇö likely feed anomaly. Resetting to ${paperBalance.toFixed(3)} SOL. Use Reset button to confirm.`);
++    log.warn(`[ENGINE] DB walletBalance ${storedBalance.toFixed(3)} SOL exceeds ${PLAUSIBILITY_MULTIPLIER}-- startingBalance " likely feed anomaly. Resetting to ${paperBalance.toFixed(3)} SOL. Use Reset button to confirm.`);
+     await storage.updateBotStats({ walletBalance: paperBalance.toFixed(4) });
+   } else {
+     // DB walletBalance is 0 (e.g. after a reset that saved 0.0000).
+     // Fall back to startingBalance so the UI shows the correct paper baseline.
+     paperBalance = engineSettings.startingBalance;
+-    console.log(`[ENGINE] DB walletBalance is 0 ΓÇö using startingBalance: ${paperBalance.toFixed(3)} SOL`);
++    log.info(`[ENGINE] DB walletBalance is 0 " using startingBalance: ${paperBalance.toFixed(3)} SOL`);
+     // Persist immediately so UI reads the correct value
+     await storage.updateBotStats({ walletBalance: paperBalance.toFixed(4) });
+   }
+ 
+   // The reference balance for the stale-peak guard differs by mode:
+-  //   ΓÇó Live:  actual on-chain wallet balance (liveWalletBalOnInit). Using paperBalance
+-  //            (= startingBalance sentinel) here is wrong ΓÇö see comment above.
+-  //   ΓÇó Paper: paperBalance (restored from DB or startingBalance).
++  //    Live:  actual on-chain wallet balance (liveWalletBalOnInit). Using paperBalance
++  //            (= startingBalance sentinel) here is wrong " see comment above.
++  //    Paper: paperBalance (restored from DB or startingBalance).
+   const peakGuardRef = isLiveMode ? liveWalletBalOnInit : paperBalance;
+ 
+   const storedPeak = parseFloat((status as any).peakBalance || "0");
+   // FIX: If DB walletBalance was 0 (reset/fresh start), peakBalance must also
+-  // reset ΓÇö otherwise a stale high peak from a previous session inflates drawdown
++  // reset " otherwise a stale high peak from a previous session inflates drawdown
+   // to 40-50% before any trade fires, triggering the circuit breaker immediately.
+   // Similarly cap if storedPeak is >20% above current balance (stale session data).
+-  // Threshold tightened from 1.5 ΓåÆ 1.2: a 20-50% stale peak (e.g. 0.630 vs 0.50
+-  // SOL after restart) previously slipped through the 1.5├ù guard and immediately
++  // Threshold tightened from 1.5 ' 1.2: a 20-50% stale peak (e.g. 0.630 vs 0.50
++  // SOL after restart) previously slipped through the 1.5-- guard and immediately
+   // showed ~20% drawdown on startup with no trades.
+   if (storedBalance <= 0 || storedPeak > peakGuardRef * 1.2) {
+     peakBalance = peakGuardRef;
+-    console.log(`[ENGINE] peakBalance reset to ${peakGuardRef.toFixed(4)} SOL (stale DB peak ${storedPeak.toFixed(4)} discarded)`);
++    log.info(`[ENGINE] peakBalance reset to ${peakGuardRef.toFixed(4)} SOL (stale DB peak ${storedPeak.toFixed(4)} discarded)`);
+   } else {
+     peakBalance = storedPeak > 0 ? storedPeak : peakGuardRef;
+   }
+@@ -1965,7 +1983,7 @@ async function initBalanceFromDB() {
+     const allTrades = await storage.getTrades();
+     const closedToday = (allTrades as any[]).filter(t => t.status === "CLOSED" && new Date(t.closedAt || t.timestamp).toDateString() === today);
+     dailyPnlSol = closedToday.reduce((sum, t) => sum + parseFloat(t.amount || "0") * (parseFloat(t.pnl || "0") / 100), 0);
+-    // Only count REAL trading exits in the streak ΓÇö admin/operational closes
++    // Only count REAL trading exits in the streak " admin/operational closes
+     // (DESYNC_NO_BALANCE, FORCE_SELL, RESET etc.) are not trading outcomes and
+     // must not pollute the consecutive loss counter. Including them inflates the
+     // streak and raises the score gate to 74+, blocking all trades.
+@@ -1986,16 +2004,16 @@ async function initBalanceFromDB() {
+       const storedCooldownEnd = parseFloat((status as any).lastLossCooldownEnd || "0");
+       if (storedCooldownEnd > Date.now()) lastLossCooldownEnd = storedCooldownEnd;
+     }
+-  } catch (e) { console.warn("[ENGINE] Could not restore risk state:", e); }
++  } catch (e) { log.warn("[ENGINE] Could not restore risk state", { error: String(e) }); }
+   const currentSolPrice = await getLiveSolPrice();
+   const openTrades = await storage.getOpenTrades();
+   // FIX: When no positions survive a restart there is zero unrealised drawdown.
+   // A stale peakBalance from a prior session (e.g. 0.630 SOL vs current 0.50)
+-  // that slipped past the 1.2├ù guard above would still show phantom drawdown and
++  // that slipped past the 1.2-- guard above would still show phantom drawdown and
+   // block the circuit breaker before any trade executes. Safe to reset here
+   // because with no open trades there is nothing to measure drawdown against.
+   if (openTrades.length === 0 && peakBalance > paperBalance) {
+-    console.log(`[ENGINE] No open trades on startup ΓÇö peakBalance reset from ${peakBalance.toFixed(4)} to ${paperBalance.toFixed(4)} SOL (stale session peak discarded)`);
++    log.info(`[ENGINE] No open trades on startup " peakBalance reset from ${peakBalance.toFixed(4)} to ${paperBalance.toFixed(4)} SOL (stale session peak discarded)`);
+     peakBalance = paperBalance;
+   }
+   for (const t of openTrades) {
+@@ -2014,15 +2032,15 @@ async function initBalanceFromDB() {
+   // FIX: Sync the resolved peakBalance back to the DB immediately after init.
+   // Without this, /api/status (reads DB botStatus.peakBalance) and
+   // /api/engine/stats (reads in-memory peakBalance) can diverge after a restart
+-  // ΓÇö the guards above may have clamped the in-memory peak down to paperBalance
++  // " the guards above may have clamped the in-memory peak down to paperBalance
+   // while the DB still holds the old session high (e.g. 3.697 SOL vs 0.500 SOL).
+   // When the frontend reads peak from one endpoint and drawdownPct from the other,
+   // the pair is mathematically inconsistent (e.g. "0.1% drawdown, peak 3.697 SOL,
+-  // balance 3.58 SOL" ΓÇö real drawdown would be 3.2%, not 0.1%).
++  // balance 3.58 SOL" " real drawdown would be 3.2%, not 0.1%).
+   await storage.updateBotStats({
+     peakBalance: peakBalance.toFixed(4),
+     dailyStartBalance: dailyStartBalance.toFixed(4),
+-  }).catch(e => console.warn("[ENGINE] Could not sync peakBalance to DB on init:", e));
++  }).catch(e => log.warn("[ENGINE] Could not sync peakBalance to DB on init", { error: String(e) }));
+   balanceInitialized = true;
+ }
+ 
+@@ -2031,13 +2049,13 @@ function getEffectiveMinScore(): number {
+   const dailyLossPct = dailyStartBalance > 0 ? Math.max(0, (-dailyPnlSol / dailyStartBalance) * 100) : 0;
+   // FIX: raised tier thresholds from (>0 / >=5 / >=10) to (>=3 / >=8 / >=15).
+   // On a 0.05 SOL micro-wallet, a single -8% trade instantly triggered the old ">0"
+-  // tier (+5) and pushed effective minScore from 60 ΓåÆ 65+, blocking recovery entries.
+-  // The new thresholds only fire when drawdown is material (ΓëÑ3%), severe (ΓëÑ8%),
+-  // or critical (ΓëÑ15%), matching the intent without penalising normal variance.
++  // tier (+5) and pushed effective minScore from 60 ' 65+, blocking recovery entries.
++  // The new thresholds only fire when drawdown is material (3%), severe (8%),
++  // or critical (15%), matching the intent without penalising normal variance.
+   const tierBonus = dailyLossPct >= 15 ? 15 : dailyLossPct >= 8 ? 10 : dailyLossPct >= 3 ? 5 : 0;
+-  const streakBonus = Math.min(15, consecutiveLosses * 3);
++  const streakBonus = Math.min(20, consecutiveLosses * 4);
+   const effective = base + tierBonus + streakBonus;
+-  if (effective > base) console.log(`[SCORE_GATE] Raised min score: ${base} ΓåÆ ${effective} (dailyLoss=${dailyLossPct.toFixed(1)}%, streak=${consecutiveLosses})`);
++  if (effective > base) log.info(`[SCORE_GATE] Raised min score: ${base} ' ${effective} (dailyLoss=${dailyLossPct.toFixed(1)}%, streak=${consecutiveLosses})`);
+   return effective;
+ }
+ 
+@@ -2045,16 +2063,16 @@ function getEffectiveMinScore(): number {
+ const FORCE_SELL_INTERVAL_MS  = 15_000;          // FIX 5: retry interval for persistent liquidation
+ const MAX_FORCE_SELL_TIME_MS  = 5 * 60_000;       // FIX 5: max 5-minute liquidation window
+ 
+-// ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++// """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+ // FIX 5: Persistent forced-liquidation loop.
+ //
+ // When a normal sell exhausts its retry budget (sellFailureStrikes > MAX_SELL_FAILURES)
+-// the old code logged CRITICAL and gave up ΓÇö leaving real tokens stranded in the
++// the old code logged CRITICAL and gave up " leaving real tokens stranded in the
+ // wallet with no automatic recovery. This function retries every FORCE_SELL_INTERVAL_MS
+ // for up to MAX_FORCE_SELL_TIME_MS at 30 % slippage (survival mode: any fill > nothing).
+ //
+ // Worst case outcome: bad fill price.  NOT: stuck funds.
+-// ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++// """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+ async function forceSellPosition(
+   trade: any,
+   fallbackPrice: number
+@@ -2063,7 +2081,7 @@ async function forceSellPosition(
+   const start    = Date.now();
+   const sizeSol  = parseFloat(trade.amount || "0");
+ 
+-  console.warn(`[FORCE_SELL] Entering persistent liquidation for #${trade.id} $${trade.tokenSymbol}`);
++  log.warn(`[FORCE_SELL] Entering persistent liquidation for #${trade.id} $${trade.tokenSymbol}`);
+ 
+   while (Date.now() - start < MAX_FORCE_SELL_TIME_MS) {
+     try {
+@@ -2073,8 +2091,8 @@ async function forceSellPosition(
+       }
+ 
+       if (tokenAmountRaw === BigInt(0)) {
+-        // Tokens already gone ΓÇö nothing to sell, treat as complete.
+-        console.log(`[FORCE_SELL] #${trade.id} $${trade.tokenSymbol} ΓÇö no on-chain balance, closing as desync`);
++        // Tokens already gone " nothing to sell, treat as complete.
++        log.info(`[FORCE_SELL] #${trade.id} $${trade.tokenSymbol} " no on-chain balance, closing as desync`);
+         return { success: true, solReceived: 0 };
+       }
+ 
+@@ -2082,26 +2100,26 @@ async function forceSellPosition(
+         jupiterService.sellToken(trade.tokenAddress, tokenAmountRaw, 3000);
+ 
+       if (result.success) {
+-        console.log(`[FORCE_SELL] SUCCESS #${trade.id} $${trade.tokenSymbol} | SOL: ${result.solReceived.toFixed(6)} | tx: ${result.txSignature?.slice(0, 20)}...`);
++        log.info(`[FORCE_SELL] SUCCESS #${trade.id} $${trade.tokenSymbol} | SOL: ${result.solReceived.toFixed(6)} | tx: ${result.txSignature?.slice(0, 20)}...`);
+         liveTokenBalances.delete(trade.id);
+         dailyPnlSol += result.solReceived - sizeSol;
+         return { success: true, solReceived: result.solReceived };
+       }
+ 
+-      console.warn(`[FORCE_SELL] Attempt failed #${trade.id} $${trade.tokenSymbol}: ${result.error} ΓÇö retrying in ${FORCE_SELL_INTERVAL_MS / 1000}s`);
++      log.warn(`[FORCE_SELL] Attempt failed #${trade.id} $${trade.tokenSymbol}: ${result.error} " retrying in ${FORCE_SELL_INTERVAL_MS / 1000}s`);
+     } catch (e: any) {
+-      console.warn(`[FORCE_SELL] Exception #${trade.id} $${trade.tokenSymbol}: ${e.message}`);
++      log.warn(`[FORCE_SELL] Exception #${trade.id} $${trade.tokenSymbol}: ${e.message}`);
+     }
+ 
+     await new Promise(r => setTimeout(r, FORCE_SELL_INTERVAL_MS));
+   }
+ 
+-  console.error(`[FORCE_SELL] EXHAUSTED #${trade.id} $${trade.tokenSymbol} ΓÇö ${MAX_FORCE_SELL_TIME_MS / 60000} min elapsed. MANUAL INTERVENTION REQUIRED.`);
++  log.error(`[FORCE_SELL] EXHAUSTED #${trade.id} $${trade.tokenSymbol} " ${MAX_FORCE_SELL_TIME_MS / 60000} min elapsed. MANUAL INTERVENTION REQUIRED.`);
+   // FIX: close the DB record at last-known price even on exhaustion.
+   // Leaving it OPEN means: (a) worstOpenPnl blocks all new buys indefinitely,
+   // (b) dailyPnlSol is never debited so the circuit breaker sees a phantom profit,
+   // (c) the UI shows a permanently open ghost position.
+-  // The actual tokens may still be in the wallet ΓÇö the FORCE_SELL_FAILED reason
++  // The actual tokens may still be in the wallet " the FORCE_SELL_FAILED reason
+   // signals to the operator that manual recovery is needed.
+   try {
+     const { price: lastPrice } = await fetchTokenPrice(trade.tokenAddress).catch(() => ({ price: fallbackPrice, pair: null }));
+@@ -2117,9 +2135,9 @@ async function forceSellPosition(
+     prevPnlMap.delete(trade.id); pnlStableMap.delete(trade.id); liveTokenBalances.delete(trade.id);
+     zeroBalanceStrikes.delete(trade.id); sellFailureStrikes.delete(trade.id);
+     tradedAddresses.set(trade.tokenAddress, Date.now());
+-    console.error(`[FORCE_SELL] DB closed ghost position #${trade.id} $${trade.tokenSymbol} at $${safePrice.toExponential(4)} (PNL: ${exhaustedPnlPct.toFixed(2)}%) ΓÇö CHECK WALLET FOR STRANDED TOKENS`);
++    log.error(`[FORCE_SELL] DB closed ghost position #${trade.id} $${trade.tokenSymbol} at $${safePrice.toExponential(4)} (PNL: ${exhaustedPnlPct.toFixed(2)}%) " CHECK WALLET FOR STRANDED TOKENS`);
+   } catch (closeErr: any) {
+-    console.error(`[FORCE_SELL] CRITICAL: DB close also failed for #${trade.id}: ${closeErr.message}`);
++    log.error(`[FORCE_SELL] CRITICAL: DB close also failed for #${trade.id}: ${closeErr.message}`);
+   }
+   return { success: false, solReceived: 0 };
+ }
+@@ -2137,7 +2155,7 @@ async function checkOpenPositions() {
+       for (let i = 0; i < liveTradesToSync.length; i++) {
+         const r = balanceFetches[i];
+         if (r.status === "fulfilled") preloadedBalances.set(liveTradesToSync[i].id, r.value);
+-        else console.warn(`[SYNC] Pre-fetch failed for #${liveTradesToSync[i].id} $${liveTradesToSync[i].tokenSymbol}`);
++        else log.warn(`[SYNC] Pre-fetch failed for #${liveTradesToSync[i].id} $${liveTradesToSync[i].tokenSymbol}`);
+       }
+     }
+     for (const trade of openTrades) {
+@@ -2154,15 +2172,15 @@ async function checkOpenPositions() {
+           const zps = (zeroPriceStrikes.get(trade.id) ?? 0) + 1;
+           if (zps < ZERO_PRICE_STRIKES_REQUIRED) {
+             zeroPriceStrikes.set(trade.id, zps);
+-            if (zps === 1 || zps % 10 === 0) console.warn(`[ZERO_PRICE] #${trade.id} $${trade.tokenSymbol} ΓÇö price unfetchable, strike ${zps}/${ZERO_PRICE_STRIKES_REQUIRED}`);
++            if (zps === 1 || zps % 10 === 0) log.warn(`[ZERO_PRICE] #${trade.id} $${trade.tokenSymbol} " price unfetchable, strike ${zps}/${ZERO_PRICE_STRIKES_REQUIRED}`);
+             continue;
+           }
+-          // All strikes consumed ΓÇö close at last valid DB price.
++          // All strikes consumed " close at last valid DB price.
+           const zpLastPrice = parseFloat((trade as any).currentPrice || trade.price || "0");
+           const zpEntryPrice = parseFloat(trade.price || "0");
+           const zpPnlPct = zpEntryPrice > 0 && zpLastPrice > 0 ? ((zpLastPrice - zpEntryPrice) / zpEntryPrice) * 100 : 0;
+           const zpSizeSol = parseFloat(trade.amount || "0");
+-          console.error(`[ZERO_PRICE] ≡ƒö┤ FORCE_CLOSE #${trade.id} $${trade.tokenSymbol} ΓÇö ${zps} consecutive zero-price reads. Closing at last DB price $${zpLastPrice.toExponential(4)} (PNL: ${zpPnlPct.toFixed(2)}%)`);
++          log.error(`[ZERO_PRICE] " FORCE_CLOSE #${trade.id} $${trade.tokenSymbol} " ${zps} consecutive zero-price reads. Closing at last DB price $${zpLastPrice.toExponential(4)} (PNL: ${zpPnlPct.toFixed(2)}%)`);
+           zeroPriceStrikes.delete(trade.id);
+           if (trade.tradingMode !== "live") {
+             paperBalance += zpSizeSol * (1 + zpPnlPct / 100);
+@@ -2180,7 +2198,7 @@ async function checkOpenPositions() {
+           tradedAddresses.set(trade.tokenAddress, Date.now());
+           continue;
+         }
+-        // Successful price read ΓÇö reset any zero-price strike counter.
++        // Successful price read " reset any zero-price strike counter.
+         if (zeroPriceStrikes.has(trade.id)) zeroPriceStrikes.delete(trade.id);
+         if (trade.tradingMode === "live" && jupiterService) {
+           const onChainRaw = preloadedBalances.get(trade.id) ?? BigInt(0);
+@@ -2188,15 +2206,15 @@ async function checkOpenPositions() {
+           if (onChainRaw > BigInt(0)) {
+             const mapBalance = liveTokenBalances.get(trade.id);
+             if (mapBalance !== onChainRaw) liveTokenBalances.set(trade.id, onChainRaw);
+-            zeroBalanceStrikes.delete(trade.id); // healthy read ΓÇö reset any strike counter
++            zeroBalanceStrikes.delete(trade.id); // healthy read  -- reset any strike counter
+           } else if (prefetchSucceeded && liveTokenBalances.has(trade.id)) {
+             // FIX V-2: only delete the map entry when we have CONFIRMED on-chain zero
+             // (prefetchSucceeded = true). If the prefetch failed (RPC error), onChainRaw
+-            // defaults to BigInt(0) but that doesn't mean tokens are gone ΓÇö deleting
++            // defaults to BigInt(0) but that doesn't mean tokens are gone " deleting
+             // here would corrupt in-memory tracking and risk a false desync close.
+             //
+             // DESYNC GRACE PERIOD: Solana RPC nodes propagate confirmed tx state to ATA
+-            // balance reads with eventual consistency ΓÇö the balance can read as 0 for up
++            // balance reads with eventual consistency " the balance can read as 0 for up
+             // to 90s after a buy confirms. Never delete the map entry (or auto-close) for
+             // trades younger than DESYNC_GRACE_PERIOD_MS, even if RPC returns zero.
+             const _rawTradeAgeMs = Date.now() - new Date(trade.timestamp).getTime();
+@@ -2205,41 +2223,41 @@ async function checkOpenPositions() {
+               // instead of UTC, making it appear ~5.5 hours in the future.
+               // This causes the grace period check to be permanently true and the
+               // trade to never self-close via desync logic.
+-              console.warn(`[TIME BUG] Trade #${trade.id} $${trade.tokenSymbol} has future timestamp (${trade.timestamp}) ΓÇö age ${Math.round(_rawTradeAgeMs / 1000)}s. Ensure storage saves timestamps as new Date().toISOString() (UTC with Z suffix).`);
++              log.warn(`[TIME BUG] Trade #${trade.id} $${trade.tokenSymbol} has future timestamp (${trade.timestamp}) " age ${Math.round(_rawTradeAgeMs / 1000)}s. Ensure storage saves timestamps as new Date().toISOString() (UTC with Z suffix).`);
+             }
+             const tradeAgeMs = Math.max(0, _rawTradeAgeMs);
+             if (tradeAgeMs < DESYNC_GRACE_PERIOD_MS) {
+-              console.log(`[SYNC] Zero balance for #${trade.id} $${trade.tokenSymbol} but trade only ${Math.round(tradeAgeMs / 1000)}s old ΓÇö retaining cached balance (RPC propagation lag)`);
++              log.info(`[SYNC] Zero balance for #${trade.id} $${trade.tokenSymbol} but trade only ${Math.round(tradeAgeMs / 1000)}s old " retaining cached balance (RPC propagation lag)`);
+             } else {
+-              console.warn(`[SYNC] Confirmed zero balance #${trade.id} $${trade.tokenSymbol}: map had ${liveTokenBalances.get(trade.id)} but on-chain zero ΓåÆ removed`);
++              log.warn(`[SYNC] Confirmed zero balance #${trade.id} $${trade.tokenSymbol}: map had ${liveTokenBalances.get(trade.id)} but on-chain zero ' removed`);
+               liveTokenBalances.delete(trade.id);
+             }
+           } else if (!prefetchSucceeded && liveTokenBalances.has(trade.id)) {
+-            console.warn(`[SYNC] Prefetch failed for #${trade.id} $${trade.tokenSymbol} ΓÇö retaining cached balance ${liveTokenBalances.get(trade.id)}`);
++            log.warn(`[SYNC] Prefetch failed for #${trade.id} $${trade.tokenSymbol} " retaining cached balance ${liveTokenBalances.get(trade.id)}`);
+           }
+           if (onChainRaw === BigInt(0) && prefetchSucceeded) {
+             // DESYNC GRACE PERIOD: suppress auto-close for fresh trades.
+             // A zero balance this soon after a buy is RPC lag, not a real desync.
+             const tradeAgeMsForDesync = Math.max(0, Date.now() - new Date(trade.timestamp).getTime());
+             if (tradeAgeMsForDesync < DESYNC_GRACE_PERIOD_MS) {
+-              console.log(`[SYNC] Suppressing DESYNC_AUTO_CLOSE for #${trade.id} $${trade.tokenSymbol} ΓÇö trade only ${Math.round(tradeAgeMsForDesync / 1000)}s old, within ${DESYNC_GRACE_PERIOD_MS / 1000}s grace period`);
++              log.info(`[SYNC] Suppressing DESYNC_AUTO_CLOSE for #${trade.id} $${trade.tokenSymbol} " trade only ${Math.round(tradeAgeMsForDesync / 1000)}s old, within ${DESYNC_GRACE_PERIOD_MS / 1000}s grace period`);
+               zeroBalanceStrikes.delete(trade.id);
+               continue;
+             }
+             // MULTI-STRIKE CONFIRMATION: require ZERO_STRIKES_REQUIRED consecutive zero
+             // reads before treating as a real desync. A single transient zero from an
+-            // overloaded RPC node must not close a live position ΓÇö on a non-zero read we
++            // overloaded RPC node must not close a live position " on a non-zero read we
+             // reset the counter and do a live retry before the final close.
+             const strikes = (zeroBalanceStrikes.get(trade.id) ?? 0) + 1;
+             if (strikes < ZERO_STRIKES_REQUIRED) {
+               zeroBalanceStrikes.set(trade.id, strikes);
+-              console.log(`[SYNC] Zero balance strike ${strikes}/${ZERO_STRIKES_REQUIRED} for #${trade.id} $${trade.tokenSymbol} ΓÇö waiting for confirmation`);
++              log.info(`[SYNC] Zero balance strike ${strikes}/${ZERO_STRIKES_REQUIRED} for #${trade.id} $${trade.tokenSymbol} " waiting for confirmation`);
+               continue;
+             }
+-            // All strikes consumed ΓÇö do one final live read before closing.
++            // All strikes consumed " do one final live read before closing.
+             const retryBalance = await jupiterService!.getTokenBalance(trade.tokenAddress).catch(() => BigInt(0));
+             if (retryBalance > BigInt(0)) {
+-              console.log(`[SYNC] False desync for #${trade.id} $${trade.tokenSymbol} ΓÇö balance appeared on retry (${retryBalance}). Resetting strikes.`);
++              log.info(`[SYNC] False desync for #${trade.id} $${trade.tokenSymbol} " balance appeared on retry (${retryBalance}). Resetting strikes.`);
+               liveTokenBalances.set(trade.id, retryBalance);
+               zeroBalanceStrikes.delete(trade.id);
+               continue;
+@@ -2249,19 +2267,19 @@ async function checkOpenPositions() {
+             const desyncPnlPct = entryForDesync > 0 && currentPrice > 0 ? (((currentPrice - entryForDesync) / entryForDesync) * 100).toFixed(2) : "0";
+             const desyncSizeSol = parseFloat(trade.amount || "0");
+             dailyPnlSol += desyncSizeSol * (parseFloat(desyncPnlPct) / 100);
+-            console.warn(`[LIVE] DESYNC DETECTED #${trade.id} $${trade.tokenSymbol} ΓÇö zero on-chain balance ΓåÆ auto-closing (PNL: ${desyncPnlPct}%)`);
++            log.warn(`[LIVE] DESYNC DETECTED #${trade.id} $${trade.tokenSymbol} " zero on-chain balance ' auto-closing (PNL: ${desyncPnlPct}%)`);
+             await storage.closeTrade(trade.id, currentPrice.toString(), desyncPnlPct, "DESYNC_AUTO_CLOSE");
+             liveTokenBalances.delete(trade.id); peakPrices.delete(trade.id); partialTpTaken.delete(trade.id);
+             tradeStopPrices.delete(trade.id); prevPnlMap.delete(trade.id); pnlStableMap.delete(trade.id);
+             tradedAddresses.set(trade.tokenAddress, Date.now());
+             // FIX DESYNC-REENTRY: also block reentry via stoppedOutAddresses for the full
+             // SL blackout period. Without this, the token immediately re-qualifies after the
+-            // 30s REENTRY_HARD_FLOOR and can be bought again before RPC propagation resolves ΓÇö
++            // 30s REENTRY_HARD_FLOOR and can be bought again before RPC propagation resolves "
+             // exactly what happened with $Eve (bought twice in live session). DESYNC is treated
+             // the same as a stop-loss for reentry purposes: the bot doesn't know whether the
+             // position was profitable or not when balance was zero, so caution is correct.
+             stoppedOutAddresses.set(trade.tokenAddress, Date.now());
+-            console.log(`[DESYNC] Blocking reentry on $${trade.tokenSymbol} for ${engineSettings.slReentryDelayMs / 1000}s (DESYNC treated as SL for reentry)`);
++            log.info(`[DESYNC] Blocking reentry on $${trade.tokenSymbol} for ${engineSettings.slReentryDelayMs / 1000}s (DESYNC treated as SL for reentry)`);
+             // FIX Z-4: desync closes must update the streak so the loss cooldown
+             // can fire from repeated RPC outage + auto-close events.
+             const desyncIsWin = parseFloat(desyncPnlPct) > 0;
+@@ -2271,14 +2289,14 @@ async function checkOpenPositions() {
+               tokenSymbolLastLossMs.set(trade.tokenSymbol, Date.now()); // Change 6: symbol cooldown on desync loss
+               if (consecutiveLosses === 2) {
+                 lastMiniCooldownEnd = Date.now() + MINI_LOSS_COOLDOWN_MS;
+-                console.log(`[RISK] 2 consecutive desync-closes ΓÇö ${MINI_LOSS_COOLDOWN_MS / 1000}s mini-cooldown activated`);
++                log.info(`[RISK] 2 consecutive desync-closes " ${MINI_LOSS_COOLDOWN_MS / 1000}s mini-cooldown activated`);
+               }
+               if (consecutiveLosses >= 3) {
+                 lastLossCooldownEnd = Date.now() + engineSettings.lossCooldownMs;
+                 // FIX 16: reset counter so next penalty requires 3 NEW losses,
+                 // not immediately re-triggering on the very next trade.
+                 consecutiveLosses = 0;
+-                console.log(`[RISK] 3 consecutive desync-closes ΓÇö ${engineSettings.lossCooldownMs / 1000}s cooldown activated`);
++                log.info(`[RISK] 3 consecutive desync-closes " ${engineSettings.lossCooldownMs / 1000}s cooldown activated`);
+               }
+             }
+             continue;
+@@ -2287,9 +2305,9 @@ async function checkOpenPositions() {
+         const entryPrice = parseFloat(trade.price);
+         if (entryPrice <= 0) continue;
+         let pnlPct = ((currentPrice - entryPrice) / entryPrice) * 100;
+-        // ΓöÇΓöÇ LAYER 1: Price ratio gate ΓÇö reject the corrupted price BEFORE it touches any state ΓöÇΓöÇ
+-        const PRICE_RATIO_MAX = 100;   // reject any price > 100├ù entry  (+10,000%)
+-        const PRICE_RATIO_MIN = 0.01;  // reject any price < 1% of entry (ΓêÆ99% in a single tick)
++        // "" LAYER 1: Price ratio gate " reject the corrupted price BEFORE it touches any state ""
++        const PRICE_RATIO_MAX = 100;   // reject any price > 100-- entry  (+10,000%)
++        const PRICE_RATIO_MIN = 0.01;  // reject any price < 1% of entry ('99% in a single tick)
+         const priceRatio = entryPrice > 0 ? currentPrice / entryPrice : 1;
+         if (priceRatio > PRICE_RATIO_MAX || priceRatio <= PRICE_RATIO_MIN) { // FIX #2: <= instead of < so exact -99% (ratio=0.01) is caught by sanity gate, not SL
+           const rejCount = (priceSanityRejections.get(trade.id) ?? 0) + 1;
+@@ -2299,18 +2317,18 @@ async function checkOpenPositions() {
+           const shouldWarn = !priceSanityWarnOnce.has(trade.id) || rejCount % 30 === 0;
+           if (shouldWarn) {
+             priceSanityWarnOnce.add(trade.id);
+-            console.warn(
+-              `[PRICE_SANITY] ΓÜá∩╕Å  Rejected anomalous price for $${trade.tokenSymbol} ` +
+-              `| entry $${entryPrice.toExponential(4)} ΓåÆ current $${currentPrice.toExponential(4)} ` +
+-              `| ratio ${priceRatio.toFixed(4)}├ù (allowed: ${PRICE_RATIO_MIN}├ùΓÇô${PRICE_RATIO_MAX}├ù) ` +
+-              `| rejection #${rejCount} ΓÇö bad feed or token migration`
++            log.warn(
++              `[PRICE_SANITY]    Rejected anomalous price for $${trade.tokenSymbol} ` +
++              `| entry $${entryPrice.toExponential(4)} ' current $${currentPrice.toExponential(4)} ` +
++              `| ratio ${priceRatio.toFixed(4)}-- (allowed: ${PRICE_RATIO_MIN}--"${PRICE_RATIO_MAX}--) ` +
++              `| rejection #${rejCount} " bad feed or token migration`
+             );
+           }
+           // Force-close only on sustained DOWNWARD rejections. Upward spikes (ratio >
+           // PRICE_RATIO_MAX) are typically transient feed errors that self-correct within
+           // seconds; closing on a spike would lock in a false total loss.
+           // EXCEPTION: after PRICE_SANITY_STUCK_CYCLES consecutive upward rejections the
+-          // feed is almost certainly a permanent migration/corruption ΓÇö close at the last
++          // feed is almost certainly a permanent migration/corruption " close at the last
+           // valid DB price so this ghost trade cannot freeze worstOpenPnl indefinitely.
+           // 30 cycles = 30s at priceCheckIntervalMs=1000ms. Real transient glitches
+           // self-correct in <10s; DexScreener migration artifacts never do.
+@@ -2321,9 +2339,9 @@ async function checkOpenPositions() {
+               ? ((lastValidPrice - entryPrice) / entryPrice) * 100
+               : 0;
+             const sizeSolStuck = parseFloat(trade.amount || "0");
+-            console.error(
+-              `[PRICE_SANITY] ≡ƒƒí STUCK_CLOSE $${trade.tokenSymbol} #${trade.id} ΓÇö ` +
+-              `${rejCount} consecutive upward rejections (ratio ${priceRatio.toFixed(0)}├ù). ` +
++            log.error(
++              `[PRICE_SANITY]  STUCK_CLOSE $${trade.tokenSymbol} #${trade.id} " ` +
++              `${rejCount} consecutive upward rejections (ratio ${priceRatio.toFixed(0)}--). ` +
+               `Closing at last valid price $${lastValidPrice.toExponential(4)} (PNL: ${stuckPnlPct.toFixed(2)}%).`
+             );
+             const stuckCleanup = () => {
+@@ -2368,7 +2386,7 @@ async function checkOpenPositions() {
+ 
+           // FIX SNIGGA: Fire emergency on-chain sell on the VERY FIRST downward PRICE_SANITY
+           // rejection for live positions. The original design waited PRICE_SANITY_FORCE_CLOSE_CYCLES
+-          // (7 s) to distinguish feed glitches from real rugs ΓÇö but that 7-second window is
++          // (7 s) to distinguish feed glitches from real rugs " but that 7-second window is
+           // exactly when a rugged token bleeds from recoverable to near-zero. The on-chain sell
+           // is initiated here immediately (non-blocking, fire-and-forget); sellingInProgress
+           // prevents the per-trade skip at line 1568 from letting cycles 2-7 re-trigger it.
+@@ -2377,9 +2395,9 @@ async function checkOpenPositions() {
+               trade.tradingMode === "live" && jupiterService && !sellingInProgress.has(trade.id)) {
+             const rugPnlPctEarly = Math.max(-99, ((currentPrice - entryPrice) / entryPrice) * 100);
+             const sizeSolEarly   = parseFloat(trade.amount || "0");
+-            console.warn(
+-              `[PRICE_SANITY] ≡ƒÜ¿ EARLY_SELL $${trade.tokenSymbol} #${trade.id} ΓÇö ` +
+-              `first downward rejection (ratio ${priceRatio.toFixed(6)}├ù, ${rugPnlPctEarly.toFixed(1)}%). ` +
++            log.warn(
++              `[PRICE_SANITY]  EARLY_SELL $${trade.tokenSymbol} #${trade.id} " ` +
++              `first downward rejection (ratio ${priceRatio.toFixed(6)}--, ${rugPnlPctEarly.toFixed(1)}%). ` +
+               `Firing emergency sell immediately (not waiting for cycle ${PRICE_SANITY_FORCE_CLOSE_CYCLES}).`
+             );
+             sellingInProgress.add(trade.id);
+@@ -2427,12 +2445,12 @@ async function checkOpenPositions() {
+           if (priceRatio < PRICE_RATIO_MIN && rejCount >= PRICE_SANITY_FORCE_CLOSE_CYCLES) {
+             const rugPnlPct = Math.max(-99, ((currentPrice - entryPrice) / entryPrice) * 100);
+             const sizeSol   = parseFloat(trade.amount || "0");
+-            console.error(
+-              `[PRICE_SANITY] ≡ƒö┤ FORCE_CLOSE $${trade.tokenSymbol} #${trade.id} ΓÇö ` +
+-              `${rejCount} consecutive downward rejections (ratio ${priceRatio.toFixed(6)}├ù, ` +
++            log.error(
++              `[PRICE_SANITY] " FORCE_CLOSE $${trade.tokenSymbol} #${trade.id} " ` +
++              `${rejCount} consecutive downward rejections (ratio ${priceRatio.toFixed(6)}--, ` +
+               `${rugPnlPct.toFixed(1)}% loss). Confirmed rug. Closing position.`
+             );
+-            // Cleanup helper ΓÇö called in both paper and live paths.
++            // Cleanup helper " called in both paper and live paths.
+             const cleanupSanityState = () => {
+               priceSanityRejections.delete(trade.id);
+               priceSanityWarnOnce.delete(trade.id);
+@@ -2457,7 +2475,7 @@ async function checkOpenPositions() {
+               tokenSymbolLastLossMs.set(trade.tokenSymbol, Date.now());
+             };
+             if (trade.tradingMode === "live" && jupiterService && !sellingInProgress.has(trade.id)) {
+-              // Attempt a 30%-slippage emergency sell. Non-blocking ΓÇö close the DB record
++              // Attempt a 30%-slippage emergency sell. Non-blocking " close the DB record
+               // regardless of sell outcome so the position is never permanently stuck.
+               sellingInProgress.add(trade.id);
+               const capturedTrade = { ...trade };
+@@ -2484,19 +2502,19 @@ async function checkOpenPositions() {
+               cleanupSanityState();
+             }
+           }
+-          continue; // skip to next trade ΓÇö do NOT update pnlPct, peakPrices, paperBalance, or dailyPnlSol
++          continue; // skip to next trade  -- do NOT update pnlPct, peakPrices, paperBalance, or dailyPnlSol
+         }
+-        // Successful price read ΓÇö reset the rejection counter so any future anomaly
++        // Successful price read " reset the rejection counter so any future anomaly
+         // starts a fresh count rather than inheriting stale strikes.
+         if (priceSanityRejections.has(trade.id)) {
+           priceSanityRejections.delete(trade.id);
+           priceSanityWarnOnce.delete(trade.id);
+         }
+-        // ΓöÇΓöÇ LAYER 2: Belt-and-suspenders cap for legitimate multi-tick compounding pumps ΓöÇΓöÇ
++        // "" LAYER 2: Belt-and-suspenders cap for legitimate multi-tick compounding pumps ""
+         if (pnlPct > 500) {
+-          console.log(
+-            `[TRADE] SUSPICIOUS PNL $${trade.tokenSymbol} | +${pnlPct.toFixed(1)}% exceeds 500% cap ΓÇö capping. ` +
+-            `Price ratio ${priceRatio.toFixed(2)}├ù passed sanity check (may be legitimate multi-tick pump).`
++          log.info(
++            `[TRADE] SUSPICIOUS PNL $${trade.tokenSymbol} | +${pnlPct.toFixed(1)}% exceeds 500% cap " capping. ` +
++            `Price ratio ${priceRatio.toFixed(2)}-- passed sanity check (may be legitimate multi-tick pump).`
+           );
+           pnlPct = 500;
+         }
+@@ -2506,16 +2524,16 @@ async function checkOpenPositions() {
+         const liveBP = (() => { if (!pair) return 0.5; const b = pair.txns?.m5?.buys || 0, s = pair.txns?.m5?.sells || 0; return (b + s) > 0 ? b / (b + s) : 0.5; })();
+         const dynamicMaxHold = getScoreBasedMaxHold(tradeScore, pnlPct, liveBP);
+         let peak = peakPrices.get(trade.id) || entryPrice;
+-        const maxAllowedPeak = entryPrice * (1 + 500 / 100); // 500% gain ceiling ΓÇö matches pnlPct cap
++        const maxAllowedPeak = entryPrice * (1 + 500 / 100); // 500% gain ceiling  -- matches pnlPct cap
+         if (currentPrice > peak && currentPrice <= maxAllowedPeak) {
+           peak = currentPrice;
+           peakPrices.set(trade.id, peak);
+         } else if (currentPrice > maxAllowedPeak) {
+-          // Price is above the 500% ceiling ΓÇö don't update peak to avoid corrupting trailingFloor.
++          // Price is above the 500% ceiling " don't update peak to avoid corrupting trailingFloor.
+           // The bad-feed case is already rejected above by Layer 1; this handles legitimate
+           // multi-tick pumps that compound past 500% cumulatively without triggering the ratio gate.
+-          console.log(
+-            `[PEAK_CAP] Not updating peak for $${trade.tokenSymbol} ΓÇö ` +
++          log.info(
++            `[PEAK_CAP] Not updating peak for $${trade.tokenSymbol} " ` +
+             `currentPrice $${currentPrice.toExponential(4)} exceeds 500% ceiling $${maxAllowedPeak.toExponential(4)}`
+           );
+         }
+@@ -2531,24 +2549,24 @@ async function checkOpenPositions() {
+         //     storage.updateTradeCurrentPrice(trade.id, currentPrice.toString(), pnlPct.toFixed(2)),
+         //     3000, 
+         //     "DB_UpdatePrice"
+-        // ).catch(e => console.warn(`[DB WARNING] Failed to update price for $${trade.tokenSymbol}: ${e.message}`));
++        // ).catch(e => log.warn(`[DB WARNING] Failed to update price for $${trade.tokenSymbol}: ${e.message}`));
+ 
+         // await withTimeout(
+         //     storage.updateTradePeakPrice(trade.id, peak.toString(), peakPnl.toFixed(2)),
+         //     3000, 
+         //     "DB_UpdatePeak"
+-        // ).catch(e => console.warn(`[DB WARNING] Failed to update peak for $${trade.tokenSymbol}: ${e.message}`));
++        // ).catch(e => log.warn(`[DB WARNING] Failed to update peak for $${trade.tokenSymbol}: ${e.message}`));
+ 
+-        // LIFECYCLE:HOLD heartbeat ΓÇö emitted every 30s per trade for production monitoring
++        // LIFECYCLE:HOLD heartbeat " emitted every 30s per trade for production monitoring
+         const _now = Date.now();
+         if (_now - (lifecycleLastLogMs.get(trade.id) ?? 0) >= LIFECYCLE_HOLD_INTERVAL_MS) {
+           lifecycleLastLogMs.set(trade.id, _now);
+-          console.log(`[LIFECYCLE:HOLD] id=#${trade.id} $${trade.tokenSymbol} | age: ${Math.round(holdTime)}s | pnl: ${pnlPct.toFixed(2)}% | peak: ${peakPnl.toFixed(2)}% | price: $${currentPrice.toFixed(8)} | mode: ${trade.mode}`);
++          log.info(`[LIFECYCLE:HOLD] id=#${trade.id} $${trade.tokenSymbol} | age: ${Math.round(holdTime)}s | pnl: ${pnlPct.toFixed(2)}% | peak: ${peakPnl.toFixed(2)}% | price: $${currentPrice.toFixed(8)} | mode: ${trade.mode}`);
+         }
+-        // TRAIL:ACTIVATED ΓÇö logged once when trailing stop becomes armed
++        // TRAIL:ACTIVATED " logged once when trailing stop becomes armed
+         if (!trailActivatedLogged.has(trade.id) && peakPnl >= engineSettings.trailingStopActivation) {
+           trailActivatedLogged.add(trade.id);
+-          console.log(`[TRAIL:ACTIVATED] id=#${trade.id} $${trade.tokenSymbol} | peakPnl: +${peakPnl.toFixed(2)}% reached threshold +${engineSettings.trailingStopActivation}% | trailing distance: -${engineSettings.trailingStopDistance}%`);
++          log.info(`[TRAIL:ACTIVATED] id=#${trade.id} $${trade.tokenSymbol} | peakPnl: +${peakPnl.toFixed(2)}% reached threshold +${engineSettings.trailingStopActivation}% | trailing distance: -${engineSettings.trailingStopDistance}%`);
+         }
+         // Partial TP
+         if (!partialTpTaken.has(trade.id) && pnlPct >= engineSettings.partialTpThreshold && pnlPct < dynamicTP) {
+@@ -2572,10 +2590,10 @@ async function checkOpenPositions() {
+                   dailyPnlSol += partialResult.solReceived - partialSize;
+                   partialTpTaken.add(trade.id);
+                   await storage.updateTradeAmount(trade.id, (sizeSol - partialSize).toFixed(4));
+-                  console.log(`[LIVE] PARTIAL TP $${trade.tokenSymbol} | Sold ${engineSettings.partialTpRatio * 100}% on-chain @ +${pnlPct.toFixed(1)}% | SOL received: ${partialResult.solReceived.toFixed(4)} | tx: ${partialResult.txSignature?.slice(0, 20)}...`);
++                  log.info(`[LIVE] PARTIAL TP $${trade.tokenSymbol} | Sold ${engineSettings.partialTpRatio * 100}% on-chain @ +${pnlPct.toFixed(1)}% | SOL received: ${partialResult.solReceived.toFixed(4)} | tx: ${partialResult.txSignature?.slice(0, 20)}...`);
+                   partialSuccess = true;
+-                } else console.warn(`[LIVE] PARTIAL TP FAILED $${trade.tokenSymbol}: ${partialResult.error}`);
+-              } else console.warn(`[LIVE] PARTIAL TP DESYNC: No tokens for $${trade.tokenSymbol}`);
++                } else log.warn(`[LIVE] PARTIAL TP FAILED $${trade.tokenSymbol}: ${partialResult.error}`);
++              } else log.warn(`[LIVE] PARTIAL TP DESYNC: No tokens for $${trade.tokenSymbol}`);
+             } finally { sellingInProgress.delete(trade.id); }
+           } else {
+             const partialLiq = pair?.liquidity?.usd ?? 1000;
+@@ -2587,7 +2605,7 @@ async function checkOpenPositions() {
+             partialTpTaken.add(trade.id);
+             dailyPnlSol += partialReturn - partialSize;
+             await storage.updateTradeAmount(trade.id, (sizeSol - partialSize).toFixed(4));
+-            console.log(`[PAPER] PARTIAL TP $${trade.tokenSymbol} | Sold ${engineSettings.partialTpRatio * 100}% @ +${pnlPct.toFixed(1)}% | ExitCost: -${partialExitCostPct.toFixed(1)}% | Secured: ${partialReturn.toFixed(4)} SOL`);
++            log.info(`[PAPER] PARTIAL TP $${trade.tokenSymbol} | Sold ${engineSettings.partialTpRatio * 100}% @ +${pnlPct.toFixed(1)}% | ExitCost: -${partialExitCostPct.toFixed(1)}% | Secured: ${partialReturn.toFixed(4)} SOL`);
+             partialSuccess = true;
+           }
+           if (partialSuccess) {
+@@ -2608,31 +2626,32 @@ async function checkOpenPositions() {
+         let shouldClose = false, reason = "";
+         // FIX DEEP_RUG: fires at -50% PNL unconditionally, immediately, no grace.
+         // The PRICE_SANITY gate (PRICE_RATIO_MIN = 0.01) only catches single-tick
+-        // -99% collapses. A gradual rug that drops price over 3ΓÇô7 ticks (e.g. -20%,
++        // -99% collapses. A gradual rug that drops price over 3"7 ticks (e.g. -20%,
+         // -40%, -60%, -80%) passes the ratio check each tick and skips EARLY_SELL
+-        // entirely ΓÇö reaching -99% through the normal shouldClose path. HARD_LOSS_KILL
++        // entirely " reaching -99% through the normal shouldClose path. HARD_LOSS_KILL
+         // fires at -10% but cannot prevent the full drain when the next price read
+         // after -10% is already -80%. This gate catches any position that has lost
+         // more than half its value regardless of how it got there.
+-        if (pnlPct <= -50) { shouldClose = true; reason = `DEEP_RUG_KILL (pnl ${pnlPct.toFixed(2)}% Γëñ -50% emergency floor)`; }
+-        // FIX SURVIVAL-1: HARD LOSS KILL ΓÇö fires unconditionally at -10% PNL.
++        if (pnlPct <= -50) { shouldClose = true; reason = `DEEP_RUG_KILL (pnl ${pnlPct.toFixed(2)}%  -50% emergency floor)`; }
++        // FIX SURVIVAL-1: HARD LOSS KILL " fires unconditionally at -10% PNL.
+         // Stop-loss of -6% is theoretical; memecoin prices gap through it in <3s.
+         // By the time priceCheckIntervalMs fires again, actual loss is -30% to -100%.
+         // This is the last-resort circuit before the position bleeds to zero.
+-        // No trailing, no grace, no hold-time conditions ΓÇö just exit immediately.
+-        else if (pnlPct <= -10) { shouldClose = true; reason = `HARD_LOSS_KILL (pnl ${pnlPct.toFixed(2)}% Γëñ -10% hard floor)`; }
+-        // FIX SURVIVAL-2: TAKE_PROFIT_20 ΓÇö restored from old working version.
++        // No trailing, no grace, no hold-time conditions " just exit immediately.
++        else if (pnlPct <= -10) { shouldClose = true; reason = `HARD_LOSS_KILL (pnl ${pnlPct.toFixed(2)}%  -10% hard floor)`; }
++        // FIX SURVIVAL-2: TAKE_PROFIT_20 " restored from old working version.
+         // The new dynamicTP allows holding until +65 to +100% depending on score.
+         // In practice, memecoins peak and collapse within seconds. EDFB peaked at
+         // +17.9% and exited at -104% because dynamicTP was 90% (score=94). BOPS
+         // peaked at +12% and exited at -104% with dynamicTP=80%. The old version
+-        // exited both at +20% via this check ΓÇö capturing real profit instead of
++        // exited both at +20% via this check " capturing real profit instead of
+         // watching it evaporate. Always exit at +20%: it's a real, bankable gain.
+-        //else if (pnlPct >= 20) { shouldClose = true; reason = `TAKE_PROFIT_20 (+${pnlPct.toFixed(2)}%)`; }
++        // else if (pnlPct >= 20) { shouldClose = true; reason = `TAKE_PROFIT_20 (+${pnlPct.toFixed(2)}%)`; }
++        
+         const costAwareStopPrice = tradeStopPrices.get(trade.id) ?? 0;
+         const stopLossPct = costAwareStopPrice > 0 && entryPrice > 0 ? ((costAwareStopPrice - entryPrice) / entryPrice) * 100 : engineSettings.stopLoss;
+         // FIX: halfStopPct floor prevents EARLY_CUT from firing on entry noise.
+-        // At -3% halfStop, a normal ┬▒2-3% pump.fun price oscillation on entry can trigger
++        // At -3% halfStop, a normal +/-2-3% pump.fun price oscillation on entry can trigger
+         // the cut before the position has moved at all. HWR and MG entries already absorb
+         // 1-3% in tx costs, so -4% minimum gives at least 1-2% of genuine move required.
+         const rawHalfStop = stopLossPct / 2;
+@@ -2645,13 +2664,13 @@ async function checkOpenPositions() {
+         // dynamicTP is still used as the upper-bound guard for partial TP above.
+         // NEAR-MISS SUPPRESSION: if pnlPct is already above +17% and the tick-to-tick
+         // drop is under 3%, suppress PROFIT_DECLINE and let TAKE_PROFIT_20 fire cleanly.
+-        // Without this, normal price oscillation at +17-19% (e.g. +18% ΓåÆ +16%, drop=2%)
+-        // triggers an early exit just below the +20% gate ΓÇö capturing 15-17% instead of 20%.
++        // Without this, normal price oscillation at +17-19% (e.g. +18% ' +16%, drop=2%)
++        // triggers an early exit just below the +20% gate " capturing 15-17% instead of 20%.
+         // The suppression window is intentionally narrow: only active when pnlPct > 17
+         // (close enough to TP gate to matter) AND drop < 3% (small oscillation, not a
+-        // genuine reversal). A real reversal at this level (ΓëÑ3% drop) still fires normally.
+-        const isNearTpGate = pnlPct > 17 && (prevPnl - pnlPct) < 3.0;
+-        // Bug #6 fix: grace period reduced from 60 ΓåÆ 20 s.  The original 60 s window
++        // genuine reversal). A real reversal at this level (3% drop) still fires normally.
++        const isNearTpGate = pnlPct > 17 && ((prevPnl ?? 0) - pnlPct) < 3.0;
++        // Bug #6 fix: grace period reduced from 60 ' 20 s.  The original 60 s window
+         // allowed a token to drop from +5 % to -9 % in the first minute without
+         // PROFIT_DECLINE firing (HARD_LOSS_KILL only activates at -10 %).  20 s
+         // still gives two or three price-check cycles to confirm the move is real
+@@ -2672,8 +2691,8 @@ async function checkOpenPositions() {
+         else if (holdTime > dynamicMaxHold && pnlPct < 5) { shouldClose = true; reason = `MAX_HOLD(${Math.round(dynamicMaxHold)}s)`; }
+         // ABSOLUTE_MAX_HOLD: fires regardless of PnL when holdTime exceeds the engine-wide
+         // maximum (dynamicHoldMaxSeconds, default 2100s = 35min). The normal MAX_HOLD above
+-        // requires pnlPct < 5%, so a trade stagnating between +5% and +20% ΓÇö where TRAIL_STOP
+-        // hasn't triggered (no drawdown from peak) and TAKE_PROFIT_20 hasn't reached ΓÇö can
++        // requires pnlPct < 5%, so a trade stagnating between +5% and +20% " where TRAIL_STOP
++        // hasn't triggered (no drawdown from peak) and TAKE_PROFIT_20 hasn't reached " can
+         // hold open indefinitely. This is a hard ceiling: no memecoin position should survive
+         // past 35 minutes regardless of profitability. Placed as standalone if (not else-if)
+         // so it always evaluates even if shouldClose is already true from another branch.
+@@ -2684,85 +2703,85 @@ async function checkOpenPositions() {
+         else if (holdTime > dynamicMaxHold / 2 && pnlPct < halfStopPct) {
+           // EARLY_CUT minimum hold guard: don't fire before the token has had time to
+           // develop momentum. For HWR (buy pressure measured over 1h) cutting at 3-4min
+-          // is contradictory ΓÇö the signal is sustained, not instant. For SNIPER/MG a
++          // is contradictory " the signal is sustained, not instant. For SNIPER/MG a
+           // shorter minimum is appropriate since those are momentum-burst entries.
+           // Shadow data consistently shows EARLY_CUT firing on temporary dips that
+           // recover: $WLD shadow=-2.13% vs paper=-8.27% (-6.14% paper inflation).
+           const earlyCutMinHold =
+-            trade.mode === "HWR"    ? 360 :  // 6 min ΓÇö HWR needs sustained pressure to develop
+-            trade.mode === "MG"     ? 240 :  // 4 min ΓÇö momentum needs time to play out
+-            trade.mode === "SNIPER" ? 180 :  // 3 min ΓÇö sniper positions move fast, shorter min OK
++            trade.mode === "HWR"    ? 360 :  // 6 min -- HWR needs sustained pressure to develop
++            trade.mode === "MG"     ? 240 :  // 4 min  -- momentum needs time to play out
++            trade.mode === "SNIPER" ? 180 :  // 3 min  -- sniper positions move fast, shorter min OK
+             240;
+           if (holdTime >= earlyCutMinHold) {
+             shouldClose = true; reason = `EARLY_CUT (pnl ${pnlPct.toFixed(1)}% < halfStop ${halfStopPct.toFixed(1)}%)`;
+           }
+         }
+         else if (holdTime > 120 && pnlPct < stopLossPct * 0.7) { shouldClose = true; reason = `FAST_CUT (pnl ${pnlPct.toFixed(1)}% past 70% of stop ${(stopLossPct * 0.7).toFixed(1)}%)`; }
+-        else if (pnlPct > 10 && (() => { const bp = pair && pair.txns?.m5 ? ((pair.txns.m5.buys + pair.txns.m5.sells) > 0 ? pair.txns.m5.buys / (pair.txns.m5.buys + pair.txns.m5.sells) : 0.5) : 0.5; const pc5m = pair?.priceChange?.m5 || 0; return bp < 0.43 && pc5m < -3; })()) { const bp = pair && pair.txns?.m5 ? ((pair.txns.m5.buys + pair.txns.m5.sells) > 0 ? pair.txns.m5.buys / (pair.txns.m5.buys + pair.txns.m5.sells) : 0.5) : 0.5; const pc5m = pair?.priceChange?.m5 || 0; shouldClose = true; reason = `EARLY_EXIT_WEAK_BP (bp=${bp.toFixed(2)}, ╬ö5m=${pc5m.toFixed(1)}%)`; }
++        else if (pnlPct > 10 && (() => { const bp = pair && pair.txns?.m5 ? ((pair.txns.m5.buys + pair.txns.m5.sells) > 0 ? pair.txns.m5.buys / (pair.txns.m5.buys + pair.txns.m5.sells) : 0.5) : 0.5; const pc5m = pair?.priceChange?.m5 || 0; return bp < 0.43 && pc5m < -3; })()) { const bp = pair && pair.txns?.m5 ? ((pair.txns.m5.buys + pair.txns.m5.sells) > 0 ? pair.txns.m5.buys / (pair.txns.m5.buys + pair.txns.m5.sells) : 0.5) : 0.5; const pc5m = pair?.priceChange?.m5 || 0; shouldClose = true; reason = `EARLY_EXIT_WEAK_BP (bp=${bp.toFixed(2)}, "5m=${pc5m.toFixed(1)}%)`; }
+         else if (pair && pnlPct > 5 && ((pair.volume?.m5 || 0) / (pair.liquidity?.usd || 1)) > 7) { const volLiq = (pair.volume?.m5 || 0) / (pair.liquidity?.usd || 1); shouldClose = true; reason = `LIQUIDITY_EXHAUSTION (${volLiq.toFixed(2)}x)`; }
+-        else if (!shouldClose && pair && holdTime > 45) { const m5b = pair.txns?.m5?.buys || 0, m5s = pair.txns?.m5?.sells || 0; const currentBP = (m5b + m5s) > 0 ? m5b / (m5b + m5s) : 0.5; const priceChange5m = pair.priceChange?.m5 || 0; if (currentBP < 0.38 && priceChange5m < -2) { shouldClose = true; reason = `MOMENTUM_FADE (BP=${currentBP.toFixed(2)}, ╬ö5m=${priceChange5m.toFixed(1)}%)`; } else if (pnlPct > 5 && currentBP < 0.43 && priceChange5m < -4) { shouldClose = true; reason = `PROFIT_PROTECT_FADE (BP=${currentBP.toFixed(2)}, ╬ö5m=${priceChange5m.toFixed(1)}%, PNL=+${pnlPct.toFixed(1)}%)`; } }
++        else if (!shouldClose && pair && holdTime > 45) { const m5b = pair.txns?.m5?.buys || 0, m5s = pair.txns?.m5?.sells || 0; const currentBP = (m5b + m5s) > 0 ? m5b / (m5b + m5s) : 0.5; const priceChange5m = pair.priceChange?.m5 || 0; if (currentBP < 0.38 && priceChange5m < -2) { shouldClose = true; reason = `MOMENTUM_FADE (BP=${currentBP.toFixed(2)}, "5m=${priceChange5m.toFixed(1)}%)`; } else if (pnlPct > 5 && currentBP < 0.43 && priceChange5m < -4) { shouldClose = true; reason = `PROFIT_PROTECT_FADE (BP=${currentBP.toFixed(2)}, "5m=${priceChange5m.toFixed(1)}%, PNL=+${pnlPct.toFixed(1)}%)`; } }
+         // FIX: VOL_COLLAPSE must be an independent `if`, not `else if`.
+         // When holdTime > 45, the MOMENTUM_FADE branch above consumes the else-if,
+-        // and VOL_COLLAPSE (holdTime > 180) is never evaluated ΓÇö tokens bleed to
++        // and VOL_COLLAPSE (holdTime > 180) is never evaluated " tokens bleed to
+         // zero indefinitely. Using a separate if allows both checks to run.
+         if (!shouldClose && pair && holdTime > 180 && pnlPct > 1) { const currentVol5m = pair.volume?.m5 || 0; const vol1hNow = pair.volume?.h1 || 0; const expectedVol5m = vol1hNow / 12; if (expectedVol5m > 100 && currentVol5m < expectedVol5m * 0.15) { shouldClose = true; reason = `VOL_COLLAPSE (5m vol ${currentVol5m.toFixed(0)} is <15% of expected ${expectedVol5m.toFixed(0)})`; } }
+         // FIX D: Liquidity collapse emergency exit. A rug pull drains LP before it crashes
+-        // price ΓÇö our stop-loss fires too late because price is calculated against drained
++        // price " our stop-loss fires too late because price is calculated against drained
+         // liquidity. If current liquidity is below $300 (un-tradeable) OR has dropped >70%
+         // from entry while we're still holding, exit immediately at any PNL.
+         // This fires regardless of holdTime because rugs don't wait.
+         if (!shouldClose && pair) {
+           const currentLiq = pair.liquidity?.usd ?? 0;
+           // FIX LIQ_CO: "0" is a truthy string so the old ternary (trade.liquidity ? parseFloat(...) : 0)
+-          // resolved to parseFloat("0") = 0 for every trade stored with zero liquidity ΓÇö making the
++          // resolved to parseFloat("0") = 0 for every trade stored with zero liquidity " making the
+           // relative 50% drop check permanently false (0 > 1000 is never true). Use parseFloat with
+           // nullish coalesce and a || 0 fallback so NaN / "0" / null / undefined all produce 0, and
+           // log a warning so we can confirm the stored value is non-zero going forward.
+           const entryLiqUsd = parseFloat(trade.liquidity ?? "0") || 0;
+           // FIX #5: when entry liquidity is zero the relative 70% drop check was permanently disabled.
+           // Use sniperMinLiquidity as a conservative floor so the relative check stays active.
+-          // This doesn't mean the token actually had that liquidity ΓÇö it means slow-rug detection
++          // This doesn't mean the token actually had that liquidity -- it means slow-rug detection
+           // will use the floor as a baseline rather than being silently bypassed.
+           const effectiveEntryLiq = entryLiqUsd > 0 ? entryLiqUsd : (engineSettings.sniperMinLiquidity ?? 3000);
+           if (entryLiqUsd === 0 && !liqCoWarnedTrades.has(trade.id)) {
+             liqCoWarnedTrades.add(trade.id);
+-            console.warn(`[LIQ_CO] #${trade.id} $${trade.tokenSymbol} ΓÇö entry liquidity zero, using floor $${effectiveEntryLiq} for relative drop check (FIX #5)`);
++            log.warn(`[LIQ_CO] #${trade.id} $${trade.tokenSymbol} -- entry liquidity zero, using floor $${effectiveEntryLiq} for relative drop check (FIX #5)`);
+           }
+           const liqCollapsed = currentLiq < 300;
+           // FIX #6: threshold tightened from 30% remaining (70% drain) to 50% remaining (50% drain).
+-          // A 55% LP drain already compromises the token ΓÇö waiting for 70% drain costs an extra
++          // A 55% LP drain already compromises the token -- waiting for 70% drain costs an extra
+           // ~20% of exit value. Catching the collapse at 50% drain gives the SL a wider price window
+           // to execute before the token becomes un-tradeable. Safe to lower because the absolute
+           // $300 floor (liqCollapsed) is unchanged and still catches near-zero LP situations.
+           const liqDropped50pct = effectiveEntryLiq > 1000 && currentLiq < effectiveEntryLiq * 0.50; // was 0.30 (70% drain gate)
+           if (liqCollapsed || liqDropped50pct) {
+             shouldClose = true;
+-            reason = `LIQ_COLLAPSE (entry $${effectiveEntryLiq.toFixed(0)} ΓåÆ now $${currentLiq.toFixed(0)}, ${liqCollapsed ? "below floor" : ">50% drain"})`;
++            reason = `LIQ_COLLAPSE (entry $${effectiveEntryLiq.toFixed(0)} -> now $${currentLiq.toFixed(0)}, ${liqCollapsed ? "below floor" : ">50% drain"})`;
+           }
+         }
+         if (shouldClose) {
+-          // FIX H: CONSOLIDATED FLOOR ΓÇö applies to every exit path, not just TRAIL_STOP
++          // FIX H: CONSOLIDATED FLOOR -- applies to every exit path, not just TRAIL_STOP
+           // and PROFIT_DECLINE. LIQ_COLLAPSE and VOL_COLLAPSE set shouldClose in independent
+           // if-blocks that run after the floor-protected branches, so pnlPct was never clamped
+           // for them. $FAH: peakPnl 12%, floor should be +3%, recorded -14.5% via VOL_COLLAPSE.
+           // $808: peakPnl 3.7%, floor should be +0.55%, recorded -22.77% via LIQ_COLLAPSE.
+-          // The floor is an accounting protection ΓÇö it doesn't change the on-chain fill price,
++          // The floor is an accounting protection -- it doesn't change the on-chain fill price,
+           // but it prevents gap fills from tripping the daily circuit breaker on good sessions.
+           // Exception: STOP_LOSS, HARD_LOSS_KILL, EARLY/FAST_CUT fire when there was no
+-          // meaningful peak ΓÇö applying the floor there would be misleading.
++          // meaningful peak " applying the floor there would be misleading.
+           const isHardLoss = reason.startsWith("STOP_LOSS") || reason.startsWith("HARD_LOSS_KILL") ||
+                              reason.startsWith("DEEP_RUG_KILL") ||
+                              reason.startsWith("EARLY_CUT") || reason.startsWith("FAST_CUT");
+           if (!isHardLoss && pnlPct < trailingFloor && trailingFloor > 0) {
+-            console.log(`[EXIT:FLOOR] $${trade.tokenSymbol} | ${reason.split(" ")[0]} | raw pnl ${pnlPct.toFixed(2)}% ΓåÆ floor locked at +${trailingFloor.toFixed(2)}% (peak was +${peakPnl.toFixed(1)}%)`);
++            log.info(`[EXIT:FLOOR] $${trade.tokenSymbol} | ${reason.split(" ")[0]} | raw pnl ${pnlPct.toFixed(2)}% ' floor locked at +${trailingFloor.toFixed(2)}% (peak was +${peakPnl.toFixed(1)}%)`);
+             pnlPct = trailingFloor;
+           }
+-          console.log(`[LIFECYCLE:EXIT] id=#${trade.id} $${trade.tokenSymbol} | reason: ${reason} | pnl: ${pnlPct.toFixed(2)}% | peakPnl: ${peakPnl.toFixed(2)}% | holdTime: ${Math.round(holdTime)}s | mode: ${trade.tradingMode}`);
++          log.info(`[LIFECYCLE:EXIT] id=#${trade.id} $${trade.tokenSymbol} | reason: ${reason} | pnl: ${pnlPct.toFixed(2)}% | peakPnl: ${peakPnl.toFixed(2)}% | holdTime: ${Math.round(holdTime)}s | mode: ${trade.tradingMode}`);
+           lifecycleLastLogMs.delete(trade.id);
+           trailActivatedLogged.delete(trade.id);
+           const sizeSol = parseFloat(trade.amount);
+           const isLiveSell = trade.tradingMode === "live" && jupiterService !== null;
+-          let finalPnlPct: number, sellTxSig: string | null = null;
++          let finalPnlPct: number = 0, sellTxSig: string | null = null; // FIX #2: initialize to 0 -- early-exit paths (DESYNC_NO_BALANCE) skip assignment, causing undefined.toFixed() crash at line 3034
+           if (isLiveSell) {
+             sellingInProgress.add(trade.id);
+             // FIX: when the force-sell background task takes over, it owns
+@@ -2778,7 +2797,7 @@ async function checkOpenPositions() {
+                 const desyncPnlPct = sizeSol > 0 && entryPrice > 0 && currentPrice > 0 ? (((currentPrice - entryPrice) / entryPrice) * 100).toFixed(2) : "0";
+                 const desyncPnlSol = sizeSol * (parseFloat(desyncPnlPct) / 100);
+                 dailyPnlSol += desyncPnlSol;
+-                console.warn(`[LIVE] DESYNC: No tokens on-chain for $${trade.tokenSymbol} (trade #${trade.id}). Auto-closing in DB (PNL: ${desyncPnlPct}%).`);
++                log.warn(`[LIVE] DESYNC: No tokens on-chain for $${trade.tokenSymbol} (trade #${trade.id}). Auto-closing in DB (PNL: ${desyncPnlPct}%).`);
+                 await storage.closeTrade(trade.id, currentPrice.toString(), desyncPnlPct, "DESYNC_NO_BALANCE");
+                 liveTokenBalances.delete(trade.id); peakPrices.delete(trade.id); partialTpTaken.delete(trade.id);
+                 tradeStopPrices.delete(trade.id); prevPnlMap.delete(trade.id); pnlStableMap.delete(trade.id);
+@@ -2789,7 +2808,7 @@ async function checkOpenPositions() {
+               const exitCostsModel = calcTransactionCosts(exitLiqUsd, sizeSol);
+               const baseExitSlippageBps = Math.min(2000, Math.max(100, Math.round(exitCostsModel.exitSlippagePct * 1.5 * 100)));
+               // If this trade has previous sell failures, use escalated slippage from
+-              // the ladder ΓÇö don't start back at base slippage on every retry.
++              // the ladder " don't start back at base slippage on every retry.
+               const priorStrikes = sellFailureStrikes.get(trade.id) ?? 0;
+               const exitSlippageBps = priorStrikes === 0 ? baseExitSlippageBps
+                 : priorStrikes === 1 ? Math.min(baseExitSlippageBps * 2, 500)
+@@ -2798,22 +2817,22 @@ async function checkOpenPositions() {
+                 : 3000;
+               // FIX E: Auto-escalate exit slippage when liquidity has shrunk since entry.
+               // If liq at entry was > $1k but current liq < 40% of entry, the pool is
+-              // draining ΓÇö use a minimum of 500bps to avoid failed fills and wasted fees.
++              // draining " use a minimum of 500bps to avoid failed fills and wasted fees.
+               const entryLiqForSell = trade.liquidity ? parseFloat(trade.liquidity) : 0;
+               const currentLiqForSell = pair?.liquidity?.usd ?? 0;
+               const liqDrainedSignificantly = entryLiqForSell > 1000 && currentLiqForSell > 0 && currentLiqForSell < entryLiqForSell * 0.40;
+               const autoEscalatedExitBps = liqDrainedSignificantly ? Math.max(exitSlippageBps, 500) : exitSlippageBps;
+               if (liqDrainedSignificantly && autoEscalatedExitBps > exitSlippageBps) {
+-                console.warn(`[SELL] Liq drained ${entryLiqForSell.toFixed(0)}ΓåÆ${currentLiqForSell.toFixed(0)} ΓÇö auto-escalating exit slippage ${exitSlippageBps}ΓåÆ${autoEscalatedExitBps}bps`);
++                log.warn(`[SELL] Liq drained ${entryLiqForSell.toFixed(0)}'${currentLiqForSell.toFixed(0)} " auto-escalating exit slippage ${exitSlippageBps}'${autoEscalatedExitBps}bps`);
+               }
+               // Sell impact guard: pre-check
+-              // ΓöÇΓöÇ ANTI-RUG ROUTING GUARD (DEAD POOL DETECTION) ΓöÇΓöÇ
++              // "" ANTI-RUG ROUTING GUARD (DEAD POOL DETECTION) ""
+               let sellQuote: any = null;
+               try {
+                 sellQuote = await jupiterService!.fetchQuote(trade.tokenAddress, SOL_MINT, tokenAmountRaw.toString(), [autoEscalatedExitBps]);
+               } catch (quoteErr: any) {
+                 if (quoteErr.message?.includes("NO_ROUTES_FOUND") || quoteErr.message?.includes("No routes")) {
+-                  console.error(`[DEAD POOL] ≡ƒÜ¿ NO ROUTES FOUND for $${trade.tokenSymbol}. Liquidity is completely gone. Force-closing ghost record.`);
++                  log.error(`[DEAD POOL]  NO ROUTES FOUND for $${trade.tokenSymbol}. Liquidity is completely gone. Force-closing ghost record.`);
+                   
+                   // Close the DB record immediately so it stops looping
+                   const deadPnl = "-99.00";
+@@ -2831,53 +2850,59 @@ async function checkOpenPositions() {
+                   if (consecutiveLosses === 2) lastMiniCooldownEnd = Date.now() + MINI_LOSS_COOLDOWN_MS;
+                   if (consecutiveLosses >= 3) { lastLossCooldownEnd = Date.now() + engineSettings.lossCooldownMs; consecutiveLosses = 0; }
+                   
+-                  continue; // Skip the rest of the loop ΓÇö trade is officially dead
++                  continue; // Skip the rest of the loop  -- trade is officially dead
+                 }
+-                console.warn(`[SELL PRE-CHECK] Quote failed for $${trade.tokenSymbol}: ${quoteErr.message}`);
++                log.warn(`[SELL PRE-CHECK] Quote failed for $${trade.tokenSymbol}: ${quoteErr.message}`);
+               }
+ 
+               const sellImpactPct = parseFloat(sellQuote?.priceImpactPct ?? "0");
+-              if (sellImpactPct > 50) console.warn(`[SELL] Extreme impact ${sellImpactPct.toFixed(1)}% for ${trade.tokenSymbol} ΓÇö forcing sell anyway (rugpull escape)`);
+-              // ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++              if (sellImpactPct > 50) log.warn(`[SELL] Extreme impact ${sellImpactPct.toFixed(1)}% for ${trade.tokenSymbol} " forcing sell anyway (rugpull escape)`);
++              // """""""""""""""""""""""""""""""""""""""""""""""""""
+               // FIX LOCK: use a shorter per-cycle timeout (12 s) rather than EXECUTION_TIMEOUT_MS (30 s).
+-              // priceCheckLock is held for the full duration of this await ΓÇö a 30 s block means other
++              // priceCheckLock is held for the full duration of this await " a 30 s block means other
+               // open positions get zero price checks for 30 s during any slow/failed sell.
+               // 12 s is still long enough for a successful Jupiter confirmation (~2-5 s average);
+               // a timeout here increments sellFailureStrikes and the escalating-slippage ladder
+               // retries next cycle automatically, so no position is ever abandoned.
+               const POSITION_SELL_TIMEOUT_MS = 12_000;
+-              const sellResult = await jupiterService!.sellToken(trade.tokenAddress, tokenAmountRaw, autoEscalatedExitBps);
++              // FIX #5: apply the timeout that was declared but never used. Without this, a hung sellToken call
++              // holds priceCheckLock=true indefinitely, freezing ALL position price checks forever.
++              const sellResult = await withTimeout(
++                jupiterService!.sellToken(trade.tokenAddress, tokenAmountRaw, autoEscalatedExitBps),
++                POSITION_SELL_TIMEOUT_MS,
++                `sellToken_${trade.tokenSymbol}`
++              );
+               if (!sellResult.success) {
+                 const strikes = (sellFailureStrikes.get(trade.id) ?? 0) + 1;
+                 sellFailureStrikes.set(trade.id, strikes);
+                 // AUTO-ESCALATING SLIPPAGE LADDER: each failed sell retries with wider
+                 // slippage rather than giving up. Giving up = tokens stuck on-chain with
+-                // no automatic recovery ΓÇö in live mode that is a guaranteed full loss.
+-                // Strike 1 ΓåÆ 2x slippage (wider but still reasonable)
+-                // Strike 2 ΓåÆ 500 bps (5% ΓÇö covers most pool conditions)
+-                // Strike 3 ΓåÆ 1500 bps (15% ΓÇö emergency exit, accept bad fill over stuck)
+-                // Strike 4+ ΓåÆ 3000 bps (30% ΓÇö last resort, any fill beats zero)
++                // no automatic recovery " in live mode that is a guaranteed full loss.
++                // Strike 1 ' 2x slippage (wider but still reasonable)
++                // Strike 2 ' 500 bps (5% " covers most pool conditions)
++                // Strike 3 ' 1500 bps (15% " emergency exit, accept bad fill over stuck)
++                // Strike 4+ ' 3000 bps (30% " last resort, any fill beats zero)
+                 if (strikes <= 4) {
+                   const escalatedBps = strikes === 1 ? Math.min(exitSlippageBps * 2, 500)
+                     : strikes === 2 ? 500
+                     : strikes === 3 ? 1500
+                     : 3000;
+-                  console.warn(`[LIVE] SELL FAILED $${trade.tokenSymbol} (attempt ${strikes}): ${sellResult.error} ΓÇö escalating slippage to ${escalatedBps}bps next cycle`);
++                  log.warn(`[LIVE] SELL FAILED $${trade.tokenSymbol} (attempt ${strikes}): ${sellResult.error} " escalating slippage to ${escalatedBps}bps next cycle`);
+                   // Store escalated slippage for next cycle by bumping the strike count
+-                  // ΓÇö the escalated bps will be derived from it on the next price check.
++                  // " the escalated bps will be derived from it on the next price check.
+                 } else {
+                   // FIX 6: Instead of logging CRITICAL and giving up (which leaves real tokens
+                   // stranded in the wallet forever), launch the persistent force-sell loop in
+                   // the background. It retries every 15s at 30% slippage for up to 5 minutes.
+                   // sellingInProgress keeps the normal sell path from double-triggering.
+-                  // We do NOT await ΓÇö this must not block the price-checking loop.
+-                  console.error(`[SELL] CRITICAL: $${trade.tokenSymbol} #${trade.id} failed ${strikes} times ΓÇö launching persistent force-sell loop (30% slippage, 5-min window)`);
++                  // We do NOT await " this must not block the price-checking loop.
++                  log.error(`[SELL] CRITICAL: $${trade.tokenSymbol} #${trade.id} failed ${strikes} times " launching persistent force-sell loop (30% slippage, 5-min window)`);
+                   const capturedTrade  = { ...trade };
+                   const capturedPrice  = currentPrice;
+                   // Hand ownership of sellingInProgress to the background task.
+                   // The entry is already present (added before the try block above).
+                   // The background .then()/.catch() finally blocks are responsible
+-                  // for the eventual delete ΓÇö do NOT let the outer finally remove it.
++                  // for the eventual delete " do NOT let the outer finally remove it.
+                   handedOffToForceSell = true;
+                   forceSellPosition(capturedTrade, capturedPrice).then(async ({ success, solReceived }) => {
+                     try {
+@@ -2900,14 +2925,14 @@ async function checkOpenPositions() {
+                       pnlStableMap.delete(capturedTrade.id);
+                       zeroBalanceStrikes.delete(capturedTrade.id);
+                       tradedAddresses.set(capturedTrade.tokenAddress, Date.now());
+-                      console.log(`[FORCE_SELL] DB closed #${capturedTrade.id} $${capturedTrade.tokenSymbol} | PNL: ${finalPnlPct.toFixed(2)}% | success: ${success}`);
++                      log.info(`[FORCE_SELL] DB closed #${capturedTrade.id} $${capturedTrade.tokenSymbol} | PNL: ${finalPnlPct.toFixed(2)}% | success: ${success}`);
+                     } catch (dbErr: any) {
+-                      console.error(`[FORCE_SELL] DB close failed #${capturedTrade.id}: ${dbErr.message}`);
++                      log.error(`[FORCE_SELL] DB close failed #${capturedTrade.id}: ${dbErr.message}`);
+                     } finally {
+                       sellingInProgress.delete(capturedTrade.id);
+                     }
+                   }).catch((e: any) => {
+-                    console.error(`[FORCE_SELL] Unhandled error #${capturedTrade.id}: ${e.message}`);
++                    log.error(`[FORCE_SELL] Unhandled error #${capturedTrade.id}: ${e.message}`);
+                     sellingInProgress.delete(capturedTrade.id);
+                   });
+                 }
+@@ -2924,41 +2949,41 @@ async function checkOpenPositions() {
+               const sellFeesSol = sellResult.feesSol ?? 0;
+               const trueNetSol = sellResult.solReceived - sellFeesSol;
+               const truePnlPct = sizeSol > 0 ? ((trueNetSol - sizeSol) / sizeSol) * 100 : 0;
+-              console.log(
++              log.info(
+                 `[LIVE_FEE] SELL $${trade.tokenSymbol} | fees: ${sellFeesSol.toFixed(6)} SOL` +
+                 ` | grossReceived: ${sellResult.solReceived.toFixed(6)} SOL` +
+                 ` | netReceived: ${trueNetSol.toFixed(6)} SOL` +
+                 ` | reportedPnl: ${finalPnlPct >= 0 ? "+" : ""}${finalPnlPct.toFixed(2)}%` +
+                 ` | truePnl(after fees): ${truePnlPct >= 0 ? "+" : ""}${truePnlPct.toFixed(2)}%`
+               );
+-              console.log(`[LIVE] ${finalPnlPct >= 0 ? "WIN" : "LOSS"} SELL $${trade.tokenSymbol} | PNL: ${finalPnlPct >= 0 ? "+" : ""}${finalPnlPct.toFixed(2)}% | ${reason} | tx: ${sellTxSig?.slice(0, 20)}...`);
++              log.info(`[LIVE] ${finalPnlPct >= 0 ? "WIN" : "LOSS"} SELL $${trade.tokenSymbol} | PNL: ${finalPnlPct >= 0 ? "+" : ""}${finalPnlPct.toFixed(2)}% | ${reason} | tx: ${sellTxSig?.slice(0, 20)}...`);
+             } finally { if (!handedOffToForceSell) sellingInProgress.delete(trade.id); }
+           } else {
+-            let exitPnlPct = Math.min(500, Math.max(pnlPct, -99)); // cap: paper exit bounded [ΓêÆ99, 500] ΓÇö mirrors the hold-loop 500% cap so a bad feed price cannot credit impossible SOL gains to paperBalance
++            let exitPnlPct = Math.min(500, Math.max(pnlPct, -99)); // cap: paper exit bounded ['99, 500]  -- mirrors the hold-loop 500% cap so a bad feed price cannot credit impossible SOL gains to paperBalance
+             const exitLiq = pair?.liquidity?.usd ?? 1000;
+             const exitTxCosts = calcTransactionCosts(exitLiq, sizeSol);
+             const exitCostPct = exitTxCosts.exitSlippagePct + exitTxCosts.exitFeePct;
+             // FIX: floor at -99 AFTER subtracting exit costs. In live trading you cannot
+-            // lose more than 100% of a position ΓÇö the worst case is selling for near-zero
++            // lose more than 100% of a position " the worst case is selling for near-zero
+             // and receiving dust. Applying exit costs on top of a -99% position produced
+             // -109% in paper mode, which inflated the circuit breaker's daily loss calc
+             // and drawdown figure with numbers that are physically impossible in live mode.
+             exitPnlPct = Math.max(-99, exitPnlPct - exitCostPct);
+             // FIX FLOOR: the trailing floor was applied to pnlPct before entering this
+             // branch (line ~1716), but subtracting exit costs can push exitPnlPct back
+-            // below it (e.g. floor +0.95%, exitCost 3.8% ΓåÆ ΓêÆ2.85%). The floor is an
++            // below it (e.g. floor +0.95%, exitCost 3.8% ' '2.85%). The floor is an
+             // accounting device to prevent gap-through trail exits from tripping the
+-            // circuit breaker on sessions that peaked positive ΓÇö it must survive costs.
++            // circuit breaker on sessions that peaked positive " it must survive costs.
+             // isHardLoss and trailingFloor are both in scope from the shouldClose block.
+             if (!isHardLoss && trailingFloor > 0 && exitPnlPct < trailingFloor) {
+               exitPnlPct = trailingFloor;
+             }
+-            const MAX_RETURN_MULTIPLIER = 6; // 500% gain = 6├ù return ΓÇö hard ceiling matches pnlPct cap
++            const MAX_RETURN_MULTIPLIER = 6; // 500% gain = 6-- return  -- hard ceiling matches pnlPct cap
+             const returnSolRaw = sizeSol * (1 + exitPnlPct / 100);
+             const returnSol = Math.min(returnSolRaw, sizeSol * MAX_RETURN_MULTIPLIER);
+             if (returnSolRaw !== returnSol) {
+-              console.warn(
+-                `[BALANCE_GUARD] returnSol clamped ${returnSolRaw.toFixed(4)} ΓåÆ ${returnSol.toFixed(4)} SOL ` +
++              log.warn(
++                `[BALANCE_GUARD] returnSol clamped ${returnSolRaw.toFixed(4)} ' ${returnSol.toFixed(4)} SOL ` +
+                 `for $${trade.tokenSymbol} | exitPnlPct was ${exitPnlPct.toFixed(2)}%`
+               );
+             }
+@@ -2966,7 +2991,7 @@ async function checkOpenPositions() {
+             dailyPnlSol += returnSol - sizeSol;
+             finalPnlPct = exitPnlPct;
+             if (paperBalance > peakBalance) peakBalance = paperBalance;
+-            console.log(`[PAPER] ${finalPnlPct >= 0 ? "WIN" : "LOSS"} SELL $${trade.tokenSymbol} @ $${currentPrice.toFixed(8)} | PNL: ${finalPnlPct >= 0 ? "+" : ""}${finalPnlPct.toFixed(2)}% | ${reason} | ExitCost: -${exitCostPct.toFixed(1)}% | Bal: ${paperBalance.toFixed(3)} SOL`);
++            log.info(`[PAPER] ${finalPnlPct >= 0 ? "WIN" : "LOSS"} SELL $${trade.tokenSymbol} @ $${currentPrice.toFixed(8)} | PNL: ${finalPnlPct >= 0 ? "+" : ""}${finalPnlPct.toFixed(2)}% | ${reason} | ExitCost: -${exitCostPct.toFixed(1)}% | Bal: ${paperBalance.toFixed(3)} SOL`);
+           }
+           const isWin = finalPnlPct! > 0;
+           if (isWin) { consecutiveWins++; consecutiveLosses = 0; lastMiniCooldownEnd = 0; }
+@@ -2981,38 +3006,40 @@ async function checkOpenPositions() {
+               // 2-loss mini-cooldown: pause 3 minutes before the next entry.
+               // Keeps the bot from adding a third loss mid-streak while market is hostile.
+               lastMiniCooldownEnd = Date.now() + MINI_LOSS_COOLDOWN_MS;
+-              console.log(`[RISK] 2 consecutive losses ΓÇö ${MINI_LOSS_COOLDOWN_MS / 1000}s mini-cooldown activated`);
++              log.info(`[RISK] 2 consecutive losses " ${MINI_LOSS_COOLDOWN_MS / 1000}s mini-cooldown activated`);
+             }
+             if (consecutiveLosses >= 3) {
+               lastLossCooldownEnd = Date.now() + engineSettings.lossCooldownMs;
+               // FIX: reset so next penalty requires 3 NEW losses, not instantly
+               // re-firing on every subsequent loss from an accumulated count.
+               consecutiveLosses = 0;
+-              console.log(`[RISK] 3 consecutive losses ΓÇö ${engineSettings.lossCooldownMs / 1000}s cooldown activated`);
++              log.info(`[RISK] 3 consecutive losses " ${engineSettings.lossCooldownMs / 1000}s cooldown activated`);
+             }
+           }
+           await storage.closeTrade(trade.id, currentPrice.toString(), finalPnlPct!.toFixed(2), reason);
+ 
+           // Reclaim ~0.002 SOL per trade
+-          jupiterService!.closeTokenAccount(trade.tokenAddress).catch(() => {});
++          if (trade.tradingMode === "live") {
++            jupiterService!.closeTokenAccount(trade.tokenAddress).catch(() => {});
++          }
+ 
+           
+-          // ΓöÇΓöÇ SHADOW MODE: close matching shadow trade ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++          // "" SHADOW MODE: close matching shadow trade """"""""""""""""""""""
+           if (trade.tradingMode !== "live") {
+             closeShadowTrade(trade.tokenAddress, currentPrice, finalPnlPct!, reason).catch(() => {});
+           }
+-          // ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++          // """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+           tradedAddresses.set(trade.tokenAddress, Date.now());
+           if (reason.startsWith("STOP_LOSS") || reason.startsWith("HARD_LOSS_KILL") || reason.startsWith("DEEP_RUG_KILL") || reason.startsWith("EARLY_CUT") || reason.startsWith("FAST_CUT") || reason.startsWith("LIQ_COLLAPSE") || reason.startsWith("VOL_COLLAPSE")) {
+             stoppedOutAddresses.set(trade.tokenAddress, Date.now());
+             // Block re-entry on ANY new contract with the same symbol for the full slReentryDelayMs.
+-            // Fixes $SOS re-entering 11m47s after LIQ_COLLAPSE via a new contract address ΓÇö
++            // Fixes $SOS re-entering 11m47s after LIQ_COLLAPSE via a new contract address "
+             // stoppedOutAddresses is address-keyed so the new address bypassed it; this closes the gap.
+             tokenSymbolSlBlockMs.set(trade.tokenSymbol, Date.now());
+             // FIX B: increment repeat-loser strike counter and extend block for chronic losers.
+             // Two stops on the same token in a session = the market has rejected this token twice.
+             // Continuing to re-enter just bleeds fees. Lock it out for 4 hours instead of 15 min.
+-            // FIX G: LIQ_COLLAPSE and VOL_COLLAPSE are structurally equivalent to a stop-loss ΓÇö
++            // FIX G: LIQ_COLLAPSE and VOL_COLLAPSE are structurally equivalent to a stop-loss "
+             // the token's pool is either drained or dead. Previously they only set tradedAddresses
+             // (60s gate) instead of stoppedOutAddresses (900s gate), allowing immediate re-entry
+             // into the same hostile token. $FARTCAT entered twice 73s apart for -23% and -14%.
+@@ -3020,9 +3047,9 @@ async function checkOpenPositions() {
+             tokenStopLossCount.set(trade.tokenAddress, slCount);
+             if (slCount >= 2) {
+               hardBlockedAddresses.set(trade.tokenAddress, Date.now()); // reuse hardBlock with custom TTL
+-              console.log(`[RISK] REPEAT_LOSER $${trade.tokenSymbol} ΓÇö ${slCount} SLs this session ΓåÆ hard block for ${REPEAT_LOSER_BLOCK_MS / 3600000}h`);
++              log.info(`[RISK] REPEAT_LOSER $${trade.tokenSymbol} " ${slCount} SLs this session ' hard block for ${REPEAT_LOSER_BLOCK_MS / 3600000}h`);
+             } else {
+-              console.log(`[RISK] SL blackout set for $${trade.tokenSymbol} (${reason.split(" ")[0]}) ΓÇö no re-entry for ${(engineSettings.slReentryDelayMs / 60000).toFixed(0)} min`);
++              log.info(`[RISK] SL blackout set for $${trade.tokenSymbol} (${reason.split(" ")[0]}) " no re-entry for ${(engineSettings.slReentryDelayMs / 60000).toFixed(0)} min`);
+             }
+           }
+           peakPrices.delete(trade.id); partialTpTaken.delete(trade.id); tradeStopPrices.delete(trade.id);
+@@ -3039,14 +3066,15 @@ async function checkOpenPositions() {
+           const displayBal = (isLiveSell && jupiterService) ? (await jupiterService.getWalletBalance().catch(() => 0)).toFixed(4) : paperBalance.toFixed(3);
+           await storage.updateBotStats({ walletBalance: displayBal, totalPnl: (totalPnl / Math.max(closedTrades.length, 1)).toFixed(2), winRate: wr, totalTrades: allTrades.length, openPositions: openNow, lastSignal: `SOLD $${trade.tokenSymbol} | ${isWin ? "+" : ""}${finalPnlPct!.toFixed(1)}% | ${reason}`, peakBalance: peakBalance.toFixed(4), lastLossCooldownEnd, dailyStartBalance: dailyStartBalance.toFixed(4) });
+         }
+-      } catch (tradeErr) { console.error(`[POSITION_MANAGER] Error processing $${trade.tokenSymbol}:`, tradeErr); }
++      } catch (tradeErr) { log.error(`[POSITION_MANAGER] Error processing $${trade.tokenSymbol}`, { error: String(tradeErr) }); }
+     }
+-  } catch (e) { console.error("[POSITION_MANAGER] Error:", e); } finally { priceCheckLock = false; }
++  } catch (e) { log.error("[POSITION_MANAGER] Error", { error: String(e) }); } finally { priceCheckLock = false; }
+ }
+ 
+ async function startTradingEngine() {
+   if (scannerInterval) clearInterval(scannerInterval);
+   if (priceCheckerInterval) clearInterval(priceCheckerInterval);
++  balanceInitialized = false; // FIX #4: reset so initBalanceFromDB() re-reads peakBalance/paperBalance from DB on every engine restart, not just the first one
+   // Reset session-scoped state on every engine start so stale counts from a
+   // previous run don't carry over and block valid entries on the new session.
+   sessionTokenBuyCount.clear();
+@@ -3057,27 +3085,29 @@ async function startTradingEngine() {
+   liqCoWarnedTrades.clear();           // FIX: warn-once guard reset on engine start
+   priceSanityRejections.clear();       // FIX: rejection counters reset on engine start
+   priceSanityWarnOnce.clear();         // FIX: warn-once guard reset on engine start
+-  console.log("[ENGINE] Starting trading engine...");
++  log.info("[ENGINE] Starting trading engine...");
+   jupiterService = createJupiterService();
+   if (jupiterService) {
+     const walletBal = await jupiterService.getWalletBalance().catch(() => 0);
+-    console.log(`[ENGINE] Live trading ENABLED | wallet: ${jupiterService.walletAddress} | balance: ${walletBal.toFixed(4)} SOL`);
++    log.info(`[ENGINE] Live trading ENABLED | wallet: ${jupiterService.walletAddress} | balance: ${walletBal.toFixed(4)} SOL`);
+     await syncLiveTokenBalances();
+ 
+-    // --> ADD THIS LINE RIGHT HERE <--
+-    await jupiterService.sweepEmptyAccounts();
+-  } else console.log("[ENGINE] Live trading DISABLED ΓÇö paper mode only");
++    // Non-critical: sweep empty ATAs in background - never block or crash startup
++    jupiterService.sweepEmptyAccounts().catch((e: any) =>
++      log.warn("[JANITOR] Sweep skipped on startup", { error: e?.message ?? String(e) })
++    );
++  } else log.info("[ENGINE] Live trading DISABLED -- paper mode only");
+   await initBalanceFromDB();
+   const mlUp = await checkMLService();
+-  console.log(mlUp ? "[ENGINE] ML Service connected" : "[ENGINE] ML Service not available");
++  log.info(mlUp ? "[ENGINE] ML Service connected" : "[ENGINE] ML Service not available");
+   if (mlCheckerInterval) clearInterval(mlCheckerInterval);
+   mlCheckerInterval = setInterval(checkMLService, 30000);
+-  console.log("[ENGINE] Fetching live SOL price from DexScreener...");
++  log.info("[ENGINE] Fetching live SOL price from DexScreener...");
+   for (let attempt = 0; attempt < 10; attempt++) {
+     const price = await getLiveSolPrice();
+-    if (solPriceFetchedOnce && price > 0) { console.log(`[ENGINE] SOL price locked at $${price.toFixed(2)}`); break; }
++    if (solPriceFetchedOnce && price > 0) { log.info(`[ENGINE] SOL price locked at $${price.toFixed(2)}`); break; }
+     if (attempt < 9) await new Promise(r => setTimeout(r, 2000));
+-    else console.warn(`[ENGINE] Could not fetch live SOL price after 10 attempts ΓÇö proceeding with cached fallback $${cachedSolPriceUsd}`);
++    else log.warn(`[ENGINE] Could not fetch live SOL price after 10 attempts " proceeding with cached fallback $${cachedSolPriceUsd}`);
+   }
+   scannerInterval = setInterval(runScanCycle, engineSettings.scanIntervalMs);
+   priceCheckerInterval = setInterval(checkOpenPositions, engineSettings.priceCheckIntervalMs);
+@@ -3091,17 +3121,17 @@ async function syncLiveTokenBalances() {
+     const openTrades = await storage.getOpenTrades();
+     const liveTrades = openTrades.filter((t: any) => t.tradingMode === "live");
+     if (liveTrades.length === 0) return;
+-    console.log(`[JUPITER] Syncing token balances for ${liveTrades.length} open live trade(s)...`);
++    log.info(`[JUPITER] Syncing token balances for ${liveTrades.length} open live trade(s)...`);
+     const fetches = await Promise.allSettled(liveTrades.map((t: any) => jupiterService!.getTokenBalance(t.tokenAddress)));
+     for (let i = 0; i < liveTrades.length; i++) {
+       const trade = liveTrades[i];
+       const result = fetches[i];
+       if (result.status === "fulfilled") {
+-        if (result.value > BigInt(0)) { liveTokenBalances.set(trade.id, result.value); console.log(`[JUPITER] Restored trade #${trade.id} ($${trade.tokenSymbol}): ${result.value} raw tokens`); }
+-        else console.warn(`[JUPITER] Trade #${trade.id} ($${trade.tokenSymbol}): no ATA balance found`);
+-      } else console.error(`[JUPITER] Trade #${trade.id} ($${trade.tokenSymbol}): balance fetch failed ΓÇö ${(result as PromiseRejectedResult).reason?.message ?? "unknown"}`);
++        if (result.value > BigInt(0)) { liveTokenBalances.set(trade.id, result.value); log.info(`[JUPITER] Restored trade #${trade.id} ($${trade.tokenSymbol}): ${result.value} raw tokens`); }
++        else log.warn(`[JUPITER] Trade #${trade.id} ($${trade.tokenSymbol}): no ATA balance found`);
++      } else log.error(`[JUPITER] Trade #${trade.id} ($${trade.tokenSymbol}): balance fetch failed " ${(result as PromiseRejectedResult).reason?.message ?? "unknown"}`);
+     }
+-  } catch (e) { console.error("[JUPITER] syncLiveTokenBalances error:", e); }
++  } catch (e) { log.error("[JUPITER] syncLiveTokenBalances error", { error: String(e) }); }
+ }
+ 
+ export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
+@@ -3111,8 +3141,8 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
+   app.get(api.status.get.path, async (req, res) => { res.json(await storage.getBotStatus()); });
+   app.get(api.trades.list.path, async (req, res) => { res.json(await storage.getTrades()); });
+   app.get(api.candidates.list.path, async (req, res) => { res.json(await storage.getCandidates()); });
+-  app.get("/api/candidates/live", async (_req, res) => { try { res.json(await fetchDexScreenerCandidates()); } catch (e) { console.error(e); res.json([]); } });
+-  app.get("/api/trades/open", async (_req, res) => { try { res.json(await storage.getOpenTrades()); } catch (e) { console.error(e); res.status(500).json({ error: "Failed to fetch open trades" }); } });
++  app.get("/api/candidates/live", async (_req, res) => { try { res.json(await fetchDexScreenerCandidates()); } catch (e) { log.error("Route error", { error: String(e) }); res.json([]); } });
++  app.get("/api/trades/open", async (_req, res) => { try { res.json(await storage.getOpenTrades()); } catch (e) { log.error("Failed to fetch open trades", { error: String(e) }); res.status(500).json({ error: "Failed to fetch open trades" }); } });
+   app.get("/api/engine/stats", async (_req, res) => {
+     try {
+       const allTrades = await storage.getTrades();
+@@ -3138,6 +3168,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
+       // directly from dailyPnlSol in the same JSON snapshot, rather than deriving
+       // it from a separate poll that may be one cycle stale.
+       const elapsedTodaySeconds = Math.round(elapsedToday);
++      const effectiveBal = await getEffectiveBalance(); // FIX #13: pre-compute to avoid a live RPC call (getWalletBalance) inside an object literal -- every frontend poll was triggering a Solana RPC call
+       res.json({
+         totalTrades: allTrades.length, closedTrades: closedTrades.length, openTrades: openTrades.length,
+         wins: wins.length, losses: losses.length,
+@@ -3152,13 +3183,13 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
+         solPerHour, uptimeSeconds, dailyPnlSol: dailyPnlSol.toFixed(4), dailyTradeCount,
+         elapsedTodaySeconds,
+         peakBalance: peakBalance.toFixed(3),
+-        drawdownPct: peakBalance > 0 ? Math.max(0, (peakBalance - (await getEffectiveBalance())) / peakBalance * 100).toFixed(1) : "0",
++        drawdownPct: peakBalance > 0 ? Math.max(0, (peakBalance - effectiveBal) / peakBalance * 100).toFixed(1) : "0",
+         circuitBreakerActive, dailyLossLimitPct: engineSettings.dailyLossLimitPct, maxDrawdownPct: engineSettings.maxDrawdownPct,
+         txCostsEnabled: !!engineSettings.txCostsEnabled, safetyChecksEnabled: !!engineSettings.safetyChecksEnabled,
+         dynamicHoldEnabled: !!engineSettings.dynamicHoldEnabled, discoveryWindowSeconds: engineSettings.maxDiscoveryAgeSeconds,
+         lastMiniCooldownEnd, lastLossCooldownEnd,
+       });
+-    } catch (e) { console.error(e); res.status(500).json({ error: "Failed to fetch stats" }); }
++    } catch (e) { log.error("Failed to fetch stats", { error: String(e) }); res.status(500).json({ error: "Failed to fetch stats" }); }
+   });
+   app.get("/api/engine/risk-status", async (_req, res) => {
+     const riskCheck = await checkCircuitBreakers();
+@@ -3175,7 +3206,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
+   });
+   app.get("/api/settings", async (_req, res) => { res.json(engineSettings); });
+ 
+-  // ΓöÇΓöÇ Shadow mode endpoints ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++  // "" Shadow mode endpoints """""""""""""""""""""""""""""""""""""""""""""""""
+   app.get("/api/shadow/trades", (_req, res) => {
+     const { open, closed } = getShadowTrades();
+     // Compute summary statistics on closed trades
+@@ -3199,7 +3230,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
+         avgRouteHops:      +avgHops.toFixed(1),
+         interpretation:    avgGap > 0
+           ? `Paper overstates live by ~${avgGap.toFixed(1)}% per trade`
+-          : `Shadow slightly BETTER than paper (unusual ΓÇö check liquidity filters)`,
++          : `Shadow slightly BETTER than paper (unusual " check liquidity filters)`,
+       },
+       open,
+       closed: closed.slice(-50), // last 50 only to keep response lean
+@@ -3214,7 +3245,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
+     res.json({ shadowModeEnabled: enable });
+   });
+ 
+-  // ΓöÇΓöÇ Latency endpoints ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++  // "" Latency endpoints """""""""""""""""""""""""""""""""""""""""""""""""""""
+   app.get("/api/latency/log", (_req, res) => {
+     const log = getLatencyLog();
+     const successful  = log.filter(r => r.success);
+@@ -3248,12 +3279,12 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
+         txConfirm: {
+           avgMs: +avg(confirmTimes).toFixed(0),
+           p90Ms: +p90(confirmTimes).toFixed(0),
+-          note:  "Send ΓåÆ on-chain confirmed. >3000ms = congestion, consider Jito",
++          note:  "Send ' on-chain confirmed. >3000ms = congestion, consider Jito",
+         },
+         totalRoundTrip: {
+           avgMs: +avg(totalTimes).toFixed(0),
+           p90Ms: +p90(totalTimes).toFixed(0),
+-          note:  "Quote fetch start ΓåÆ confirmed. This is your real execution delay",
++          note:  "Quote fetch start ' confirmed. This is your real execution delay",
+         },
+       },
+       recentRecords: log.slice(-30),
+@@ -3263,11 +3294,10 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
+ 
+   app.delete("/api/latency/log", (req, res) => {
+     if (!requireAdmin(req, res)) return;
+-    const { clearLatencyLog } = require("./jupiter");
+-    clearLatencyLog();
++    clearLatencyLog(); // FIX #1: removed require("./jupiter") -- using the ES import at top of file. require() in ESM scope throws ReferenceError: require is not defined
+     res.json({ cleared: true });
+   });
+-  // ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
++  // """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+   app.post("/api/settings", async (req, res) => {
+     if (!requireAdmin(req, res)) return;
+     try {
+@@ -3308,11 +3338,11 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
+         if (priceCheckerInterval) clearInterval(priceCheckerInterval);
+         scannerInterval = setInterval(runScanCycle, engineSettings.scanIntervalMs);
+         priceCheckerInterval = setInterval(checkOpenPositions, engineSettings.priceCheckIntervalMs);
+-        console.log(`[ENGINE] Intervals restarted: scan=${engineSettings.scanIntervalMs}ms, price=${engineSettings.priceCheckIntervalMs}ms`);
++        log.info(`[ENGINE] Intervals restarted: scan=${engineSettings.scanIntervalMs}ms, price=${engineSettings.priceCheckIntervalMs}ms`);
+       }
+-      console.log(`[SETTINGS] Updated engine settings:`, JSON.stringify(updates));
++      log.info(`[SETTINGS] Updated engine settings`, { updates });
+       res.json(engineSettings);
+-    } catch (e) { console.error(e); res.status(500).json({ message: "Failed to update settings" }); }
++    } catch (e) { log.error("Failed to update settings", { error: String(e) }); res.status(500).json({ message: "Failed to update settings" }); }
+   });
+   app.post("/api/bot/force-sell-all", async (req, res) => {
+     if (!requireAdmin(req, res)) return;
+@@ -3339,16 +3369,16 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
+               tradeStopPrices.delete(trade.id); prevPnlMap.delete(trade.id); pnlStableMap.delete(trade.id);
+               closedCount++; continue;
+             }
+-            const forceLiq = trade.liquidity ? parseInt(trade.liquidity, 10) : 1000;
++            const forceLiq = trade.liquidity ? parseFloat(trade.liquidity) : 1000; // FIX #6: parseInt("12345.67", 10) truncates to 12345 -- use parseFloat for stored toFixed(2) string values
+             const forceCosts = calcTransactionCosts(forceLiq, sizeSol);
+             const forceSlippageBps = Math.min(2000, Math.max(300, Math.round(forceCosts.exitSlippagePct * 2 * 100)));
+             const sellResult = await jupiterService!.sellToken(trade.tokenAddress, tokenAmountRaw, forceSlippageBps);
+-            if (!sellResult.success) { console.warn(`[FORCE] SELL FAILED $${trade.tokenSymbol}: ${sellResult.error} ΓÇö skipping`); continue; }
++            if (!sellResult.success) { log.warn(`[FORCE] SELL FAILED $${trade.tokenSymbol}: ${sellResult.error} " skipping`); continue; }
+             finalPnlPct = sizeSol > 0 ? ((sellResult.solReceived - sizeSol) / sizeSol) * 100 : 0;
+             dailyPnlSol += sellResult.solReceived - sizeSol;
+             liveTokenBalances.delete(trade.id);
+             const closingPriceForSell = currentPrice > 0 ? currentPrice : entryPrice;
+-            console.log(`[FORCE] LIVE sold $${trade.tokenSymbol} | SOL in: ${sizeSol.toFixed(4)} ΓåÆ out: ${sellResult.solReceived.toFixed(4)} | PNL: ${finalPnlPct.toFixed(2)}%`);
++            log.info(`[FORCE] LIVE sold $${trade.tokenSymbol} | SOL in: ${sizeSol.toFixed(4)} ' out: ${sellResult.solReceived.toFixed(4)} | PNL: ${finalPnlPct.toFixed(2)}%`);
+             await storage.closeTrade(trade.id, closingPriceForSell.toString(), finalPnlPct.toFixed(2), "FORCE_SELL");
+           } else {
+             if (currentPrice <= 0) continue;
+@@ -3357,7 +3387,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
+             paperBalance += returnSol; dailyPnlSol += returnSol - sizeSol;
+             if (paperBalance > peakBalance) peakBalance = paperBalance;
+             finalPnlPct = pnlPct;
+-            console.log(`[FORCE] PAPER sold $${trade.tokenSymbol} @ $${currentPrice.toFixed(8)} | PNL: ${pnlPct.toFixed(2)}%`);
++            log.info(`[FORCE] PAPER sold $${trade.tokenSymbol} @ $${currentPrice.toFixed(8)} | PNL: ${pnlPct.toFixed(2)}%`);
+             await storage.closeTrade(trade.id, currentPrice.toString(), finalPnlPct.toFixed(2), "FORCE_SELL");
+           }
+           tradedAddresses.set(trade.tokenAddress, Date.now());
+@@ -3366,11 +3396,13 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
+           closedCount++;
+         } finally { sellingInProgress.delete(trade.id); }
+       }
+-      const newBal = jupiterService ? await jupiterService.getWalletBalance().catch(() => 0) : paperBalance;
++      const status = await storage.getBotStatus();
++      const isLiveForceSell = jupiterService !== null && status.tradingMode === "live";
++      const newBal = isLiveForceSell ? await jupiterService!.getWalletBalance().catch(() => 0) : paperBalance;
+       const openNow = (await storage.getOpenTrades()).length;
+       await storage.updateBotStats({ walletBalance: newBal.toFixed(4), openPositions: openNow, lastSignal: `Force sold ${closedCount} positions` });
+       res.json({ success: true, closedCount, newBalance: newBal.toFixed(4) });
+-    } catch (e) { console.error(e); res.status(500).json({ success: false, error: "Failed to force sell" }); }
++    } catch (e) { log.error("Failed to force sell", { error: String(e) }); res.status(500).json({ success: false, error: "Failed to force sell" }); }
+   });
+   app.post("/api/bot/reset-balance", async (req, res) => {
+     if (!requireAdmin(req, res)) return;
+@@ -3389,7 +3421,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
+       }
+       // FIX: gate on actual tradingMode from DB, not just key presence.
+       // If WALLET_PRIVATE_KEY is set but the UI is in paper mode, jupiterService
+-      // is non-null but isLiveReset was true ΓÇö causing the reset to read the
++      // is non-null but isLiveReset was true " causing the reset to read the
+       // on-chain wallet balance (possibly 0 SOL) and persist "0.0000" to the DB,
+       // wiping the paper baseline even though no live trading was happening.
+       const resetStatus = await storage.getBotStatus();
+@@ -3414,15 +3446,15 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
+       priceSanityWarnOnce.clear();     // FIX: warn-once guard reset on balance reset
+       rugcheckBlockedAddresses.clear(); // FIX: clear rugcheck 30-min block cache on reset
+       // In paper mode always display startingBalance regardless of any live wallet
+-      // value ΓÇö the two are independent and confusing them caused the UI to show
++      // value " the two are independent and confusing them caused the UI to show
+       // "0.0000 SOL" after a paper reset when a live key was configured.
+       const displayBalance = isLiveReset
+         ? liveWalletBal.toFixed(4)
+         : engineSettings.startingBalance.toFixed(4);
+       await storage.updateBotStats({ walletBalance: displayBalance, totalPnl: "0", openPositions: 0, lastSignal: `Balance reset to ${displayBalance} SOL`, peakBalance: resetBaseline.toFixed(4), lastLossCooldownEnd: 0, dailyStartBalance: resetBaseline.toFixed(4) });
+-      console.log(`[ENGINE] Reset complete | mode: ${isLiveReset ? "LIVE" : "paper"} | peak/baseline set to ${resetBaseline.toFixed(4)} SOL`);
++      log.info(`[ENGINE] Reset complete | mode: ${isLiveReset ? "LIVE" : "paper"} | peak/baseline set to ${resetBaseline.toFixed(4)} SOL`);
+       res.json({ success: true, newBalance: displayBalance, peakBalance: resetBaseline.toFixed(4) });
+-    } catch (e) { console.error(e); res.status(500).json({ success: false, error: "Failed to reset" }); }
++    } catch (e) { log.error("Failed to reset", { error: String(e) }); res.status(500).json({ success: false, error: "Failed to reset" }); }
+   });
+   app.post("/api/bot/trading-mode", async (req, res) => {
+     if (!requireAdmin(req, res)) return;
+@@ -3430,7 +3462,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
+     if (!mode || !["paper", "live"].includes(mode)) return res.status(400).json({ message: "Invalid trading mode. Use 'paper' or 'live'." });
+     if (mode === "live" && !confirmed) return res.status(400).json({ message: "Live trading requires explicit confirmation. Set confirmed: true." });
+     // Reset streak counters when switching to live mode.
+-    // Paper losses carry different risk characteristics than live losses ΓÇö a paper
++    // Paper losses carry different risk characteristics than live losses " a paper
+     // streak of 2 losses should not raise the live score gate by +6 points before
+     // the first live trade fires. Each mode switch is a clean execution context.
+     if (mode === "live") {
+@@ -3439,14 +3471,14 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
+       lastMiniCooldownEnd = 0;
+       // FIX CIRCUIT-BREAKER: reset ALL session state when switching to live.
+       // Previous bug: (1) paper peakBalance (e.g. 0.093 SOL) stayed as drawdown
+-      // baseline ΓåÆ instant 55% drawdown ΓåÆ circuit breaker tripped before trade #1.
+-      // (2) dailyPnlSol was never zeroed ΓåÆ paper losses counted against live daily
++      // baseline ' instant 55% drawdown ' circuit breaker tripped before trade #1.
++      // (2) dailyPnlSol was never zeroed ' paper losses counted against live daily
+       // limit. (3) liveWalletBal === 0 on RPC timeout silently skipped the reset.
+       circuitBreakerActive = false;
+       dailyPnlSol = 0; // FIX: zero paper P&L so it doesn't pollute live daily loss calc
+       let liveWalletBal = 0;
+       if (jupiterService) {
+-        // Retry up to 3 times ΓÇö first call can return 0 on RPC cold-start.
++        // Retry up to 3 times " first call can return 0 on RPC cold-start.
+         for (let attempt = 0; attempt < 3 && liveWalletBal <= 0; attempt++) {
+           liveWalletBal = await jupiterService.getWalletBalance().catch(() => 0);
+           if (liveWalletBal <= 0 && attempt < 2) await new Promise(r => setTimeout(r, 800));
+@@ -3455,21 +3487,21 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
+       if (liveWalletBal > 0) {
+         peakBalance = liveWalletBal;
+         dailyStartBalance = liveWalletBal;
+-        console.log(`[ENGINE] Switched to LIVE mode ΓÇö peakBalance + dailyStartBalance reset to ${liveWalletBal.toFixed(4)} SOL (live wallet)`);
++        log.info(`[ENGINE] Switched to LIVE mode " peakBalance + dailyStartBalance reset to ${liveWalletBal.toFixed(4)} SOL (live wallet)`);
+       } else {
+-        // Hard fallback: RPC unavailable ΓÇö keep circuitBreakerActive = false but
++        // Hard fallback: RPC unavailable " keep circuitBreakerActive = false but
+         // set peakBalance to a safe floor of MIN_FEE_BUFFER_SOL so drawdownPct
+-        // starts at 0% instead of (paper_peak - 0) / paper_peak Γëê 100%.
++        // starts at 0% instead of (paper_peak - 0) / paper_peak  100%.
+         // The first successful getEffectiveBalance() call in checkCircuitBreakers()
+         // will immediately raise peakBalance to the real wallet balance.
+         peakBalance = MIN_FEE_BUFFER_SOL;
+         dailyStartBalance = MIN_FEE_BUFFER_SOL;
+-        console.warn(`[ENGINE] Switched to LIVE mode ΓÇö RPC returned 0 after 3 retries. peakBalance set to floor ${MIN_FEE_BUFFER_SOL} SOL. Will self-correct on first circuit-breaker check.`);
++        log.warn(`[ENGINE] Switched to LIVE mode " RPC returned 0 after 3 retries. peakBalance set to floor ${MIN_FEE_BUFFER_SOL} SOL. Will self-correct on first circuit-breaker check.`);
+       }
+       // Sync the new peak to DB immediately so the UI reflects the correct
+       // drawdown from the very first scan cycle (not the stale paper value).
+       storage.updateBotStats({ peakBalance: peakBalance.toFixed(4), dailyStartBalance: dailyStartBalance.toFixed(4) }).catch(() => {});
+-      console.log("[ENGINE] Switched to LIVE mode ΓÇö streak counters + circuit breaker + dailyPnlSol reset");
++  log.info("[ENGINE] Switched to LIVE mode -- streak counters + circuit breaker + dailyPnlSol reset");
+     }
+     res.json(await storage.updateTradingMode(mode));
+   });
+@@ -3490,11 +3522,11 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
+ 	  if (!requireAdmin(req, res)) return;
+ 	  consecutiveLosses = 0;
+ 	  consecutiveWins = 0;
+-	  console.log("[ENGINE] Streak manually reset ΓÇö consecutiveLosses=0");
++  log.info("[ENGINE] Streak manually reset -- consecutiveLosses=0");
+ 	  res.json({ success: true });
+ 	});
+   app.get("/api/wallet", async (_req, res) => {
+-    if (!jupiterService) return res.json({ connected: false, address: null, balanceSol: null, liveTradesActive: 0, message: "WALLET_PRIVATE_KEY not set ΓÇö live trading disabled" });
++    if (!jupiterService) return res.json({ connected: false, address: null, balanceSol: null, liveTradesActive: 0, message: "WALLET_PRIVATE_KEY not set  -- live trading disabled" });
+     try {
+       const [balanceSol, openTrades] = await Promise.all([jupiterService.getWalletBalance(), storage.getOpenTrades()]);
+       const liveOpen = (openTrades as any[]).filter(t => t.tradingMode === "live");
+@@ -3504,7 +3536,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
+   });
+   app.post("/api/bot/fix-desync", async (req, res) => {
+     if (!requireAdmin(req, res)) return;
+-    if (!jupiterService) return res.status(400).json({ error: "Live mode not active ΓÇö WALLET_PRIVATE_KEY not set" });
++    if (!jupiterService) return res.status(400).json({ error: "Live mode not active -- WALLET_PRIVATE_KEY not set" });
+     const openTrades = await storage.getOpenTrades();
+     let fixed = 0, recovered = 0;
+     const liveTradesToFix = openTrades.filter((t: any) => t.tradingMode === "live");
+@@ -3524,16 +3556,17 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
+           tradeStopPrices.delete(trade.id); prevPnlMap.delete(trade.id); pnlStableMap.delete(trade.id);
+           tradedAddresses.set(trade.tokenAddress, Date.now());
+           fixed++;
+-          console.log(`[DESYNC_FIX] Closed desynced trade #${trade.id} $${trade.tokenSymbol} ΓÇö no on-chain balance`);
+-        } else { liveTokenBalances.set(trade.id, onChainBalance); recovered++; console.log(`[DESYNC_FIX] Recovered balance for #${trade.id} $${trade.tokenSymbol}: ${onChainBalance} raw units`); }
+-      } catch (err: any) { console.warn(`[DESYNC_FIX] Error for #${trade.id} $${trade.tokenSymbol}: ${err.message}`); }
++          log.info(`[DESYNC_FIX] Closed desynced trade #${trade.id} $${trade.tokenSymbol} " no on-chain balance`);
++        } else { liveTokenBalances.set(trade.id, onChainBalance); recovered++; log.info(`[DESYNC_FIX] Recovered balance for #${trade.id} $${trade.tokenSymbol}: ${onChainBalance} raw units`); }
++      } catch (err: any) { log.warn(`[DESYNC_FIX] Error for #${trade.id} $${trade.tokenSymbol}: ${err.message}`); }
+       finally { if (timerId !== undefined) clearTimeout(timerId); }
+     }
+     const newBal = await jupiterService.getWalletBalance().catch(() => 0);
+     const openNow = (await storage.getOpenTrades()).length;
+     await storage.updateBotStats({ walletBalance: newBal.toFixed(4), openPositions: openNow });
+-    console.log(`[DESYNC_FIX] Done ΓÇö closed ${fixed}, recovered ${recovered}. Wallet: ${newBal.toFixed(4)} SOL`);
++    log.info(`[DESYNC_FIX] Done " closed ${fixed}, recovered ${recovered}. Wallet: ${newBal.toFixed(4)} SOL`);
+     res.json({ success: true, fixedCount: fixed, recoveredCount: recovered, newWalletBalance: newBal.toFixed(4), openPositionsRemaining: openNow });
+   });
+   return httpServer;
+-}
+\ No newline at end of file
++}
++

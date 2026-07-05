@@ -1,0 +1,422 @@
+﻿diff --git a/crypto-trader-v1_1/server/jupiter.ts b/crypto-trader-v1_1/server/jupiter.ts
+index fce1046..5c98ef7 100644
+--- a/crypto-trader-v1_1/server/jupiter.ts
++++ b/crypto-trader-v1_1/server/jupiter.ts
+@@ -68,10 +68,22 @@ export class RpcRotator {
+     }
+   }
+ 
++  /** Force-mark a specific endpoint unhealthy by its index */
++  markUnhealthyByIndex(idx: number) {
++    const node = this.endpoints[idx];
++    if (node) {
++      node.healthy = false;
++      node.restoredAt = Date.now() + RPC_BLACKLIST_MS;
++      setTimeout(() => { node.healthy = true; }, RPC_BLACKLIST_MS);
++    }
++  }
++
+   /** Force-mark the current endpoint unhealthy so the next call rotates away from it */
+   markCurrentUnhealthy() {
++    // Use the previous index (currentIndex was already incremented by exec/connection)
+     const healthyNodes = this.endpoints.filter(e => e.healthy);
+-    const node = healthyNodes[this.currentIndex % healthyNodes.length] || this.endpoints[0];
++    const prevIdx = (this.currentIndex - 1 + healthyNodes.length) % healthyNodes.length;
++    const node = healthyNodes[prevIdx] || this.endpoints[0];
+     if (node) {
+       node.healthy = false;
+       node.restoredAt = Date.now() + RPC_BLACKLIST_MS;
+@@ -80,33 +92,60 @@ export class RpcRotator {
+   }
+ 
+   async exec<T>(name: string, fn: (c: Connection) => Promise<T>, timeoutMs: number): Promise<T> {
+-    const healthyNodes = this.endpoints.filter(e => e.healthy);
+-    const node = healthyNodes[this.currentIndex % healthyNodes.length] || this.endpoints[0];
+-    this.currentIndex++;
+-    const conn = new Connection(node.url, "confirmed");
+-    try {
+-      return await Promise.race([fn(conn), new Promise<never>((_, r) => setTimeout(() => r(new Error("RPC_TIMEOUT")), timeoutMs * 2.0))]) as T;
+-    } catch (e: any) {
+-      // Blacklist on timeout, server errors, rate limits, AND network failures
+-      if (e.message.includes("TIMEOUT") || e.message.includes("503") || e.message.includes("429") ||
+-          e.message.includes("fetch failed") || e.message.includes("ECONNRESET") ||
+-          e.message.includes("socket hang up") || e.message.includes("ETIMEDOUT") ||
+-          e.message.includes("ENOTFOUND")) {
+-        node.healthy = false;
+-        node.restoredAt = Date.now() + RPC_BLACKLIST_MS;
+-        setTimeout(() => { node.healthy = true; }, RPC_BLACKLIST_MS);
++    // ISSUE #12 FIX: Retry up to 3 different nodes instead of failing on the first
++    const maxExecRetries = 3;
++    let lastExecErr: any;
++    for (let attempt = 0; attempt < maxExecRetries; attempt++) {
++      const healthyNodes = this.endpoints.filter(e => e.healthy);
++      const node = healthyNodes[this.currentIndex % healthyNodes.length] || this.endpoints[0];
++      this.currentIndex++;
++      // ISSUE #11 FIX: Reuse cached Connection objects
++      const url = node?.url || "https://api.mainnet-beta.solana.com";
++      let conn = this.connectionCache.get(url);
++      if (!conn) {
++        conn = new Connection(url, "confirmed");
++        this.connectionCache.set(url, conn);
++      }
++      try {
++        // ISSUE #17 FIX: Removed the hidden 2x multiplier ΓÇö timeout is now exactly what the caller specifies
++        return await Promise.race([fn(conn), new Promise<never>((_, r) => setTimeout(() => r(new Error("RPC_TIMEOUT")), timeoutMs))]) as T;
++      } catch (e: any) {
++        lastExecErr = e;
++        // Blacklist on timeout, server errors, rate limits, AND network failures
++        if (e.message.includes("TIMEOUT") || e.message.includes("503") || e.message.includes("429") ||
++            e.message.includes("fetch failed") || e.message.includes("ECONNRESET") ||
++            e.message.includes("socket hang up") || e.message.includes("ETIMEDOUT") ||
++            e.message.includes("ENOTFOUND")) {
++          node.healthy = false;
++          node.restoredAt = Date.now() + RPC_BLACKLIST_MS;
++          setTimeout(() => { node.healthy = true; }, RPC_BLACKLIST_MS);
++          // Retry on next healthy node
++          if (attempt < maxExecRetries - 1) {
++            await new Promise(r => setTimeout(r, 200));
++            continue;
++          }
++        }
++        // Non-retryable errors (like "could not find") break immediately
++        throw e;
+       }
+-      throw e;
+     }
++    throw lastExecErr || new Error("RPC_TIMEOUT: All exec retries failed");
+   }
+ 
+   /** Returns a round-robin rotated connection to distribute load across API keys and avoid timeouts */
++  private connectionCache = new Map<string, Connection>();
++
+   get connection(): Connection {
+     const healthyNodes = this.endpoints.filter(e => e.healthy);
+     const node = healthyNodes[this.currentIndex % healthyNodes.length] || this.endpoints[0];
+     this.currentIndex++;
+     const url = node?.url || "https://api.mainnet-beta.solana.com";
+-    return new Connection(url, "confirmed");
++    let conn = this.connectionCache.get(url);
++    if (!conn) {
++      conn = new Connection(url, "confirmed");
++      this.connectionCache.set(url, conn);
++    }
++    return conn;
+   }
+ 
+   private async runHealthChecks() {
+@@ -161,11 +200,13 @@ function recordLatency(rec: LatencyRecord): void {
+   );
+ }
+ 
+-const JUPITER_QUOTE_URL = "https://lite-api.jup.ag/swap/v1/quote";
+-const JUPITER_SWAP_URL  = "https://lite-api.jup.ag/swap/v1/swap";
++const JUPITER_API_KEY = process.env.JUPITER_API_KEY?.trim() || "";
++const JUPITER_QUOTE_URL = JUPITER_API_KEY ? "https://quote-api.jup.ag/v6/quote" : "https://lite-api.jup.ag/swap/v1/quote";
++const JUPITER_SWAP_URL  = JUPITER_API_KEY ? "https://quote-api.jup.ag/v6/swap" : "https://lite-api.jup.ag/swap/v1/swap";
++const getJupiterHeaders = (): Record<string, string> => JUPITER_API_KEY ? { "x-api-key": JUPITER_API_KEY } : {};
+ 
+-const CONFIRM_TIMEOUT_MS = 60_000;
+-const POST_BUY_POLL_TIMEOUT_MS        = 20_000;
++const CONFIRM_TIMEOUT_MS = 30_000;  // ISSUE #16 FIX: Reduced from 60s ΓÇö if not confirmed in 30s, let ghost-trade recovery handle it
++const POST_BUY_POLL_TIMEOUT_MS        = 30_000;  // BUG #5 FIX: Extended from 20s to 30s for RPC lag resilience
+ const POST_BUY_STABLE_READS_REQUIRED  = 2;
+ 
+ // -- Rate limiter -------------------------------------------------------------
+@@ -221,6 +262,7 @@ export class JupiterService {
+   private readonly priorityFeeLamports: number;
+   private readonly jitoTipLamports: number;
+   private readonly jitoEngineUrl: string | null;
++  private readonly jitoEngineBackupUrl: string | null;
+   private executedTransactions = new Set<string>();
+ 
+   constructor(
+@@ -229,6 +271,7 @@ export class JupiterService {
+     priorityFeeLamports = 10_000,
+     jitoTipLamports = 0,
+     jitoEngineUrl: string | null = null,
++    jitoEngineBackupUrl: string | null = null,
+     fullUrls?: (string | undefined)[],
+   ) {
+     this.rpc = new RpcRotator();
+@@ -242,6 +285,7 @@ export class JupiterService {
+     this.priorityFeeLamports = priorityFeeLamports;
+     this.jitoTipLamports = jitoTipLamports;
+     this.jitoEngineUrl = jitoEngineUrl;
++    this.jitoEngineBackupUrl = jitoEngineBackupUrl;
+   }
+ 
+   get walletAddress(): string { return this.keypair.publicKey.toBase58(); }
+@@ -289,7 +333,7 @@ export class JupiterService {
+   }
+ 
+  
+-  /** Fast token balance read with 3s timeout. Supports SPL and Token-2022 */
++  /** Fast token balance read with 5s timeout. Supports SPL and Token-2022 */
+   async getTokenBalance(tokenMint: string): Promise<bigint> {
+     const mintPubkey = new PublicKey(tokenMint);
+ 
+@@ -316,13 +360,19 @@ export class JupiterService {
+       }
+     };
+ 
+-    try {
+-      const val = await this.rpc.exec("getTokenBalance", fetchBalance, 3_000);
+-      return val === BigInt(-1) ? BigInt(0) : val;
+-    } catch (err: any) {
+-      // Network error - throw it to trigger 'retaining cached balance'
+-      throw err;
++    // ISSUE #18 FIX: 2-retry loop with rotation on RPC failure (matching getWalletBalance pattern)
++    let lastError: Error | null = null;
++    for (let i = 0; i < 2; i++) {
++      try {
++        const val = await this.rpc.exec("getTokenBalance", fetchBalance, 5_000);
++        return val === BigInt(-1) ? BigInt(0) : val;
++      } catch (err: any) {
++        lastError = err;
++        this.rpc.markCurrentUnhealthy();
++        if (i < 1) await new Promise(r => setTimeout(r, 300));
++      }
+     }
++    throw lastError || new Error("getTokenBalance: All retries failed");
+   }
+ 
+   private async fetchQuoteWithRetry(
+@@ -347,7 +397,7 @@ export class JupiterService {
+           url.searchParams.set("swapMode", "ExactIn");
+           const resp = await fetch(url.toString(), {
+             method: "GET",
+-            headers: { "Accept": "application/json", "User-Agent": "Mozilla/5.0" },
++            headers: { "Accept": "application/json", "User-Agent": "Mozilla/5.0", ...getJupiterHeaders() },
+             signal: AbortSignal.timeout(15_000), // Increase timeout to 15s to handle high-latency RPCs
+           });
+ 
+@@ -448,7 +498,7 @@ export class JupiterService {
+         await jupiterRateGate();
+         const swapResp = await fetch(JUPITER_SWAP_URL, {
+           method: "POST",
+-          headers: { "Content-Type": "application/json" },
++          headers: { "Content-Type": "application/json", ...getJupiterHeaders() },
+           body: JSON.stringify(swapBody),
+           signal: AbortSignal.timeout(10_000),
+         });
+@@ -481,6 +531,9 @@ export class JupiterService {
+         // We track the swap signature to confirm the actual trade on-chain
+         sig = bs58.encode(tx.signatures[0]);
+ 
++        // BUG #4 FIX: Check for duplicate BEFORE sending to prevent double-broadcast
++        if (this.executedTransactions.has(sig)) throw new Error(`Duplicate tx: ${sig}`);
++
+         if (usingJito && this.jitoEngineUrl) {
+           try {
+             // 1. Pick a random Jito Tip Account
+@@ -518,20 +571,29 @@ export class JupiterService {
+             
+             // Auto-convert your /transactions endpoint URL to the /bundles endpoint
+             const bundleUrl = this.jitoEngineUrl.replace("/transactions", "/bundles");
+-
+-            txSendWallMs = Date.now();
+-            const jitoRes = await fetch(bundleUrl, {
++            
++            const sendJito = async (bUrl: string) => fetch(bUrl, {
+               method: "POST",
+               headers: { "Content-Type": "application/json" },
+-              body: JSON.stringify({
+-                jsonrpc: "2.0",
+-                id: 1,
+-                method: "sendBundle",
+-                params: [[encodedSwapTx, encodedTipTx]]
+-              }),
++              body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "sendBundle", params: [[encodedSwapTx, encodedTipTx]] }),
+               signal: AbortSignal.timeout(10_000),
+             });
+ 
++            txSendWallMs = Date.now();
++            let jitoRes: any;
++            let jitoHttpErr: any;
++            
++            try { jitoRes = await sendJito(bundleUrl); }
++            catch (e) { jitoHttpErr = e; }
++            
++            if ((!jitoRes || !jitoRes.ok) && this.jitoEngineBackupUrl) {
++                log.warn(`[JUPITER] Primary Jito failed, trying backup: ${this.jitoEngineBackupUrl}`);
++                const backupBundleUrl = this.jitoEngineBackupUrl.replace("/transactions", "/bundles");
++                jitoRes = await sendJito(backupBundleUrl);
++            } else if (!jitoRes) {
++                throw jitoHttpErr;
++            }
++
+             if (!jitoRes.ok) throw new Error(`Jito HTTP ${jitoRes.status}`);
+             const jitoData = await jitoRes.json() as any;
+             if (jitoData.error) throw new Error(`Jito rejected: ${JSON.stringify(jitoData.error)}`);
+@@ -539,12 +601,17 @@ export class JupiterService {
+             log.info(`[JUPITER] MEV Bundle Sent via Jito | Swap Sig: ${sig.slice(0, 20)}...`);
+             
+           } catch (jitoErr: any) {
+-            log.warn(`[JUPITER] Jito bundle failed: ${jitoErr.message} -- falling back to public RPC`);
+-            txSendWallMs = Date.now();
+-            await Promise.race([
+-              txConn.sendRawTransaction(serializedTx, { skipPreflight: false, maxRetries: 0, preflightCommitment: "confirmed" }),
+-              new Promise<never>((_, reject) => setTimeout(() => reject(new Error("sendRawTransaction timeout")), 15_000))
+-            ]);
++            // BUG #2 FIX: If we already sent a tx in a previous iteration, do NOT re-send via public RPC
++            if (landedSig) {
++              log.warn(`[JUPITER] Jito bundle failed but landedSig exists from prior attempt -- skipping public RPC fallback to prevent double-spend`);
++            } else {
++              log.warn(`[JUPITER] Jito bundle failed: ${jitoErr.message} -- falling back to public RPC`);
++              txSendWallMs = Date.now();
++              await Promise.race([
++                txConn.sendRawTransaction(serializedTx, { skipPreflight: false, maxRetries: 0, preflightCommitment: "confirmed" }),
++                new Promise<never>((_, reject) => setTimeout(() => reject(new Error("sendRawTransaction timeout")), 15_000))
++              ]);
++            }
+           }
+         } else {
+           // Standard public send if Jito is disabled
+@@ -555,7 +622,6 @@ export class JupiterService {
+           ]);
+         }
+ 
+-        if (this.executedTransactions.has(sig)) throw new Error(`Duplicate tx: ${sig}`);
+         landedSig = sig;
+ 
+         // Confirm on the SAME connection that sent it -- never rotate during confirmation
+@@ -612,7 +678,7 @@ export class JupiterService {
+         log.warn(`[JUPITER] Swap attempt ${i + 1}/${maxRetries} failed: ${err.message}`);
+         if (landedSig) {
+           try {
+-            const status = await this.rpc.exec("getSignatureStatus", c => c.getSignatureStatus(landedSig!, { searchTransactionHistory: false }), 3_000) as any;
++            const status = await this.rpc.exec("getSignatureStatus", c => c.getSignatureStatus(landedSig!, { searchTransactionHistory: true }), 5_000) as any;
+             if (status?.value && !status.value.err) {
+               log.info(`[JUPITER] TX landed despite error`);
+               const txDetails = await this.rpc.exec("getTransaction", c => c.getTransaction(landedSig!, { maxSupportedTransactionVersion: 0 }), 10_000);
+@@ -643,7 +709,9 @@ export class JupiterService {
+       slippageBps, priceImpactPct: parseFloat(quote.priceImpactPct ?? "0"), retryCount, success: false,
+       error: lastError?.message ?? "unknown",
+     });
+-    throw new Error(`Swap failed after ${maxRetries}: ${lastError?.message ?? "unknown"}`);
++    const finalErr: any = new Error(`Swap failed after ${maxRetries}: ${lastError?.message ?? "unknown"}`);
++    finalErr.signature = landedSig;
++    throw finalErr;
+   }
+ 
+   async preflightQuote(inputMint: string, outputMint: string, amountRaw: number, slippageBps: number): Promise<PreflightResult | null> {
+@@ -690,10 +758,19 @@ export class JupiterService {
+ 
+       if (!quote.routePlan || quote.routePlan.length === 0) throw new Error("No routePlan");
+ 
+-      const { signature: txSignature, postSwapBalances } = await this.buildAndSendWithRetry(
+-        quote, 2, maxImpactPct, slippageBps,
+-        () => this.fetchQuoteWithRetry(SOL_MINT, tokenMint, lamports, [slippageBps, Math.max(slippageBps, Math.min(slippageBps * 2, 1000))])
+-      );
++      let txSignature: string | null = null;
++      let postSwapBalances: any[] = [];
++      try {
++        const res = await this.buildAndSendWithRetry(
++          quote, 2, maxImpactPct, slippageBps,
++          () => this.fetchQuoteWithRetry(SOL_MINT, tokenMint, lamports, [slippageBps, Math.max(slippageBps, Math.min(slippageBps * 2, 1000))])
++        );
++        txSignature = res.signature;
++        postSwapBalances = res.postSwapBalances;
++      } catch (sendErr: any) {
++        log.warn(`[JUPITER] buildAndSend threw: ${sendErr.message}. Forcing balance verification to prevent ghost trade...`);
++        txSignature = sendErr.signature || "unknown_sig_ghost_recovery";
++      }
+ 
+       let finalTokenBal = BigInt(0);
+       for (const bal of postSwapBalances) {
+@@ -704,7 +781,14 @@ export class JupiterService {
+         const POLL_START = Date.now();
+         while (Date.now() - POLL_START < POST_BUY_POLL_TIMEOUT_MS) {
+           await new Promise(r => setTimeout(r, 500));
+-          const tokenBal = await this.getTokenBalance(tokenMint);
++          // BUG #5 FIX: Catch timeout errors inside the loop so a single RPC timeout doesn't waste 3s+
++          let tokenBal: bigint;
++          try {
++            tokenBal = await this.getTokenBalance(tokenMint);
++          } catch (pollErr: any) {
++            log.warn(`[JUPITER] Post-buy token poll error (continuing): ${pollErr.message}`);
++            continue; // Skip this iteration, try again
++          }
+           if (tokenBal > tokenBalBefore) {
+             if (tokenBal === lastTokenBal) {
+               stableReads++;
+@@ -719,7 +803,21 @@ export class JupiterService {
+       const safeTokenAmountRaw = tokenAmountRaw < BigInt(0) ? finalTokenBal : tokenAmountRaw;
+       const finalSolBal = await this.getWalletBalance();
+       let actualSolSpent = solBalBefore - finalSolBal;
+-      if (actualSolSpent <= 0) actualSolSpent = amountSol + 0.005;
++      // BUG #6 FIX: If negative/zero, retry on a rotated RPC node before fabricating
++      if (actualSolSpent <= 0) {
++        log.warn(`[JUPITER] actualSolSpent=${actualSolSpent.toFixed(6)} -- retrying balance on different RPC node`);
++        this.rpc.markCurrentUnhealthy(); // Force rotation
++        await new Promise(r => setTimeout(r, 1000));
++        const retriedBal = await this.getWalletBalance().catch(() => -1);
++        if (retriedBal >= 0) {
++          actualSolSpent = solBalBefore - retriedBal;
++        }
++        // If still bad after retry, use conservative estimate
++        if (actualSolSpent <= 0) {
++          log.error(`[JUPITER] actualSolSpent still ${actualSolSpent.toFixed(6)} after retry -- using estimate`);
++          actualSolSpent = amountSol + 0.005;
++        }
++      }
+ 
+       const expectedOut = BigInt(quote.outAmount);
+       if (safeTokenAmountRaw < expectedOut * 70n / 100n) {
+@@ -756,13 +854,20 @@ export class JupiterService {
+       if (impactPct > 30) log.warn(`[JUPITER] SELL high impact ${impactPct.toFixed(2)}%`);
+ 
+       const solBefore = await this.getWalletBalance();
+-      const { signature: txSignature } = await this.buildAndSendWithRetry(
+-        quote, 2, 99, slippageBps,
+-        () => this.fetchQuoteWithRetry(tokenMint, SOL_MINT, sellAmount.toString(), [
+-          Math.max(slippageBps, Math.min(slippageBps * 2, 2000)),
+-          Math.max(slippageBps, Math.min(slippageBps * 4, 3000)),
+-        ])
+-      );
++      let txSignature: string | null = null;
++      try {
++        const res = await this.buildAndSendWithRetry(
++          quote, 2, 99, slippageBps,
++          () => this.fetchQuoteWithRetry(tokenMint, SOL_MINT, sellAmount.toString(), [
++            Math.max(slippageBps, Math.min(slippageBps * 2, 2000)),
++            Math.max(slippageBps, Math.min(slippageBps * 4, 3000)),
++          ])
++        );
++        txSignature = res.signature;
++      } catch (sendErr: any) {
++        log.warn(`[JUPITER] sell buildAndSend threw: ${sendErr.message}. Checking balance anyway...`);
++        txSignature = sendErr.signature || "unknown_sig_ghost_recovery";
++      }
+ 
+       let solAfter = solBefore;
+       for (let i = 0; i < 30; i++) {
+@@ -788,6 +893,11 @@ export class JupiterService {
+       }
+ 
+       const feesSol = 0.000005 + (this.priorityFeeLamports / 1e9) + (this.jitoTipLamports / 1e9);
++      // BUG #7 FIX: If solReceived is 0, return success:false so the trade stays open for retry
++      if (solReceived === 0) {
++        log.error(`[JUPITER] SELL completed but solReceived=0 -- returning failure to keep trade open for retry`);
++        return { success: false, txSignature, solReceived: 0, feesSol, error: "Sell confirmed but received 0 SOL -- RPC desync suspected" };
++      }
+       log.info(`[JUPITER] SELL OK | sig:${txSignature?.slice(0,20)} | SOL:${solReceived.toFixed(6)} | fees:${feesSol.toFixed(6)}`);
+       return { success: true, txSignature, solReceived, feesSol };
+     } catch (e: any) {
+@@ -934,6 +1044,7 @@ export function createJupiterService(): JupiterService | null {
+   if (urls.length === 0) urls.push({ base: "https://api.mainnet-beta.solana.com" });
+ 
+   const jitoEngineUrl = process.env.JITO_ENGINE_URL?.trim() || null;
++  const jitoEngineBackupUrl = process.env.JITO_ENGINE_BACKUP_URL?.trim() || null;
+   const DEFAULT_JITO_TIP = jitoEngineUrl ? 30_000 : 0;
+   const rawJitoTip = parseInt(process.env.JITO_TIP_LAMPORTS ?? String(DEFAULT_JITO_TIP), 10);
+   const jitoTipLamports = isNaN(rawJitoTip) ? DEFAULT_JITO_TIP : rawJitoTip;
+@@ -943,7 +1054,7 @@ export function createJupiterService(): JupiterService | null {
+   const priorityFeeLamports = isNaN(rawPriorityFee) ? DEFAULT_PRIORITY_FEE : rawPriorityFee;
+ 
+   try {
+-    const svc = new JupiterService(urls.map(u => u.base), pk, priorityFeeLamports, jitoTipLamports, jitoEngineUrl, urls.map(u => u.full));
++    const svc = new JupiterService(urls.map(u => u.base), pk, priorityFeeLamports, jitoTipLamports, jitoEngineUrl, jitoEngineBackupUrl, urls.map(u => u.full));
+     log.info(`[JUPITER] Init | wallet:${svc.walletAddress} | endpoints:${urls.length}`);
+     return svc;
+   } catch (e: any) {

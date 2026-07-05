@@ -1,0 +1,7 @@
+- [x] `spec.md` defines the exact full-engine startup objective and scope
+- [x] `tasks.md` includes the build step and all three runtime processes
+- [x] The validation flow checks ML server startup
+- [x] The validation flow checks fast scanner startup
+- [x] The validation flow checks TypeScript server startup
+- [x] The validation flow captures blocking runtime failures per process
+- [x] The spec stays minimal and does not include unrelated feature work

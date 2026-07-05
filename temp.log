@@ -1,0 +1,108 @@
+The file is uploaded. Let me read it in full — every line — starting with structure, then exhaustive passes.
+
+The file compiles clean. Now let me read it in full — every line — in sequential passes. This is the execution layer (real swaps, real SOL), so I'll read all 1048 lines.
+
+I have the first ~560 lines. Let me read the remaining lines (560–1048) to complete the full pass, then deliver the audit.
+
+I've now read all 1048 lines of `jupiter.ts` end to end. The file **transpiles clean** (esbuild OK, 38.7 kb, no syntax errors). Below is the complete, precise audit — organized by severity, with exact line references and the failure permutation for each.
+
+---
+
+## 🔴 CRITICAL — can cause real SOL loss
+
+**C1. `sweepEmptyAccounts()` can BURN a live position — irreversible (L920–1005, filter at L937).**
+
+The janitor fetches every SPL + Token‑2022 account and targets any with `uiAmount < 0.01`, then **burns the raw balance** (`createBurnInstruction`, L976) and closes the account. The comment at L937 notes the filter was previously `return true` (burned everything). It's safer now, but the guard is purely `uiAmount < 0.01`:
+
+- It does **not** cross‑check the bot's open-positions ledger.
+- A genuine live micro‑position whose UI amount reads `< 0.01` (high‑decimals token, RPC returning `uiAmount: null→0`, or a partially-filled buy) will be **burned to zero = total loss**, and burn is irreversible.
+- It runs on startup (5s warmup, L922). If a position is open when the engine restarts, it's a live hazard.
+- **Fix needed:** pass the set of open-position mints and exclude them; treat `uiAmount === null` as "skip", never burn; require `rawAmount` below a hard dust ceiling, not just UI < 0.01.
+
+**C2. Double‑buy window when `sendRawTransaction` times out (L600–607, retry loop L532+, refresh L538).**
+
+`landedSig = sig` is set **only after** the send `Promise.race` resolves (L609). If `sendRawTransaction` rejects via the 15s timeout *while the tx actually propagated to the network*, `landedSig` stays null → the catch block skips the `getSignatureStatus` safety check (L662, gated on `if (landedSig)`) → the loop retries. On retry with `quoteRefresher`, you get a **fresh quote → fresh blockhash → fresh signature**, so Solana's signature‑dedup no longer protects you. Result: the timed‑out buy lands *and* the retry lands = **double position, double SOL spent.**
+
+- Same‑sig retries (no refresh) are safe (network dedups identical signatures). The danger is specifically the refresh-on-retry path combined with a send that threw rather than returned.
+- **Fix:** set `landedSig = sig` *before* the send race (treat "sent" as "possibly landed"), so the status‑check guard always runs before any re‑broadcast.
+
+**C3. Sells accept up to 99% price impact (L841: `buildAndSendWithRetry(quote, 2, 99, …)`).**
+
+The sell path passes `maxImpactPct = 99`, so the impact gate at L445 is effectively disabled for exits. Intentional ("exit at any cost"), but the permutation that goes wrong: on a rug/honeypot/near‑zero‑liquidity book, the sell executes and returns **dust**, booking a ~100% loss that a sane impact cap would have surfaced as "no viable exit." Consider a two‑tier cap (e.g., 40% normal, 99% only after N failed attempts or a hard stop‑loss flag).
+
+---
+
+## 🟠 HIGH — correctness / accounting / stuck-state
+
+**H1. Stuck "open" position after a successful-but-undetected sell (L860–884).**
+
+`sellToken` polls 15s (30×500ms) for the SOL balance to rise. If the sell lands but the balance read lags beyond 15s, it returns `success:false` "to keep trade open for retry" (L881). The retry then reads `getTokenBalance` = 0 → throws "No token balance" → failure again. The wallet has no tokens but the **ledger still shows the position open** → ghost open trade, never reconciled. Needs a signature‑status confirmation fallback (you have `getSignatureStatus` in the buy path; mirror it here) before declaring failure.
+
+**H2. ATA rent (~0.002 SOL) is never counted as a fee (L818–820 buy, L869 sell).**
+
+`feesSol = 0.000005 + priorityFee + jitoTip`. The first buy of any new token creates an associated token account costing ~0.00204 SOL rent, which is excluded. Every fresh entry under‑reports cost basis by ~0.002 SOL → P&L is systematically optimistic. (You reclaim it in the janitor, but only on close, and the buy‑side accounting never reflects it.)
+
+**H3. `actualSolSpent` is fabricated when balance reads fail (L806).**
+
+After a buy, if `actualSolSpent <= 0` even after a rotated retry, it's set to `amountSol + 0.005` (L806). A hardcoded estimate is then recorded as the real spend — silently corrupts P&L and any per‑trade cost analysis. At minimum log it as `estimated:true` so downstream analytics can exclude it.
+
+**H4. `minOut` threshold is computed from the *caller's* slippage, not the quote's (L484–485).**
+
+`minOut = outAmount * (10000 - slippageBps) / 10000` uses the original `slippageBps`, but `quote.outAmount` may come from a higher slippage tier (e.g., quote fetched at 1500bps while `slippageBps=500`). The enforced `otherAmountThreshold` is then **tighter than the quote's own tolerance**, causing avoidable on‑chain reverts — worst on sells, where you actually want the exit to clear. Align the threshold with the slippage tier that produced the quote.
+
+**H5. Partial fills < 100% down to 70% are reported as `success:true` (L811–815).**
+
+A fill at 70% of `expectedOut` returns success with an `error: "Partial fill"` string. If the caller only checks `success`, it records a full position while only 70% filled — size/exposure mismatch. Ensure the caller treats the `error` field on a successful result as a partial‑fill signal.
+
+---
+
+## 🟡 MEDIUM — reliability / latency
+
+**M1. `markCurrentUnhealthy()` can blacklist the wrong endpoint (L81–92).**
+
+`currentIndex` is a shared monotonic counter indexed modulo a **changing‑length** `healthyNodes` array (it's recomputed here, and again in `exec`/`connection`). The "previous" node it marks may not be the one that actually failed, so a healthy endpoint gets blacklisted for 60s while the bad one keeps serving. Track the actually‑used node/url per call instead of reconstructing it from the index.
+
+**M2. Global rate gate can delay urgent exits (L212–226, `MIN_JUPITER_INTERVAL_MS=600`).**
+
+All quotes serialize through one 600ms promise chain. During a multi‑position dump, a stop‑loss sell quote queues behind buy quotes → ~0.6–5.4s added latency exactly when you need to exit fastest. Give sells a priority lane or a separate gate.
+
+**M3. `runHealthChecks` builds a new `Connection` every 30s per endpoint (L156), bypassing `connectionCache`.** Minor resource churn; reuse the cache.
+
+**M4. Latency log mislabels the token on buys (L648, `quote.inputMint ?? quote.outputMint`).** For buys `inputMint = SOL_MINT`, so every buy's latency record is tagged as SOL rather than the token. Observability bug — use the non‑SOL mint.
+
+**M5. `closeTokenAccount` can't close Token‑2022 ATAs (L897).** `getAssociatedTokenAddress(mint, owner)` omits the program id → always derives the standard SPL ATA. Token‑2022 positions won't be closed here (the janitor handles them, but this path silently no‑ops for 2022 mints).
+
+**M6. Fee‑buffer may be too thin under high priority fees (L725, `MIN_FEE_BUFFER_SOL=0.004`).** With `PRIORITY_FEE_LAMPORTS` defaulting to 100_000 and ATA rent 0.002 + jito tip, 0.004 holds. But if priority fee is raised (e.g., 1_000_000 = 0.001) plus a new ATA, the balance check at L725 can pass yet the tx fails for insufficient lamports. Derive the buffer from the actual priority/jito/rent figures.
+
+---
+
+## 🟢 LOW — hygiene / dead code
+
+- **L1.** `interface RpcEndpoint` (L21–27, with `connection/lastFailMs/avgLatencyMs`) is **never used** — the real array uses an inline `{url, healthy, restoredAt}` type. Dead.
+- **L2.** `HEALTH_CHECK_INTERVAL_MS = 5_000` (L30) is unused; the constructor hardcodes `30_000` (L40). Misleading.
+- **L3.** Health‑check `setInterval` (L40) is never cleared — no teardown path; fine for a singleton, leaks if ever instantiated repeatedly.
+- **L4.** `fetchQuote` default slippage `[500,1000]` (L712) differs from `fetchQuoteWithRetry`'s `[500,1500,3000]` (L377) — harmless but inconsistent.
+- **L5.** Up to 9 quote fetches per call (3 slippage tiers × 3 attempts, L375–377) at 600ms gate each ≈ 5.4s worst case before giving up — slow under stress, but bounded.
+
+---
+
+## ✅ What's correctly handled (so you don't "fix" these)
+
+- **Private key & RPC keys are env‑only** (`WALLET_PRIVATE_KEY`, `HELIUS_API_KEYS`, `SOLANA_RPC_*`); only the **public** wallet address is logged (L284, L1043). No plaintext secrets in this file.
+- **`isHalted()` gates buys but not sells** (L719) — correct: you can always exit when halted.
+- **Duplicate‑send guard** before broadcast (L529, `executedTransactions.has(sig)`), with bounded pruning at 1000 (L643).
+- **Jito‑bundle failure won't double‑send** if a prior `landedSig` exists (L588), and a `null` signature status forces a double‑spend abort rather than a blind retry (L677).
+- **Ghost‑trade recovery** on both buy (L789) and sell (L857) via balance verification.
+- **Confirm on the same connection that sent** (L612, never rotates mid‑confirm) — avoids cross‑node confirmation false‑negatives.
+- **Bounded memory** (latencyLog 500, executedTransactions 1000), cached connections, `ipv4first` DNS.
+
+---
+
+### Priority order to act on
+
+1. **C1** (burn‑a‑live‑position) and **C2** (double‑buy on send timeout) — these are direct fund‑loss paths.
+2. **C3 / H1** — exit correctness (dust exits, stuck‑open positions).
+3. **H2 / H3 / H4 / H5** — accounting accuracy and avoidable reverts.
+4. Medium/Low — reliability and cleanup.
+
+Nothing here breaks the build; every item above is a runtime/financial‑correctness concern. This is a read‑only audit — I haven't changed a single line. Tell me which one you want patched first (I'd recommend C1, since it's irreversible) and I'll make that single change and re‑verify the compile.

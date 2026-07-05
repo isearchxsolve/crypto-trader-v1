@@ -1,0 +1,13 @@
+$env:BIRDEYE_API_KEY="05f10e59e3824f438c6446d195f49c56"
+$env:SOLANA_RPC_URL="https://mainnet.helius-rpc.com/?api-key=85a848b0-d314-4477-a123-1a294ac0908b"
+$env:SOLANA_RPC_BACKUP_URL="https://twilight-old-diamond.solana-mainnet.quiknode.pro/1653af2ba52ff5de6fdcf42ab06867d797df8399/"
+$env:SOLANA_RPC_TERTIARY_URL="https://api.mainnet-beta.solana.com"
+$env:JITO_ENGINE_URL="https://tokyo.mainnet.block-engine.jito.wtf/api/v1/transactions"
+$env:JITO_TIP_LAMPORTS="100000"
+$env:WALLET_PRIVATE_KEY="DHt9ipNNB5KmqDv87etG3kfvCU9dsVQcyo13t2U33RHDc7ik3Frex5FuoD5K4veqRJ58zVNaPQm3Kd5EcCcCDzx"
+$env:PRIORITY_FEE_LAMPORTS="100000"
+$env:DATABASE_URL="postgres://postgres:postgres@localhost:5432/crypto_db"
+$env:NODE_ENV="production"
+
+Set-Location "C:/Users/Admin/Downloads/god_ai/crypto-trader-v1_1"
+cmd.exe /c "node dist/index.cjs >> logs/console.log 2>&1"

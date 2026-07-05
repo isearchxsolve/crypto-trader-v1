@@ -1,0 +1,303 @@
+SACRED EXECUTION PROTOCOL - MANDATORY INSTRUCTION SET
+ABSOLUTE COMPLIANCE REQUIRED - NO DEVIATION ALLOWED
+PRIMARY DIRECTIVE: 1000x ROI and >80% WIN RATE and HIGH FREQUENCY OF TRADES CONFIGURATION VERIFICATION & EXECUTION
+PHASE 0: ENVIRONMENT SANCTIFICATION
+Execute these commands in exact sequence - NO SKIPPING, NO REORDERING:
+
+bash
+set BIRDEYE_API_KEY=05f10e59e3824f438c6446d195f49c56
+set SOLANA_RPC_URL=https://mainnet.helius-rpc.com/?api-key=85a848b0-d314-4477-a123-1a294ac0908b
+set SOLANA_RPC_BACKUP_URL=https://twilight-old-diamond.solana-mainnet.quiknode.pro/1653af2ba52ff5de6fdcf42ab06867d797df8399/
+set SOLANA_RPC_TERTIARY_URL=https://api.mainnet-beta.solana.com
+set JITO_ENGINE_URL=https://tokyo.mainnet.block-engine.jito.wtf/api/v1/transactions
+set JITO_TIP_LAMPORTS=100000
+set WALLET_PRIVATE_KEY=DHt9ipNNB5KmqDv87etG3kfvCU9dsVQcyo13t2U33RHDc7ik3Frex5FuoD5K4veqRJ58zVNaPQm3Kd5EcCcCDzx
+set PRIORITY_FEE_LAMPORTS=100000
+set DATABASE_URL=postgres://postgres:postgres@localhost:5432/crypto_db
+Verify each variable is set:
+
+Run echo %VARIABLE_NAME% for each environment variable
+
+Confirm non-empty output for all 9 variables
+
+DO NOT PROCEED if any variable is empty or incorrect
+
+PHASE 1: HISTORICAL CONFIGURATION AUDIT
+Step 1.1: Locate previous routes.ts version
+
+bash
+git log --oneline -- server/routes.ts
+git show <commit-hash>:server/routes.ts
+Step 1.2: Extract settings section from old routes.ts
+
+Find the exact configuration block containing:
+
+targetROI: 1000
+
+minWinRate: 80
+
+paperMode settings
+
+moonbag parameters
+
+shadow mode configuration
+
+Trade size calculations
+
+Stop-loss thresholds
+
+Take-profit multipliers
+
+Step 1.3: Document exact configuration values found
+
+Create a checklist of every parameter discovered
+
+Note any discrepancies between old and current settings
+
+PHASE 2: LOG PURIFICATION
+Step 2.1: Delete the existing log file
+
+bash
+del /f /s /q logs\app.log
+# OR if on Unix:
+rm -f logs/app.log
+Step 2.2: Verify deletion
+
+bash
+dir logs\app.log
+# Should return: "File Not Found"
+Step 2.3: Create fresh log directory if needed
+
+bash
+if not exist logs mkdir logs
+PHASE 3: SERVICE INITIALIZATION SEQUENCE
+Step 3.1: Start ML Server
+
+bash
+python solana_hybrid_sniper_ultra/ml_server.py
+Wait for confirmation message: Server running on port 5001
+
+Verify health endpoint:
+
+bash
+curl http://localhost:5001/health
+Expected response: {"status": "healthy"} or similar success indicator
+
+If health check fails: DO NOT PROCEED. Debug ML server until health returns success.
+
+Step 3.2: Build the application
+
+bash
+npm run build
+Monitor build output for errors
+
+Confirm build success: Look for "Build completed" or exit code 0
+
+If build fails: Document error, fix, and rebuild until clean.
+
+Step 3.3: Start the bot
+
+bash
+npm run start
+Initial mode verification: Confirm console output shows:
+
+paper+moonbag+shadow mode
+
+Wallet: 0.01 SOL
+
+ROI Target: 1000x
+
+PHASE 4: CONTINUOUS MONITORING & ITERATIVE FIXING PROTOCOL
+Step 4.1: Real-time log monitoring
+
+bash
+tail -f logs/app.log
+Watch for these critical events:
+
+Trade entries/exits
+
+Error messages
+
+Profit/loss calculations
+
+Wallet balance changes
+
+Step 4.2: Issue Detection Categories
+Monitor for:
+
+Failed transactions
+
+Insufficient balance errors
+
+RPC connection failures
+
+Slippage exceeding thresholds
+
+Losses on trades with >80% win rate
+
+Incorrect position sizing
+
+Moonbag calculation errors
+
+Shadow mode data inconsistencies
+
+Step 4.3: Iterative Fix Loop
+
+text
+WHILE (issues exist OR trades_count < 100):
+  1. Identify issue from logs
+  2. Locate relevant file:
+     - Trade execution → server/routes.ts
+     - Data persistence → server/storage.ts  
+     - DEX interactions → server/jupiter.ts
+  3. Make MINIMAL fix addressing ONLY the identified issue
+  4. Save file
+  5. Kill current bot process
+  6. Rebuild: npm run build
+  7. Restart: npm run start
+  8. Monitor for 5 minutes minimum
+  9. Count successful trades since last fix
+  10. IF same issue reoccurs:
+      - Revert change
+      - Analyze root cause differently
+      - Apply alternative fix
+Step 4.4: Fix Documentation Requirements
+For each fix applied, document:
+
+File modified
+
+Lines changed
+
+Nature of issue
+
+Resolution applied
+
+Verification method
+
+PHASE 5: 100-TRADE SUCCESS CRITERIA
+Definition of "successful trade" (ALL must be true):
+
+Transaction confirmed on-chain
+
+Trade recorded in database via storage.ts
+
+Positive ROI contribution OR stopped out according to rules
+
+No unhandled exceptions in logs
+
+Wallet balance updated correctly
+
+Moonbag amount properly calculated
+
+Shadow data logged without corruption
+
+Count reset rule:
+
+If ANY unsuccessful trade occurs, the continuous successful trade counter resets to 0
+
+You must achieve 100 CONSECUTIVE successful trades
+
+Real-time counter tracking:
+
+After each trade, log: [TRADE #{n}/100] - Status: SUCCESS/FAILURE
+
+Maintain running tally visible in monitoring
+
+PHASE 6: FINAL METRICS REPORTING
+After 100 consecutive successful trades, extract and report:
+
+Required Metrics:
+
+ROI (Return on Investment)
+
+Formula: ((Final Balance - 0.01 SOL) / 0.01 SOL) × 100
+
+Target: 1000x minimum
+
+Win Rate (WR)
+
+Formula: (Profitable trades / Total trades) × 100
+
+Requirement: > 80%
+
+Trade Statistics:
+
+Total trades executed
+
+Winning trades count
+
+Losing trades count
+
+Average profit per winning trade
+
+Average loss per losing trade
+
+Largest single trade profit
+
+Largest single trade loss
+
+Profit factor (Gross profit / Gross loss)
+
+Timing Metrics:
+
+Average trade duration
+
+Total runtime to achieve 100 trades
+
+Trades per hour
+
+Execution Quality:
+
+Slippage statistics (average, max)
+
+Failed transaction rate
+
+Average confirmation time
+
+Moonbag Performance:
+
+Total SOL accumulated in moonbag
+
+Moonbag as % of total returns
+
+Shadow Mode Data:
+
+Theoretical vs actual performance comparison
+
+Any discrepancies identified
+
+Report Format:
+
+text
+==================== 1000x ROI TRADING REPORT ====================
+Date: [CURRENT_DATE]
+Wallet: 0.01 SOL Initial
+
+FINAL ROI: [CALCULATED_VALUE]x
+WIN RATE: [CALCULATED_VALUE]%
+TOTAL TRADES: 100
+WINNING TRADES: [NUMBER]
+LOSING TRADES: [NUMBER]
+PROFIT FACTOR: [CALCULATED_VALUE]
+MOONBAG TOTAL: [SOL_AMOUNT]
+
+[ALL OTHER METRICS AS SPECIFIED ABOVE]
+==================================================================
+CRITICAL COMMANDMENTS
+THOU SHALT NOT skip any phase or step
+
+THOU SHALT NOT proceed if any verification fails
+
+THOU SHALT NOT fix issues not observed in logs
+
+THOU SHALT NOT modify files not in {routes.ts, storage.ts, jupiter.ts}
+
+THOU SHALT NOT stop until 100 consecutive successful trades achieved
+
+THOU SHALT NOT proceed to Phase 6 until Phase 5 criteria met
+
+THOU SHALT document every action taken
+
+THOU SHALT restart from Phase 0 if environment variables lost
+
+BEGIN EXECUTION IMMEDIATELY. REPORT EACH PHASE COMPLETION.

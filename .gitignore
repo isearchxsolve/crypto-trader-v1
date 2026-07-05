@@ -1,0 +1,14 @@
+.env
+.heartbeat
+.HALT
+.PANIC
+.engine.pid
+.failsafe.pid
+.autofix-state.json
+*.pid
+incidents/
+logs/
+dist/
+node_modules/
+# GMGN secrets (added by setup-gmgn.mjs)
+gmgn_keys/

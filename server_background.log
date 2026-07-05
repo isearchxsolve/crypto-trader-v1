@@ -1,0 +1,16 @@
+﻿
+> rest-express@1.0.0 start
+> cross-env NODE_ENV=production node dist/index.cjs
+
+Γùç injected env (68) from .env // tip: Γîÿ multiple files { path: ['.env.local', '.env'] }
+[SECURITY] ADMIN_SECRET loaded ΓÇö admin endpoints require authentication (requireAdmin active).
+==================== 1000x ROI TRADING BOT ====================
+[CONFIG] MODE=paper from .env applied to trading mode.
+[CONFIG] PAPER_SEED=0.03 SOL from .env applied to paper starting balance.
+[CONFIG] Mode: paper + moonbag + shadow
+[CONFIG] Paper seed: 0.03 SOL (config default ΓÇö NOT the live wallet; real balance shown below)
+[CONFIG] ROI Target: 1000x
+[CONFIG] Win Rate Target: >80%
+[CONFIG] EDGE micro: minEdge=5% buffer=0.5% | normal: minEdge=-5% buffer=1%
+[CONFIG] Starting trading engine...
+[ENGINE] Live trading ENABLED | wallet: 2qi849TBq72XMpsp8PjR4YfegDEzc7BRFZaarwQ2tKgL | balance: 0.0381 SOL

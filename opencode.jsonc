@@ -1,0 +1,27 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  // Default model when no --model flag is passed. Prevents interactive "pick a model"
+  // prompts that would hang an unattended/headless run. The auto-fix adapter still
+  // overrides this via --model (AGENT_MODEL / AGENT_MODEL_FALLBACK).
+  "model": "zenmux/moonshotai/kimi-k2.7-code-free",
+  "provider": {
+    "zenmux": {
+      "models": {
+        "moonshotai/kimi-k2.7-code-free": {
+          "name": "Kimi K2.7 Code Free",
+          "limit": {
+            "context": 256000,
+            "output": 256000
+          }
+        },
+        "z-ai/glm-5.2-free": {
+          "name": "GLM 5.2 Free",
+          "limit": {
+            "context": 1000000,
+            "output": 128000
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,1 @@
+const { db } = require('./dist/db.cjs'); const { botStats } = require('./dist/schema.cjs'); const { eq } = require('drizzle-orm'); async function run() { await db.update(botStats).set({ peakBalance: '0.5000', dailyStartBalance: '0.5000' }).where(eq(botStats.id, 1)); console.log('Done'); process.exit(0); } run();

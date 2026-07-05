@@ -1,0 +1,105 @@
+WALLET_PRIVATE_KEY=DHt9ipNNB5KmqDv87etG3kfvCU9dsVQcyo13t2U33RHDc7ik3Frex5FuoD5K4veqRJ58zVNaPQm3Kd5EcCcCDzx
+SOLANA_RPC_URL=https://mainnet.helius-rpc.com/?api-key=f54cc447-237c-45c7-b5d9-6c3b342c1308
+PUBLIC_KEY=xtutQXyyM2mvs893E1hX4uFfAX2Dz55v1mjokTpSpPr
+SOLANA_RPC_BACKUP_URL=https://twilight-old-diamond.solana-mainnet.quiknode.pro/1653af2ba52ff5de6fdcf42ab06867d797df8399/
+SOLANA_RPC_TERTIARY_URL=https://api.mainnet-beta.solana.com
+JITO_ENGINE_URL=https://tokyo.mainnet.block-engine.jito.wtf/api/v1/transactions
+JITO_TIP_LAMPORTS=100000
+PRIORITY_FEE_LAMPORTS=100000
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/crypto_db
+ML_SERVICE_URL=http://localhost:5001
+NODE_ENV=development
+PORT=5000
+
+ADMIN_SECRET=crypto-trader-admin-2026
+
+# --- FORCE LIVE MODE ---
+MODE=paper
+
+# --- Helius rotation pool (comma-split, move OUT of source code) ---
+HELIUS_KEYS=46d8b645-e6c1-465a-ae80-c7d69092fe2f,48ef1b0a-9864-4cce-b5c7-f59b607de30b,f54cc447-237c-45c7-b5d9-6c3b342c1308,19813e86-a184-4103-82e7-0a5f45c63238,cebfbeaf-3e35-4029-aca2-c4baf92e0315,71db18bf-4cdc-4a82-976b-458400bc389c,513ae5d1-cc38-402b-8a85-2e80f8c02817
+
+# --- Failsafe ---
+HEALTH_URL=http://127.0.0.1:5000/api/health
+HEALTH_PORT=5000
+AUTO_FIX=true
+ENGINE_PM2_NAME=trading-engine
+
+# --- Alerting (set at least one; auto-fix still runs unattended, alerts are just notifications) ---
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
+ALERT_WEBHOOK_URL=https://discordapp.com/api/webhooks/1517960665636016199/b8gBH7ZlsP_5iH1LVogpVFVZVOo2UXxJ3aTyDDi8zZ-OkPAjttOLFSQqaM-4FI0iFnY7
+
+HEALTH_URL=http://127.0.0.1:5000/api/health
+
+# =====================================================================
+#  UNATTENDED MODE (no human approval for restart or fixes)
+# =====================================================================
+# Auto-restart on crash is handled by pm2/systemd/run.ps1. Auto-FIX is below.
+# Pick your coding agent: opencode | antigravity | custom
+AGENT_PROVIDER=opencode
+# Pin the model the agent uses (RECOMMENDED -- don't rely on a default that can change).
+# Use the EXACT slug from `opencode models`, INCLUDING the gateway prefix (vercel/ or zenmux/).
+# Fixes are rare (incident-only) and capped (AUTOFIX_MAX_ATTEMPTS), so rate limits rarely bite,
+# and a throttled model just leaves the system safely HALTED+FLAT -- it never risks funds.
+# opencode tries AGENT_MODEL first, then AGENT_MODEL_FALLBACK (set this to a FREE coding model
+# so a rate-limited primary can't block auto-recovery).
+#   e.g. AGENT_MODEL=zenmux/openai/gpt-5.3-codex
+#        AGENT_MODEL_FALLBACK=zenmux/moonshotai/kimi-k2.7-code-free
+# Empty = opencode's own configured default. (opencode only; antigravity uses its own config.)
+AGENT_MODEL=
+AGENT_MODEL_FALLBACK=
+# Optional: an explicit ordered model CHAIN (comma-separated) that OVERRIDES the two vars above.
+# "Free" models still have rate limits AND daily quotas -- chain several so one exhausted quota
+# isn't fatal. opencode tries them left to right; first one to succeed wins.
+#   e.g. AGENT_MODELS=zenmux/moonshotai/kimi-k2.7-code-free,zenmux/z-ai/glm-5.2-free,vercel/openai/gpt-oss-120b
+AGENT_MODELS=google/gemini-2.5-flash,openrouter/qwen/qwen3-coder:free,openrouter/qwen/qwen3-next-80b-a3b-instruct:free,openrouter/meta-llama/llama-3.3-70b-instruct:free,openrouter/cohere/north-mini-code:free
+AGENT_MODEL_RETRIES=2
+AGENT_RETRY_BACKOFF_MS=30000
+# AUTO_FIX calls this; the adapter (agent-run.cjs) dispatches per AGENT_PROVIDER.
+# Leave as-is unless you know what you're doing.
+AGENT_CMD=node agent-run.cjs "{INCIDENT}" {BRANCH}
+# Only used when AGENT_PROVIDER=custom -- your literal command ({INCIDENT}/{BRANCH} substituted):
+AGENT_RAW_CMD=
+GIT_MAIN_BRANCH=main
+# Push fixes to your git remote (main) after they pass gates. Git history keeps
+# every change, so any auto-fix can be rolled back with git revert.
+AUTO_PUSH=true
+GIT_REMOTE=origin
+# A fix must clear BOTH gates before going live: tests, then a paper canary.
+AUTOFIX_MAX_ATTEMPTS=3
+AUTOFIX_WINDOW_MS=86400000
+CANARY_MINUTES=15
+
+# --- Money-protection circuit breaker (always on, even unattended) ---
+# Engine should self-HALT + liquidate if daily realized loss exceeds this (SOL).
+MAX_DAILY_LOSS_SOL=0.005
+# Hard cap on consecutive auto-restarts before the watchdog liquidates + stays down.
+MAX_RESTART_LOOP=8
+
+RESET_DAILY_ON_BOOT=0
+
+PAPER_SEED=0.05
+
+WHALE_TRACKING=true
+RELAX_GRADED_LP_VETO_LIVE=false
+MAX_CONCURRENT_TRADES=1
+
+EDGE_POCKET_ONLY=false
+
+# --- Added by Agent: Infrastructure Hardening ---
+JUPITER_API_KEY=
+JITO_ENGINE_BACKUP_URL=https://ny.mainnet.block-engine.jito.wtf/api/v1/transactions
+
+
+
+PAPER_PROBE_GRADED_LP_VETO=true
+
+WASH_VETO_SHADOW=true
+WHALE_EXIT_SHADOW=true
+
+ENTRY_MIN_LIQ_USD=40000
+
+WHALE_TAPE=on
+
+HELIUS_WHALE_TAPE=true
