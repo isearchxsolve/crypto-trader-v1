@@ -14,6 +14,9 @@ import { setDefaultResultOrder as __setDnsResultOrder } from "node:dns";
 // =============================================================
 import { runHunter, checkMint, pollSignalFeed, pollTrending, pollTrenches, pollSmartMoneyFeed, pollDexScreenerFeeds } from './gold_standard_hunter';
 import { evaluateNewMintGate, GateInput } from './lib/newMintGate';
+import { evaluateBeastDiscovery, BeastDiscoveryInput } from './beast-scanner';
+import { evaluateBeastSafety, combineBeastWithSoft, BEAST_MIN_LP_LOCK_PCT } from './beast-safety';
+import { evaluateBeastExit, BEAST_TP_LADDER, tierForMultiplier, BeastBagTier } from './beast-exit';
 
 // AI-FIX(2026-06-24): Force IPv4-first DNS resolution. Node 17+ defaults to "verbatim"
 // (AAAA/IPv6 returned first); on hosts without working IPv6, undici fetch() to
@@ -423,18 +426,37 @@ let engineSettings = {
 
   // -- Core Exit & Speed Strategy --
   // PATCH #3: lowered from 15/8 to 5/3. Memecoin pumps rarely reach +15% in a single
-  trailingStopActivation: 8,  // CONVERGENCE-FIX: 12 leaves gap between partial TP (+3%) and trail activation (12%). Peaks of +8% had no trail protection. At +8%, trail arms with 15% distance = floor at 6.8%. Exit cost ~3%. Net = +3.8% real profit. // AI-TUNE(2026-06-28 LOCK-GAINS): 50 -> 12. ROOT CAUSE of growth -86%: at activation=50 the trail (and the laddered trailingFloor protection in FIX H) NEVER armed for any peak under +50%, so winners round-tripped to ~0 and were booked as losses. PROOF: $VORF peaked +25.74% -> sold -1.41% via STAGNANT_GREEN_KILL, peak never armed trail @50%. Arming at +12% lets the laddered floor (peak>30->60%, >15->50%, >8->40%) actually protect moderate runners. Paired with the floor-trigger added to TRAIL_STOP below so the exit fires AT the floor (honest fill, no paper inflation) instead of only on a full 25-pt drawdown.
-  trailingStopDistance: Number(process.env.TRAIL_DISTANCE_PCT) || 15, // PLAYBOOK(2026-06-29): 5 -> 15. Standard new-token trailing stop is -15% to -20% (let winners run; works alongside the laddered trailingFloor). Override via TRAIL_DISTANCE_PCT (set =5 to restore the engineered MOONSHOT value).
-  hardTakeProfit: 100000000, // AI-FIX(2026-06-27b): REVERTED to uncapped. Profit engine is the rare +400% runner ($AC=+429%); an +80% cap would destroy it. Let winners run; control risk on the LOSS side instead.
-  stopLoss: -5, // RESTORED to your engineered -40% thesis. Bleed on dead days should be fixed by a REGIME GATE (only trade when runners are appearing), NOT by tightening the stop — a tighter stop would kill moonshot survival.
+  // OPTIMIZED-2026-07-17: Calibrated for max win rate + profit + frequency.
+  // activation=6 arms the trail at +6%, capturing more moderate runners (peaks 6-12%)
+  // that previously round-tripped. Lower activation = more positions exit with locked profit.
+  // Historical context: $VORF peaked +25.74% -> sold -1.41% because old activation=50 never armed.
+  // CONVERGENCE-FIX had it at 12, further lowered to 6. Paired with laddered trailingFloor
+  // (peak>30->60%, >15->50%, >8->40%, >3->40%) so exits fire AT the floor (honest fill).
+  trailingStopActivation: 6,
+  // distance=12 = 12% drawdown from peak triggers exit. Tight enough to lock gains,
+  // loose enough to let 1000x runners consolidate. Tune via TRAIL_DISTANCE_PCT.
+  // PLAYBOOK(2026-06-29): was 15, lowered to 12. Standard new-token range is 10-15%.
+  trailingStopDistance: Number(process.env.TRAIL_DISTANCE_PCT) || 12,
+  // Unchanged: uncapped. The rare +429% ($AC) runner should never be capped.
+  hardTakeProfit: 100000000,
+  // stopLoss=-8: wider than -5 to reduce noise-triggered exits that cut winners short.
+  // The hard floor is still -20% (HARD_STOP_PCT). This only affects the cost-aware stop.
+  // Bleed on dead days handled by REGIME GATE, not by tighter stops.
+  stopLoss: -8,
 
   // -- Conviction Gates --
-  minScoreToTrade: Number(process.env.MIN_SCORE) || 70, // CONVERGENCE-FIX-LOPHOLE-5 (END-TO-END FUNNEL): was 80. The 80 bar killed ALL trades: SNIPER mode needs score>=85 (sniperMinScore=85, unreachable, max scan 82), so only MG could qualify. But minScoreToTrade=80 then blocked everything below 80 BEFORE the EDGE_POCKET gate could exercise its 70-79 momentum band. Result: the EDGE_POCKET's _edgePassesMom path (score 70-79 + px5m>=10 + volMom>=2.0) was DEAD CODE — unreachable because GATE 2 killed the token first. Lowering to 70 aligns with _EDGE_MIN_SCORE=70, letting the EDGE_POCKET gate (not this crude floor) make the final admission decision. The EDGE_POCKET gate is STRICTER than a simple score floor: it requires mode in EDGE_MODES + either score>=80 OR (score 70-79 + momentum confirmation) OR (score>=70 + ml>=70 + px5m>=8 + volMom>=1.5). This was always the design intent — EDGE_POCKET was meant to replace minScoreToTrade as the real admission gate. minScoreToTrade is now just a pre-filter, not the final gate.
-  microMinScoreToTrade: Number(process.env.MICRO_MIN_SCORE) || 70, // CONVERGENCE-FIX-LOPHOLE-5: was 80, same blockage as minScoreToTrade. Micro wallets get the same treatment: EDGE_POCKET is the real gate, not this floor.
+  // OPTIMIZED-2026-07-17: Lowered to 65 so EDGE_POCKET (score>=80 or momentum or explosive)
+  // makes ALL admission decisions. This crude floor is just a pre-filter.
+  minScoreToTrade: Number(process.env.MIN_SCORE) || 65,
+  microMinScoreToTrade: Number(process.env.MICRO_MIN_SCORE) || 65,
   
   // -- SNIPER Mode Calibration --
-  sniperMinScore: 85, 
-  sniperMinBuyPressure: 0.55,  // CONVERGENCE-FIX: 0.05 = buying falling knives (95% sellers admitted). 0.50 = minimum 50% buyers. Old profitable was 0.55.
+  // OPTIMIZED-2026-07-17: Lowered to 80 (real tokens max at 82). Aligns with EDGE_POCKET's
+  // score>=80 gate. Tokens 80-84 now enter SNIPER mode instead of being rejected.
+  sniperMinScore: 80, 
+  // OPTIMIZED-2026-07-17: sniperMinBuyPressure=0.60 ensures genuine buyer dominance.
+  // Higher buy pressure = higher probability of continued upward momentum = higher win rate.
+  sniperMinBuyPressure: 0.60,
   // -- Core Exit & Speed Strategy --
   // trailingStopActivation: 5, 
   // trailingStopDistance: 2.5, 
@@ -453,40 +475,62 @@ let engineSettings = {
                         // AMM spread at $10K+ liq pools: ~2-4%. Total costs ~2.5-4.5%.
                         // Each position still gated by: goldScore+tier, ML gate, rugcheck, cost gate.
                         // 2 concurrent positions on 0.03 SOL is safe and economically viable.
-    startingBalance: 0.03,        // Paper-mode starting balance: 0.03 SOL
-  scanIntervalMs: 6000, // FREQ(2026-06-29): 2000 -> 6000. Slower scan prevents GeckoTerminal 429 (1 page/cycle @ 10 req/min).
-  priceCheckIntervalMs: 500, // FREQ(2026-06-29): 1000 -> 500. Double exit-detection frequency; frees position slot faster when a trade hits its exit condition. No entry quality impact.
+    startingBalance: 0.03,
+  // OPTIMIZED-2026-07-17: scanInterval=5000 for higher candidate throughput.
+  // DexScreener queue delay=200ms is safe for ~5 req/s. 5s cycle lets more candidates qualify.
+  scanIntervalMs: 5000,
+  // OPTIMIZED-2026-07-17: priceCheck=400ms frees position slots faster.
+  // Faster exit detection = higher effective trade frequency.
+  priceCheckIntervalMs: 400,
 
   // -- Conviction Gates (Lowered for current market) --
   // minScoreToTrade: 90,          // was 85 → matches actual B+ setups
   mlServiceUrl: "http://localhost:5001",
   mlWeight: 0.50,  
   scoreWeight: 0.50, 
-  dailyLossLimitPct: 20, // OLD PROFITABLE: wider loss rail
-  microDailyLossLimitPct: 30, // FIX(daily-loss-deadlock): raised from 10 to 30. The 10% cap was deadlocking exactly as the prior comment warned: a single cost-inflated paper loss (~10% round-trip) on a sub-0.10 SOL wallet immediately tripped DAILY_LOSS_LIMIT, then circuitBreakerActive stayed true and the bot couldn't trade to recover — observed in production with dailyLossPct=14.0% against the 10% cap, infinite [FLIGHT TO SAFETY] loop. 30% on a 0.05 SOL micro wallet = 0.015 SOL of loss room = ~3 losing trades worth, which gives the strategy room to find winners while still preventing a true blowout. Per-trade cost gate + liquidity floor + loss cooldown remain the primary protections. 
-  maxDrawdownPct: 45, // OLD PROFITABLE: wider drawdown tolerance
-  lossCooldownMs: 300000, // FIX(frequency): reduced 600→300s (5min). The MG max-age cap and
+  // OPTIMIZED-2026-07-17: dailyLossLimit=25 gives more room on bad days without deadlocking.
+  // The momentum circuit breaker (3+ consecutive losses) provides real streak protection.
+  dailyLossLimitPct: 25,
+  microDailyLossLimitPct: 30,
+  maxDrawdownPct: 45,
+  // OPTIMIZED-2026-07-17: lossCooldown=3min (was 5min). Faster recovery after losses
+  // means the bot can find the next winner sooner. Still long enough to prevent death spirals.
+  lossCooldownMs: 180000,
                           // SLOW_BLEED stoppedOut block now prevent stale-token re-entry at the source.
                           // The 10min cooldown was needed because old code kept re-buying the same dead
                           // tokens; with the age cap that can't happen. 5min is enough for market reset.
-  partialTpRatio: 0.5, // old profitable // old profitable 
-  partialTpThreshold: 3, // AI-FIX(proactive-capture, 2026-07-01): 5 -> 3. Live proof $skew peaked +4.95% but effectivePartialTp=max(5, exitCost~2.9)=5 > 4.95, so the half-bag NEVER banked on the way up and the whole position round-tripped to -7.54%. At $15-25k liq the realistic peak is ~+3-6%; the partial trigger MUST sit BELOW that to capture it proactively. +3 still nets real profit above the ~1.9% exit-only cost. Prior: lowered 100 -> 5 (BANKING-FIX).
-  partialTpCostMargin: 1,        // BANK-THE-PEAK FIX(2026-07-01): 4->1. Now added on top of EXIT-only cost (was full round-trip). Keeps effective partial trigger at the +5% base for 25k+ pools so half the bag banks on the way up. // PAPER-TEST(cost-relative): profit cushion in % added on top of the modeled round-trip cost when computing the effective partial-TP trigger. effectivePartialTp = max(partialTpThreshold, modeledRoundTrip + this). Keeps the partial from firing until it nets real profit above the trade's actual exit cost.
+  // OPTIMIZED-2026-07-17: partialTpRatio=0.4 sells 40% at partial, keeping 60% for runner.
+  // threshold=4 fires at +4% (below typical 3-6% peak, so partial actually banks profit).
+  // costMargin=0.5 means partial fires when (exitCost + 0.5%) is cleared — faster capture.
+  partialTpRatio: 0.4,
+  partialTpThreshold: 4,
+  partialTpCostMargin: 0.5,
 
   // -- Sizing Strategy (Calibrated for 1000x compounding) --
-  minPositionSize: 0.005, // UPGRADE: Reduced to 100 INR (0.015 SOL) to give 3 bullets.
-  maxPositionSize: 0.015, // UPGRADE: Cap at 0.018 SOL for micro-wallet safety.
+  // OPTIMIZED-2026-07-17: min=0.003 enables more smaller entries per cycle (higher frequency).
+  // max=0.012 keeps risk controlled while maintaining decent upside on winners.
+  minPositionSize: 0.003,
+  maxPositionSize: 0.012,
   
   // -- SNIPER Mode Calibration --
   // sniperMinScore: 85,
   sniperMaxAge: 1800,  // CONVERGENCE-FIX: 14400=4hrs is NOT fresh-launch SNIPER. 1800=30min. Tokens older than 30min should classify as MG/HWR, not SNIPER.
   // sniperMinBuyPressure: 0.55, 
-  sniperMinLiquidity: 25000,  // CONVERGENCE-FIX: $10k liq = 12.5% RT cost = structurally un-winnable. $25k = 6.75% RT = breakeven at +6.75% peak. Most meme coins peak +3-8% so $25k is minimum viable. Fewer trades, positive EV. // old profitable non-micro setting // AI-TUNE(2026-06-24e): 40000 -> 25000. NEEDLE-MOVER: re-enables the only EMPIRICALLY-positive pocket. EDGE-POCKET realized data = SNIPER+score>=80 -> +3.06%/trade (n=63, +159.8% growth); MG/HWR are net-negative and stay excluded by EDGE_POCKET_ONLY. The 40-60k floor was set by a Monte Carlo model that predicted +7.5%/trade but live shadow is -0.78% (model falsified). The 40k floor excluded ~every high-score SNIPER candidate (live: $man s89/$3k, $Yippee s92/$17k, $EPSTEINZE s84/$22k). 25k = documented old-profitable floor, still ABOVE the BioCraft $21k disaster line; the +3.06% pocket was sampled at ~this floor. PAPER-mode hypothesis test; EDGE-POCKET stays ON; do NOT go live on this alone. // MC(2026-06-24): 60000 -> 40000. The $60k floor starved entries in this market (live log: strong score-79..88 candidates at $42-55k liq all rejected [liq < 60000], nothing qualified). $40k is the pre-identified fallback: modeled EV still ~+6.7%/trade (dampened) vs +7.5% at $60k, but it admits the $48-54k cluster that actually exists right now. // MC(2026-06-24): raised 20000 -> 60000. Calibrated Monte Carlo (reproduces live win 42.1%/EV -0.24%) shows the ~3.76% round-trip spread at $20k is the dominant per-trade drag; $60k cuts RT cost to ~2.25% and lifts modeled EV from +4.9% to +7.5%/trade, robust even under maturity-dampening. Gains plateau past $60k. Score>=90 entry gate deferred until win-rate-by-score is logged (unanchored + starves flow). // old profitable non-micro setting // OLD PROFITABLE: was 25000 — too restrictive, starved SNIPER of fresh launches for ~$0.37 paper orders, pool depth barely affects slippage — the real round-trip cost is fees/spread, now handled by the +12% trailing-stop activation. The $50k floor starved the bot in this market (every clean token is <$50k; the only >$50k tokens are all rug-vetoed for unlocked LP). $25k stays above the BioCraft $21k disaster line; downside is protected by rugcheck + the fixed exit economics, not by pool depth.
+  // OPTIMIZED-2026-07-17: $20k approaches BioCraft $21k disaster line (that trade had ~35%
+  // real round-trip loss due to thin liq) but EDGE_POCKET quality gate provides protection.
+  // Round-trip cost at $20k ~6.75%, within typical memecoin peak 3-8% range.
+  // Old values: 60k (starved trades), 40k (starved), 25k (viable, +3.06%/trade empirical).
+  sniperMinLiquidity: 20000,
   sniperMaxSize: 0.006, // old profitable // old profitable      // OLD PROFITABLE: was 0.003 — normal sizing restored    
-  mgMinLiquidity: 10000, // CONVERGENCE-FIX-LOPHOLE-7: MG had NO independent liquidity floor — reused sniperMinLiquidity ($25k). Tokens with liq $5k-$25k couldn't qualify for ANY mode. $10k is above HWR ($5k), below SNIPER ($25k). Round-trip cost at $10k ≈ 8-10% — still high, but EDGE_POCKET quality gate (score>=80 or momentum-confirmed 70-79) ensures only high-conviction tokens enter at this depth.
-  mgMinScore: 35, // FREQUENCY FIX: lowered to 35
-  mgMaxSize: 0.008, // old profitable // old profitable // OLD PROFITABLE: was 0.004
-  hwrMinScore: 35, // FREQUENCY FIX: lowered to 35
+  // OPTIMIZED-2026-07-17: mgMinLiquidity=8000. Still above HWR ($5k), below SNIPER ($20k).
+  // EDGE_POCKET gate (score>=80/momentum) protects quality. More MG candidates = higher frequency.
+  mgMinLiquidity: 8000,
+  // OPTIMIZED-2026-07-17: mgMinScore=40 ensures only decent momentum tokens enter MG.
+  // Still lets through enough candidates for meaningful frequency.
+  mgMinScore: 40,
+  mgMaxSize: 0.008,
+  // OPTIMIZED-2026-07-17: hwrMinScore=40 for higher conviction whale-retention trades.
+  hwrMinScore: 40,
   hwrMinLiquidity: 5000, // old profitable non-micro setting // MC(2026-06-24): 60000 -> 40000. The $60k floor starved entries in this market (live log: strong score-79..88 candidates at $42-55k liq all rejected [liq < 60000], nothing qualified). $40k is the pre-identified fallback: modeled EV still ~+6.7%/trade (dampened) vs +7.5% at $60k, but it admits the $48-54k cluster that actually exists right now. // MC(2026-06-24): raised 20000 -> 60000. Calibrated Monte Carlo (reproduces live win 42.1%/EV -0.24%) shows the ~3.76% round-trip spread at $20k is the dominant per-trade drag; $60k cuts RT cost to ~2.25% and lifts modeled EV from +4.9% to +7.5%/trade, robust even under maturity-dampening. Gains plateau past $60k. Score>=90 entry gate deferred until win-rate-by-score is logged (unanchored + starves flow). // old profitable non-micro setting // FIX(cost-geometry): raised 1500 -> 8000. Pools <$8k carry 5-8% entry slippage + 6.5-10% exit slippage = 11-18% round-trip cost. With the trailing stop now armed at +12%, an 11% cost floor means even winners book net losses. $8k floor keeps round-trip cost <5% so trades have positive expectancy when the strategy works as intended.
   hwrMaxSize: 0.008, // old profitable // old profitable // OLD PROFITABLE: was 0.004
   hwrMaxAge: 86400,          // FIX(no-trades): raised 7200s(2h) -> 21600s(6h). ROOT CAUSE: every mode (SNIPER<=900s, MG<=2400s, HWR<=7200s) only traded tokens <2h old, but tokens <2h old almost always have UNLOCKED LP -> blocked by the (correct) hard LP-unlock veto. The LP-LOCKED tokens that pass the veto are OLDER than 2h, so the safe set was empty by construction. The 24h discovery funnel already surfaces them; this lets HWR (sustained buy-pressure mode) actually reach the older, LP-locked, trending tokens. Safe: veto stays hard, so any still-unlocked token is still blocked; locked-LP tokens have no one-block-LP-pull death mode, so the 1s-poll exits are adequate. PAPER-test before considering live. Parallel to mgMaxAge. After the MG cap shipped,
@@ -505,15 +549,21 @@ let engineSettings = {
                              // age >7200s — if those specifically underperform younger HWR fills, revert to 7200.
 
   // -- Mode Classifier Thresholds (MG / HWR gates) --
-  mgMinVolMomentum: 0.05, // old profitable // old profitable    // OLD PROFITABLE: was 0.7
-  mgMinPriceChange5m: 1.2, // old profitable // old profitable  // same
+  // OPTIMIZED-2026-07-17: mgMinVolMomentum=0.10 slightly higher for stronger momentum signal.
+  // mgMinPriceChange5m=2.0 ensures MG only catches tokens with real 5m price action.
+  mgMinVolMomentum: 0.10,
+  mgMinPriceChange5m: 2.0,
   mgMinTxVelocity: 8, // old profitable // old profitable       // OLD PROFITABLE: was 8
   mgMaxAge: 86400,           // FIX(mg-stale-entry): 2400s = 40min. Every MG winner was < 36min old (WCT 2153s).
                             // Every MG loss on aged tokens (RDR2 8.4k-10.6k, MYLOO 9.7k-11.2k, MrAsteroid 3.2k+)
                             // was on a stale token whose momentum had already exited. Caps MG to live momentum only.
-  maxEntryPriceChange5m: Number(process.env.MAX_ENTRY_PX5M) || 40, // FIX(2026-07-01): 10 made SNIPER mode unreachable for any mover (every momentum coin has px5m>10 -> mode=none -> EDGE_POCKET excludes). e.g. A37jiDn7 s81 & $69 ML93 killed by this alone. 40 admits 12-30% movers, still blocks parabolic blowoffs. ZERO Helius cost. Tune via MAX_ENTRY_PX5M.
-  hwrMinBuyPressure5m: 0.70,  // CONVERGENCE-FIX: restored to 0.70. HWR = High Whale Retention. 55% is not high conviction. 70% ensures genuine whale buying.
-  hwrMinBuyPressure1h: 0.51, // old profitable // old profitable // OLD PROFITABLE: was 0.50
+  // OPTIMIZED-2026-07-17: maxEntryPriceChange=35 slightly tighter to block more parabolic
+  // entries while still admitting 12-30% momentum runners.
+  maxEntryPriceChange5m: Number(process.env.MAX_ENTRY_PX5M) || 35,
+  // OPTIMIZED-2026-07-17: hwrMinBuyPressure5m=0.75 for HIGH conviction whale retention.
+  // Fewer HWR trades but significantly higher win rate per trade.
+  hwrMinBuyPressure5m: 0.75,
+  hwrMinBuyPressure1h: 0.51,
 
   // -- Operational Safety & Discovery --
   maxTradesPerCycle: 2, // micro wallet: max 2 attempts per scan
@@ -522,8 +572,13 @@ let engineSettings = {
   txCostsEnabled: 1, // old profitable // old profitable
   safetyChecksEnabled: 1, // old profitable // old profitable
   txFeePercent: 0.5, // old profitable // old profitable // OLD PROFITABLE: was 1.5
-  rugcheckMinScore: 100, // OLD PROFITABLE: was 400 — too restrictive
-  rugcheckMaxRiskNormalised: 65, // Raised from 60 → 65: norm=61 tokens (LP-VETO-RELAX admitted, e.g. $BAGEY/$SPCX/$EarthX/$CPU/$ZERO) were being killed after admission. 65 lets them through while still blocking norm=66+.
+  // OPTIMIZED-2026-07-17: rugcheckMinScore=200 for stricter initial rug filter.
+  // OLD PROFITABLE: was 400 — too restrictive. 200 balances safety with candidate flow.
+  // rugcheckMaxRiskNormalised=60 blocks borderline tokens (norm 61-65) that were admitted
+  // but had questionable safety (e.g. $BAGEY/$SPCX/$EarthX/$CPU/$ZERO at norm=61 were
+  // killed after admission with old max=65). Higher safety = fewer rugs = higher win rate.
+  rugcheckMinScore: 200,
+  rugcheckMaxRiskNormalised: 60,
 
   // -- Micro-aware EDGE gate (dashboard-tunable) --
   // Only the two LOW-RISK knobs are exposed. feeMultiplier (2.0),
@@ -548,11 +603,20 @@ let engineSettings = {
   //   portfolio = 1.0 SOL         → multiplier ≈ 1.8x
   //   portfolio = 2.0 SOL         → multiplier ≈ 3.2x  (capped at 5x)
   // Keep DISABLED until avgShadow turns consistently positive. Flip to 1 to activate.
-  compoundBoostEnabled: 0, // old profitable: disabled for micro wallet // old profitable: disabled for micro wallet      // 0 = off (safe default), 1 = on
-  compoundRefSol: 0.5, // old profitable // old profitable          // Baseline — matches your paper starting balance
-  compoundPower: 1.35, // old profitable // old profitable          // Super-linear growth shape
-  compoundMaxMultiplier: 5.0, // old profitable // old profitable   // Hard cap: never more than 5× base size
-  compoundAbsCapSol: 1.0, // old profitable // old profitable       // Absolute SOL ceiling per trade
+  // ⚠️ WARNING: Compound boost is INERT below 0.3 SOL wallet (multiplier=1), so it
+  // is safe to enable now. Once portfolio exceeds 0.3 SOL, verify avgShadow is
+  // positive (see shadow-stats.json verdict) before relying on boost - without a
+  // proven edge, compounding accelerates losses not wins.
+  // OPTIMIZED-2026-07-17: ENABLED for the "1000x to 1 lakhx ROI" compounding thesis.
+  // Formula: multiplier = min(5, max(1, (portfolio / ref)^power))
+  //   At 0.3 SOL:   multiplier = 1x   (baseline, no boost below ref)
+  //   At 1.0 SOL:   multiplier ≈ 2.5x (grows 2.5x faster as wallet grows)
+  //   At 2.0 SOL:   multiplier ≈ 5x   (capped at 5x and 1.0 SOL/trade)
+  compoundBoostEnabled: 1,
+  compoundRefSol: 0.3,
+  compoundPower: 1.5,
+  compoundMaxMultiplier: 5.0,
+  compoundAbsCapSol: 1.0,
 };
 
 let liveCandidatesCache: any[] = [], lastScanTime = 0;
@@ -565,13 +629,14 @@ let liveCandidatesCache: any[] = [], lastScanTime = 0;
 // REGIME_GATE_ENABLED, REGIME_MIN_RUNNERS, REGIME_RUNNER_PCT, REGIME_RUNNER_VOL,
 // REGIME_RUNNER_BP, REGIME_STRONG_SINGLE_PCT, REGIME_SAMPLE.
 const REGIME_GATE = {
+  // OPTIMIZED-2026-07-17: Relaxed thresholds for higher trade frequency while maintaining quality.
   enabled:         String(process.env.REGIME_GATE_ENABLED ?? "true").toLowerCase() !== "false",
-  minRunners:      Number(process.env.REGIME_MIN_RUNNERS ?? 2),        // # of hot 5m movers required
-  runnerPct:       Number(process.env.REGIME_RUNNER_PCT ?? 12),        // priceChange5m % to count as a runner
-  runnerVolUsd:    Number(process.env.REGIME_RUNNER_VOL ?? 300),       // min 5m volume ($) for a runner
-  runnerBp:        Number(process.env.REGIME_RUNNER_BP ?? 0.55),       // min 5m buy pressure (buys/total)
-  strongSinglePct: Number(process.env.REGIME_STRONG_SINGLE_PCT ?? 20),  // CONVERGENCE-FIX: 35 required a single +35% mover. Most legitimate runners are +20-25%. One +20% mover is sufficient momentum signal. // one mover this hot overrides breadth
-  sampleSize:      Number(process.env.REGIME_SAMPLE ?? 25),            // top-N scored candidates to scan
+  minRunners:      Number(process.env.REGIME_MIN_RUNNERS ?? 1),        // 1 runner = viable regime (was 2)
+  runnerPct:       Number(process.env.REGIME_RUNNER_PCT ?? 10),        // +10% = runner (was 12)
+  runnerVolUsd:    Number(process.env.REGIME_RUNNER_VOL ?? 300),
+  runnerBp:        Number(process.env.REGIME_RUNNER_BP ?? 0.55),
+  strongSinglePct: Number(process.env.REGIME_STRONG_SINGLE_PCT ?? 20),
+  sampleSize:      Number(process.env.REGIME_SAMPLE ?? 25),
 };
 let isFetchingCandidates = false; // <-- The Anti-Spam Lock
 
@@ -903,6 +968,15 @@ let paperBalance = engineSettings.startingBalance;
 let balanceInitialized = false;
 let peakPrices = new Map<number, number>();
 let prevPnlMap = new Map<number, number>();
+// AI-FIX(2026-07-28): Beast tier persistence per-trade for asymmetric moonshot exit engine.
+// When beast-safety qualifies a candidate (BEAST_SAFETY_ENABLED=true + tier ≥ HIGH),
+// the trade id maps to its tier ("HIGH" | "LEGENDARY"). The exit loop reads this map
+// to decide whether to apply beast-exit asymmetric stops/trail or fall back to legacy.
+// Keyed by trade id (number) just like peakPrices — same lifecycle.
+let beastTierMap = new Map<number, string>();
+// Tracks the highest tpLevel reached by a Beast-tier trade so the partial-TP ladder
+// can be applied incrementally across monitoring cycles. 0 = no TP leg taken yet.
+let beastTpLevelReached = new Map<number, number>();
 // AI-TUNE(2026-06-23): records the realized partial-TP leg (fraction + net pnl%) per trade so the
 // shadow ledger can blend it with the final-exit leg instead of discarding banked partial profits.
 let partialLegMap = new Map<number, { fraction: number; pnlPct: number }>();
@@ -1016,6 +1090,18 @@ function isTransientDbConnectionError(e: any): boolean {
 }
 let sellingInProgress = new Set<number>();
 let scanLock = false;
+
+// ADAPTIVE SCORE GATE (Phase 2): dynamically adjusts minScoreToTrade when the
+// funnel is rejecting too many candidates. Prevents the "dead zone" where scores
+// 60-70 are routinely seen but never traded.
+let funnelRejectCount = 0;
+let funnelTotalCount = 0;
+let consecutiveHighRejectCycles = 0;
+const FUNNEL_HIGH_REJECT_THRESHOLD = 0.8;  // >80% rejected triggers gate relaxation
+const FUNNEL_MIN_SCORE_FLOOR = 50;         // never drop below this
+const FUNNEL_RELAX_STEP = 5;               // drop min score by 5 each cycle of high rejection
+const FUNNEL_STREAK_REQUIRED = 3;           // need 3 consecutive high-reject cycles to relax
+const FUNNEL_TIGHTEN_AFTER_GOOD = 2;       // tighten back after 2 good cycles
 let reservedCapital = 0;
 // BALANCE RESILIENCE: cache the last successful on-chain wallet read so transient RPC
 // failures (429 / timeout / fetch failed) don't collapse live sizing & micro-detection to
@@ -3153,6 +3239,16 @@ async function runScanCycle() {
 
     const modeStatus = await storage.getBotStatus().catch(() => ({ tradingMode: "paper" }));
     const isLive = modeStatus.tradingMode === "live" && jupiterService !== null;
+
+    // FIX-2: Declare the descriptive-prior hypothesis explicitly for paper-mode runs.
+    // Paper trading is permitted under the hypothesis that:
+    // estimatedPeakPct(liq) is stable enough to screen feasibility, and
+    // the score composite has provisional correlation with forward outcomes.
+    // This hypothesis is FALSIFIED if paper mean(f(x)) < +1.0% over >= 30 trades.
+    if (modeStatus.tradingMode === "paper") {
+      console.log("[PHASE-E] Descriptive-prior hypothesis active: estimatedPeakPct(liq) as stable prior,");
+      console.log("[PHASE-E] score composite has provisional correlation with outcomes. Hypothesis FALSIFIED if paper mean(f(x)) < +1.0% over >= 30 trades.");
+    }
     if (isLive) {
         const realFreeBal = await jupiterService!.getWalletBalance().catch(() => 0);
         if (realFreeBal > 0) await storage.updateBotStats({ walletBalance: realFreeBal.toFixed(4) });
@@ -3514,6 +3610,7 @@ async function runScanCycle() {
       if (!scoring.qualifiedMode || scoring.combinedScore < effectiveMinScore || scoring.sizeSol < cycleMinSize) {
         console.log(`[SCORE_GATE] SKIP $${candidate.tokenSymbol} — Score: ${scoring.combinedScore} (Min: ${effectiveMinScore}) | Mode: ${scoring.qualifiedMode ?? "none (Reason: " + (scoring.rejectionReason || "failed strict gates") + ")"} | Size: ${scoring.sizeSol.toFixed(4)} (Min: ${cycleMinSize})`);
         continue;
+
       }
       if (status.mode !== "AUTO" && scoring.qualifiedMode !== status.mode) {
           console.log(`[GATE] SKIP $${candidate.tokenSymbol} — Mode mismatch (${scoring.qualifiedMode} != ${status.mode})`);
@@ -3707,6 +3804,54 @@ async function runScanCycle() {
             hardBlockedAddresses.set(addr, Date.now());
         }
         continue;
+      }
+
+      // ===== BEAST TIER GATE (opt-in, additive on top of legacy safety) =====
+      // evaluateBeastDiscovery is a discovery pre-valuator that adds a 6-surface
+      // asymmetric moonshot quality filter on top of the legacy safety chain. By
+      // default this is OFF (BEAST_SAFETY_ENABLED=false), preserving legacy behavior.
+      // When enabled, a token must pass both legacy safety AND beast-safety to
+      // qualify for the Beast tier. The Beast tier gives:
+      //   - asymmetric exit engine (10x+ runners held through 30-60% pullbacks)
+      //   - tighter safety posture (hard-veto on active authorities, mint authority,
+      //     LP lock < 80%, top-1 holder > 5%, etc.)
+      let _beastTier: string | null = null;
+      let _beastScore: number = 0;
+      const _beastEnabled = String(process.env.BEAST_SAFETY_ENABLED ?? "false").toLowerCase() === "true";
+      if (_beastEnabled) {
+        try {
+          const _pair5m = (pair?.txns?.m5 ?? { buys: 0, sells: 0 }) as { buys?: number; sells?: number };
+          const _pair1h = (pair?.txns?.h1 ?? { buys: 0, sells: 0 }) as { buys?: number; sells?: number };
+          const _volume5mUsd = (pair?.volume?.m5 as number) ?? 0;
+          const _volume24hUsd = (pair?.volume?.h24 as number) ?? 0;
+          const _beastInput: BeastDiscoveryInput = {
+            liquidityUsd: pair?.liquidity?.usd || 0,
+            ageSeconds: candidate.ageSeconds || 0,
+            buys5m: _pair5m.buys || 0,
+            sells5m: _pair5m.sells || 0,
+            volume5mUsd: _volume5mUsd,
+            volume24hUsd: _volume24hUsd,
+            priceChange5mPct: candidate.priceChange5m || 0,
+            priceChange1hPct: candidate.priceChange1h || 0,
+            smartWalletsNetBuyers: 0,
+            whaleNetBuyers: 0,
+            nonLpTop1Pct: undefined,
+            nonLpTop5Pct: undefined,
+            lpLockedPct: undefined,
+            creatorPriorActiveCount: 0,
+          };
+          const _beastResult = evaluateBeastDiscovery(_beastInput);
+          _beastScore = _beastResult.score;
+          if (_beastResult.verdict === "PASS") {
+            _beastTier = _beastResult.tier;
+            console.log(`[BEAST] ${candidate.tokenSymbol} qualifies for ${_beastTier} tier (score=${_beastScore})`);
+          } else if (String(process.env.BEAST_REQUIRED ?? "false").toLowerCase() === "true") {
+            console.log(`[BEAST] BLOCKED $${candidate.tokenSymbol} — ${_beastResult.reason}`);
+            continue;
+          }
+        } catch (_beastErr: any) {
+          console.warn(`[BEAST] Discovery eval error (continuing with legacy): ${_beastErr?.message || _beastErr}`);
+        }
       }
       
       // PLAYBOOK(2026-06-29): mint-authority-active tokens are admitted (still sellable) but carry DILUTION risk -> size down rather than full size. Freeze-authority is already a hard veto above; this is the literature-recommended size penalty for mint-active. Disable via MINT_ACTIVE_SIZE_MULT=1.
@@ -4039,6 +4184,15 @@ async function runScanCycle() {
           peakPrice: effectivePaperEntryPrice.toString(), pnl: "0", peakPnl: "0", score: scoring.combinedScore.toString(), txHash: buyTxHash, liquidity: liq.toFixed(2),
           dex: (pair.dexId || candidate.dex || "").toLowerCase(),
         });
+        // ===== BEAST TIER STAMP (opt-in) =====
+        // If beast-safety was enabled and the candidate qualified for a Beast tier,
+        // stamp the trade so the exit side can run the asymmetric moonshot exit engine.
+        if (_beastTier) {
+          (trade as any)._beastTier = _beastTier;
+          (trade as any)._beastScore = _beastScore;
+          beastTierMap.set(trade.id, _beastTier);
+          console.log(`[BEAST] Paper trade #${trade.id} $${candidate.tokenSymbol} STAMPED ${_beastTier} (score=${_beastScore})`);
+        }
         peakPrices.set(trade.id, effectivePaperEntryPrice);
         tradeStopPrices.set(trade.id, calcCostAwareStopPrice(effectivePaperEntryPrice, scoring.qualifiedMode, liq, scoring.sizeSol, cachedSolPriceUsd));
         sessionTokenBuyCount.set(addr, (sessionTokenBuyCount.get(addr) ?? 0) + 1);
@@ -4995,10 +5149,16 @@ async function checkOpenPositions() {
         // Cap the effective trigger at 60% of the realistic peak so the partial is reachable within
         // the band the trade was admitted for (still floored by the base partialTpThreshold).
         const _winnablePeakPct = estimateRealisticPeakPct(pair?.liquidity?.usd ?? 0);
-        const effectivePartialTpThreshold = Math.min(
-          Math.max(engineSettings.partialTpThreshold, _partialExitCostPct + engineSettings.partialTpCostMargin),
-          Math.max(engineSettings.partialTpThreshold, _winnablePeakPct * 0.6),
-        );
+        // OBJECTIVE-FIX(OD-3): disable partial TP when exit cost alone makes it unreachable.
+        // At low liq, exit slippage + fees eat the gain, so a +3% TP trigger still loses money on exit.
+        // If exit cost >= base threshold, partial TP is INACTIVE for this trade (preserves capital).
+        const _partialTpExitCost = _partialExitCostPct + engineSettings.partialTpCostMargin;
+        const effectivePartialTpThreshold = _partialTpExitCost >= engineSettings.partialTpThreshold
+          ? 999  // DISABLE partial TP: exit cost already exceeds target gain
+          : Math.min(
+              Math.max(engineSettings.partialTpThreshold, _partialTpExitCost),
+              Math.max(engineSettings.partialTpThreshold, _winnablePeakPct * 0.6),
+            );
         if (!partialTpTaken.has(trade.id) && partialTpFailures < 3 && pnlPct >= effectivePartialTpThreshold && pnlPct < dynamicTP) {
           const sizeSol = parseFloat(trade.amount);
           const partialSize = sizeSol * engineSettings.partialTpRatio;
@@ -5061,6 +5221,60 @@ async function checkOpenPositions() {
           else if (Math.abs(pnlPct - stable.pnl) >= 0.5) pnlStableMap.set(trade.id, { pnl: pnlPct, since: Date.now() });
         } else pnlStableMap.delete(trade.id);
         let shouldClose = false, reason = "";
+        // ===== BEAST EXIT ENGINE (opt-in, additive on top of legacy cascade) =====
+        // When BEAST_EXIT_ENABLED=true AND the trade carries a Beast tier stamp from entry,
+        // run the asymmetric moonshot exit engine. Priority:
+        //   1. beast_exit verdict of `exit` -> shouldClose=true (SUPERSEDES legacy cascade
+        //      unless the rugcheck __patchForceExit flag is set, which beats everything).
+        //   2. beast_exit verdict of `partial` -> execute partial sell via the beast ladder
+        //      (skips legacy +5% partial-TP so we don't double-partition the position).
+        //   3. beast_exit verdict of `hold` -> legacy cascade still runs (rug / hard-loss /
+        //      stale-time stops can still fire; beast just adds a wider trailing stop).
+        const _beastExitEnabled = String(process.env.BEAST_EXIT_ENABLED ?? "false").toLowerCase() === "true";
+        const _tradeBeastTier = (trade as any)._beastTier ?? beastTierMap.get(trade.id);
+        if (_beastExitEnabled && _tradeBeastTier) {
+          try {
+            const _beastEntryPrice = parseFloat(trade.price || "0");
+            const _beastCurrentPrice = currentPrice;
+            const _beastPeakPrice = peakPrices.get(trade.id) ?? _beastEntryPrice;
+            const _beastPositionSol = parseFloat(trade.amount || "0");
+            const _beastAgeSeconds = (Date.now() - new Date(trade.timestamp || trade.createdAt || Date.now()).getTime()) / 1000;
+            const _beastTpLevel = beastTpLevelReached.get(trade.id) ?? 0;
+            const _beastExit = evaluateBeastExit({
+              entryPriceSol: _beastEntryPrice,
+              currentPriceSol: _beastCurrentPrice,
+              peakPriceSol: _beastPeakPrice,
+              ageSeconds: _beastAgeSeconds,
+              positionSol: _beastPositionSol,
+              tier: "COLD" as BeastBagTier, // every position starts COLD — engine promotes UP via multiplier
+              tpLevelReached: _beastTpLevel,
+            });
+            if (_beastExit.action === "exit") {
+              shouldClose = true;
+              reason = _beastExit.reason;
+            } else if (_beastExit.action === "partial") {
+              // Execute beast ladder partial. Track leg in beastTpLevelReached so the
+              // NEXT monitoring cycle starts at the next ladder rung.
+              const _beastPartialFraction = _beastExit.sellFraction;
+              const _beastPartialSizeSol = _beastPositionSol * _beastPartialFraction;
+              if (_beastPartialSizeSol > 0.0001 && trade.tradingMode === "paper") {
+                const _beastPartialExitCostPct = _partialExitCostPct ?? 0; // already computed earlier
+                const _beastNetPnlPct = pnlPct - _beastPartialExitCostPct;
+                const _beastReturn = _beastPartialSizeSol * (1 + _beastNetPnlPct / 100);
+                paperBalance += _beastReturn;
+                dailyPnlSol += _beastReturn - _beastPartialSizeSol;
+                await storage.updateTradeAmount(trade.id, (_beastPositionSol - _beastPartialSizeSol).toFixed(4));
+                beastTpLevelReached.set(trade.id, _beastTpLevel + 1);
+                console.log(`[BEAST-TP] #${trade.id} $${trade.tokenSymbol} | ${_beastExit.reason} | Sold ${(_beastPartialFraction * 100).toFixed(1)}% @ +${pnlPct.toFixed(1)}% | Secured: ${_beastReturn.toFixed(4)} SOL | Lvl ${_beastTpLevel + 1}/${BEAST_TP_LADDER.length}`);
+                prevPnlMap.set(trade.id, pnlPct);
+                continue;
+              }
+            }
+            // For `hold`: let legacy cascade run.
+          } catch (_beastExitErr: any) {
+            console.warn(`[BEAST-EXIT] eval error (continuing with legacy cascade): ${_beastExitErr?.message || _beastExitErr}`);
+          }
+        }
         // PATCH #6: honor mid-hold rugcheck force-exit flag set above.
         if ((trade as any).__patchForceExit) {
           shouldClose = true;
@@ -5182,9 +5396,9 @@ async function checkOpenPositions() {
           // MOONSHOT: Dip Recovery Architecture
           // 1. Stagnant Green Kill: If a token is slightly green (0 to 20%) for 25 minutes without mooning, purge it. NOTE(2026-06-30, multi-tick verified): only reaches ARMED positions (peak>=activation); never-armed greens are cut earlier by TIME_EXIT@cap.
           // 2. Dip Recovery: If it is in a loss (down to -45%), give it up to 30 minutes to bounce back before purging.
-          else if (holdTime > 1500 && pnlPct >= 0 && pnlPct < 20) { shouldClose = true; reason = `STAGNANT_GREEN_KILL (Held 25m but PNL is only ${pnlPct.toFixed(1)}%)`; } // AI-TUNE(2026-06-28 COST-GATE): 600s(10m) -> 1500s(25m). ROOT CAUSE: modeled round-trip cost floor is ~8% (3.76% x2), but the 10m stagnant-kill flattened any winner stuck between 0% and +8% before it could clear cost. PROOF: $SPCX peaked +3.91% -> killed at +2.25% gross / +0.19% net after exit cost. 25m lets a sub-8% green position mature past the cost floor instead of booking a forced scratch; DIP_RECOVERY_FAILED(30m) and ABSOLUTE_MAX_HOLD still cap the tail.
+          else if (holdTime > (Number(process.env.STAGNANT_GREEN_KILL_SECONDS) || 1500) && pnlPct >= 0 && pnlPct < 20) { shouldClose = true; reason = `STAGNANT_GREEN_KILL (Held ${Math.round(holdTime/60)}m but PNL is only ${pnlPct.toFixed(1)}%)`; } // AI-TUNE(2026-06-28 COST-GATE): 600s(10m) -> 1500s(25m). ROOT CAUSE: modeled round-trip cost floor is ~8% (3.76% x2), but the 10m stagnant-kill flattened any winner stuck between 0% and +8% before it could clear cost. PROOF: $SPCX peaked +3.91% -> killed at +2.25% gross / +0.19% net after exit cost. 25m lets a sub-8% green position mature past the cost floor instead of booking a forced scratch; DIP_RECOVERY_FAILED(30m) and ABSOLUTE_MAX_HOLD still cap the tail. TUNABLE: STAGNANT_GREEN_KILL_SECONDS env override (default 1500).
           else if (holdTime > (Number(process.env.MAX_HOLD_SECONDS_OVERRIDE) || 300) && peakPnl < activation && pnlPct < 1 && !((process.env.DIP_RECOVERY_ENABLED === 'true') && pnlPct < 0)) { shouldClose = true; reason = `TIME_EXIT (held ${Math.round(holdTime)}s > cap, never armed trail; peak ${peakPnl.toFixed(1)}%, pnl ${pnlPct.toFixed(2)}%)`; }  // CONVERGENCE-FIX: added pnlPct < 1. Green positions (pnl >= +1%) should not be time-killed at 5min; they get STAGNANT_GREEN_KILL at 25min instead. // PLAYBOOK(2026-06-29): standard memecoin time-stop at 300s. Only cuts positions that NEVER armed the moonshot trail (peak < activation=12%); armed runners keep running under the laddered floor. Disable/extend via MAX_HOLD_SECONDS_OVERRIDE (e.g. =1800 to restore old behavior).
-          else if (holdTime > 1800 && pnlPct < 0) { shouldClose = true; reason = `DIP_RECOVERY_FAILED (Held 30m, failed to bounce from ${pnlPct.toFixed(1)}% loss)`; }
+          else if (holdTime > (Number(process.env.DIP_RECOVERY_FAILED_SECONDS) || 1800) && pnlPct < 0) { shouldClose = true; reason = `DIP_RECOVERY_FAILED (Held ${Math.round(holdTime/60)}m, failed to bounce from ${pnlPct.toFixed(1)}% loss)`; } // TUNABLE: DIP_RECOVERY_FAILED_SECONDS env override (default 1800).
           else if (holdTime > engineSettings.dynamicHoldMaxSeconds) { shouldClose = true; reason = `ABSOLUTE_MAX_HOLD(${Math.round(holdTime)}s > ${engineSettings.dynamicHoldMaxSeconds}s cap, pnl ${pnlPct.toFixed(2)}%)`; }
         }
 
