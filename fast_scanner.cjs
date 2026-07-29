@@ -92,25 +92,64 @@ async function holderPass(mint) {
 }
 
 const seen = new Set();
+const processed = new Map();
 const q = [];
 let busy = false;
+const SCAN_COOLDOWN_MS = 300_000;
+const CANDIDATE_TTL_MS = 3_600_000;
+
+function candidateKey(mint) { return mint.toLowerCase(); }
+
+function isFresh(mint) {
+  const key = candidateKey(mint);
+  const lastSeen = processed.get(key);
+  if (!lastSeen) return true;
+  return (Date.now() - lastSeen) < SCAN_COOLDOWN_MS;
+}
+
+function markProcessed(mint) {
+  const key = candidateKey(mint);
+  processed.set(key, Date.now());
+  if (processed.size > 5000) {
+    const cutoff = Date.now() - CANDIDATE_TTL_MS;
+    for (const [k, t] of processed) { if (t < cutoff) processed.delete(k); }
+  }
+}
+
+function scoreCandidate(liq, ageH, ratio, top1, top10) {
+  let score = 0;
+  if (liq >= 25000) score += 30;
+  else if (liq >= 10000) score += 20;
+  else if (liq >= 5000) score += 10;
+  if (ageH >= 1 && ageH <= 24) score += 25;
+  else if (ageH < 1) score += 15;
+  if (ratio >= 1 && ratio <= 10) score += 25;
+  if (top1 < 10) score += 10;
+  if (top10 < 40) score += 10;
+  return Math.min(score, 100);
+}
 
 async function evaluate(mint) {
+    const key = candidateKey(mint);
+    if (seen.has(key)) return;
+    if (!isFresh(key)) return;
+    markProcessed(key);
     log(`Evaluating ${mint}`);
     const a = await rugcheckPass(mint);
-    if (!a.pass) { log(`  ✗ RugCheck: ${a.reason}`); return; }
+    if (!a.pass) { log(`  RugCheck: ${a.reason}`); return; }
     const b = await dexscreenerPass(mint);
-    if (!b.pass) { log(`  ✗ DexScreener: ${b.reason}`); return; }
+    if (!b.pass) { log(`  DexScreener: ${b.reason}`); return; }
     const c = await holderPass(mint);
-    if (!c.pass) { log(`  ✗ Holders: ${c.reason}`); return; }
+    if (!c.pass) { log(`  Holders: ${c.reason}`); return; }
+    const score = scoreCandidate(b.liq, b.ageH, b.ratio, c.top1, c.top10);
     const row = [
-        new Date().toISOString(), mint, (a.score || 0).toFixed(0),
+        new Date().toISOString(), mint, score.toFixed(0),
         b.liq.toFixed(0), b.ageH.toFixed(1),
         c.top1.toFixed(1), c.top10.toFixed(1),
         b.ratio.toFixed(2), b.url
     ].join(',') + '\n';
     fs.appendFileSync(CANDIDATES_FILE, row);
-    log(`★ CANDIDATE: ${mint} | LP $${b.liq.toFixed(0)} | age ${b.ageH.toFixed(1)}h | ${b.url}`);
+    log(`★ CANDIDATE [score=${score}] ${mint} | LP $${b.liq.toFixed(0)} | age ${b.ageH.toFixed(1)}h | ${b.url}`);
 }
 
 async function drain() {
@@ -120,7 +159,7 @@ async function drain() {
         if (seen.has(m)) continue;
         seen.add(m);
         try { await evaluate(m); } catch (e) { log(`eval err: ${e.message}`); }
-        await new Promise(r => setTimeout(r, 200)); // FREQ(2026-06-29): 600->200ms, faster queue drain
+        await new Promise(r => setTimeout(r, 200));
     }
     busy = false;
 }

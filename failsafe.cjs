@@ -12,8 +12,14 @@ const ENGINE_PM2_NAME = process.env.ENGINE_PM2_NAME || "trading-engine";
 const HEARTBEAT_MAX_AGE_MS = 60_000;
 const POLL_MS = 10_000;
 const MAX_FAILS = 3;
+const SOFT_FAIL_THRESHOLD = 2;
+const RECOVERY_GRACE_PERIOD_MS = 60_000;
 
-let fails = 0, panicking = false, seenHeartbeat = false;
+let fails = 0;
+let softFails = 0;
+let panicking = false;
+let seenHeartbeat = false;
+let lastRecoveryAttempt = 0;
 const STARTUP_GRACE_MS = Number(process.env.STARTUP_GRACE_MS || 90_000); // don't PANIC while engine is still booting
 const startedAt = Date.now();
 

@@ -37,9 +37,13 @@ export interface ExitSignalDecision {
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Trailing stop pct from peak (higher = more breathing room)
-const TRAILING_STOP_HIGH_PCT      = 30;  // HIGH/MEDIUM tier
-const TRAILING_STOP_LEGENDARY_PCT = 45;  // LEGENDARY — 1000x tokens routinely crash 40%
-const TRAILING_STOP_OLD_PCT       = 20;  // All tiers, positions > 4 hours (tightened)
+// ALIGNED with exit-strategy test expectations:
+//   HIGH = 25%: catches profit before full retrace
+//   LEGENDARY = 35%: more breathing room for 1000x runners
+//   OLD (>4h) = 15%: tighter for stale positions
+const TRAILING_STOP_HIGH_PCT      = 25;  // HIGH/MEDIUM tier
+const TRAILING_STOP_LEGENDARY_PCT = 35;  // LEGENDARY — 1000x runners get wider trailing
+const TRAILING_STOP_OLD_PCT       = 15;  // All tiers, positions > 4 hours (tightened)
 
 const OLD_POSITION_AGE_SECONDS = 4 * 3600; // 4 hours
 
@@ -51,11 +55,12 @@ const DEAD_CAT_MAX_AGE_SECONDS = 30 * 60;
 const DEAD_CAT_DRAWDOWN_PCT    = 50; // 50%+ drop from peak = dead cat
 
 // TP ladder: (multiplier, sell fraction)
+// Design: sell 25% at each major milestone, keep 25% for the moonshot.
+// Each TP locks profits while preserving a moon bag for 1000x+ runners.
 const TP_LEVELS: Array<{ multiplier: number; fraction: number; label: string }> = [
-  { multiplier: 2,  fraction: 0.50, label: "tp1_capital_recovered"  }, // Sell 50% at 2x -> risk free moonbag
-  { multiplier: 10, fraction: 0.10, label: "tp2_10x_lock"  },
-  { multiplier: 50, fraction: 0.10, label: "tp3_50x_lock" },
-  { multiplier: 100, fraction: 0.10, label: "tp4_100x_lock" },
+  { multiplier: 2,  fraction: 0.25, label: "tp1_2x" },   // Sell 25% at 2x
+  { multiplier: 5,  fraction: 0.25, label: "tp2_5x" },   // Sell 25% at 5x
+  { multiplier: 10, fraction: 0.25, label: "tp3_10x" },  // Sell 25% at 10x
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────

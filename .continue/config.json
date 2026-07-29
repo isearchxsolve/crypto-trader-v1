@@ -1,0 +1,67 @@
+{
+  "models": [
+    {
+      "title": "CryptoTrader-DeepSeek NIM",
+      "provider": "openai",
+      "model": "deepseek-ai/deepseek-v4-flash",
+      "apiBase": "https://integrate.api.nvidia.com/v1",
+      "apiKey": "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",
+      "completionOptions": {
+        "maxTokens": 131072,
+        "temperature": 0.2
+      }
+    }
+  ],
+  "tabAutocompleteModel": {
+    "title": "CryptoTrader-DeepSeek Autocomplete",
+    "provider": "openai",
+    "model": "deepseek-ai/deepseek-v4-flash",
+    "apiBase": "https://integrate.api.nvidia.com/v1",
+    "apiKey": "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"
+  },
+  "customCommands": [
+    {
+      "name": "fix",
+      "prompt": "Fix the code in the selected file. Look for bugs, type errors, and logical issues. Return only the corrected code.",
+      "description": "Fix code issues"
+    },
+    {
+      "name": "refactor",
+      "prompt": "Refactor the selected code for better readability, performance, and maintainability. Follow best practices.",
+      "description": "Refactor code"
+    },
+    {
+      "name": "explain",
+      "prompt": "Explain the selected code in detail. Break down the logic, data flow, and any design patterns used.",
+      "description": "Explain code"
+    }
+  ],
+  "contextProviders": [
+    {
+      "name": "diff",
+      "params": {}
+    },
+    {
+      "name": "folder",
+      "params": {}
+    },
+    {
+      "name": "codebase",
+      "params": {}
+    }
+  ],
+  "slashCommands": [
+    {
+      "name": "edit",
+      "description": "Edit selected code"
+    },
+    {
+      "name": "comment",
+      "description": "Add comments"
+    },
+    {
+      "name": "share",
+      "description": "Export session"
+    }
+  ]
+}

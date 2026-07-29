@@ -97,6 +97,43 @@ async def predict_batch(request: Request):
     except Exception as e:
         return JSONResponse(status_code=200, content={"predictions": [], "error": str(e)})
 
+
+@app.post("/api/retrain")
+async def retrain_model():
+    import sys
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    try:
+        from ml.train import load_real_data, generate_training_data
+        import pandas as pd
+        import pickle
+        from sklearn.model_selection import train_test_split
+        from sklearn.metrics import accuracy_score, f1_score
+        import xgboost as xgb
+
+        real_df = load_real_data(min_rows=50)
+        synth_df = generate_training_data(25000)
+        if real_df is not None and len(real_df) > 0:
+            combined = pd.concat([synth_df, real_df], ignore_index=True)
+        else:
+            combined = synth_df
+        X = combined[FEATURE_COLUMNS]
+        y = combined["label"]
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+        neg_weight = (1 - y_train.mean()) / y_train.mean()
+        model = xgb.XGBClassifier(n_estimators=800, max_depth=5, learning_rate=0.03, subsample=0.75, colsample_bytree=0.75, min_child_weight=8, gamma=0.5, reg_alpha=0.3, reg_lambda=2.0, scale_pos_weight=neg_weight * 0.8, eval_metric="logloss", early_stopping_rounds=40, random_state=42)
+        model.fit(X_train, y_train, verbose=False)
+        acc = accuracy_score(y_test, model.predict(X_test))
+        f1 = f1_score(y_test, model.predict(X_test))
+        model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ml", "model.pkl")
+        os.makedirs(os.path.dirname(model_path), exist_ok=True)
+        with open(model_path, "wb") as fmodel:
+            pickle.dump({"model": model, "features": FEATURE_COLUMNS, "version": "5.0-real"}, fmodel)
+        return {"status": "ok", "samples": len(combined), "test_accuracy": float(acc), "test_f1": float(f1), "version": "5.0-real"}
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JSONResponse(status_code=500, content={"status": "error", "detail": str(e)})
+
 if __name__ == "__main__":
     port = int(os.getenv("ML_PORT", "5001"))
     print(f"[ML] Starting XGBoost ML service on port {port}")

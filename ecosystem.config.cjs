@@ -115,4 +115,19 @@ module.exports = {
       exec_mode: 'fork',
     },
   ],
-};
+};,
+
+
+  // Fast Scanner - candidate discovery feed (Phase 4: PM2-managed resilience)
+  {
+    name: "fast-scanner",
+    script: "fast_scanner.cjs",
+    interpreter: "node",
+    max_restarts: 10,
+    min_uptime: 5000,
+    restart_delay: 3000,
+    error_file: "logs/fast-scanner-error.log",
+    out_file: "logs/fast-scanner-out.log",
+    merge_logs: true,
+  },
+];

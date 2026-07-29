@@ -1,0 +1,5 @@
+{
+  "continue.enableTabAutocomplete": true,
+  "continue.allowAnonymousTelemetry": false,
+  "window.title": "CryptoTrader-DeepSeek - ${activeEditorShort}${separator}${rootName}"
+}

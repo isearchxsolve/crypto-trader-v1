@@ -14,7 +14,7 @@ export default defineConfig({
     exclude: [
       'test/failsafe.test.cjs',   // uses node:test, not vitest
       'tests/newMintGate.test.ts', // uses node:assert + custom runner, not vitest
-      'routes.test.ts',           // requires postgres DB
+      // 'routes.test.ts' REMOVED from exclude — now fully mockable (storage + jupiter + fetch mocked)
       'node_modules/**',
       'dist/**',
     ],

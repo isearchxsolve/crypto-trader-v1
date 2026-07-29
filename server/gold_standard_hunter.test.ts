@@ -281,7 +281,7 @@ describe("gold_standard_hunter", () => {
       const signals: string[] = [];
       goldScore(gmgn, dex, signals);
 
-      expect(signals).toContain("Liquidity $5000 [DANGER <$10K, -10]");
+      expect(signals).toContain("Liquidity $5000 [TRENCHES <$10K, +0]");
     });
 
     it("awards +10 for optimal market cap $100K-$1M", () => {

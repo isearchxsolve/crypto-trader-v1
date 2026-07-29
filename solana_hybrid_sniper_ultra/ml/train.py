@@ -22,6 +22,31 @@ FEATURE_COLUMNS = [
     "liq_to_mcap",
 ]
 
+REAL_DATA_PATH = os.path.join(os.path.dirname(__file__), "solana_real_launches.csv")
+
+def load_real_data(min_rows=100):
+    if not os.path.exists(REAL_DATA_PATH):
+        return None
+    try:
+        df = pd.read_csv(REAL_DATA_PATH)
+        required = [c for c in FEATURE_COLUMNS if c != "liq_to_mcap"] + ["label"]
+        missing = [c for c in required if c not in df.columns]
+        if missing:
+            print(f"[REAL-DATA] Missing columns {missing}, skipping")
+            return None
+        if len(df) < min_rows:
+            print(f"[REAL-DATA] Only {len(df)} rows (need {min_rows}), skipping")
+            return None
+        df = df.dropna(subset=required)
+        if len(df) < min_rows:
+            print(f"[REAL-DATA] Only {len(df)} valid rows after dropna, skipping")
+            return None
+        print(f"[REAL-DATA] Loaded {len(df)} real-labeled rows from solana_real_launches.csv")
+        return df[FEATURE_COLUMNS + ["label"]]
+    except Exception as e:
+        print(f"[REAL-DATA] Failed to load: {e}")
+        return None
+
 def generate_training_data(n_samples=25000):
     np.random.seed(42)
     data = []
@@ -249,6 +274,23 @@ def train_model():
     print("Generating realistic training dataset (25000 samples, 12 scenarios)...")
     df = generate_training_data(25000)
 
+    # REAL DATA INJECTION - close OD-1 by training on actual market outcomes
+    real_df = load_real_data(min_rows=50)
+    if real_df is not None and len(real_df) > 0:
+        real_pump = int(real_df["label"].sum())
+        real_nonpump = len(real_df) - real_pump
+        if real_pump > 0 and real_nonpump > 0:
+            n_extra_pumps = max(0, len(df[df["label"] == 1]) - real_pump)
+            n_extra_nonpumps = max(0, len(df[df["label"] == 0]) - real_nonpump)
+            pumps_to_add = real_df[real_df["label"] == 1].sample(n=min(n_extra_pumps, real_pump * 3), replace=True, random_state=42) if n_extra_pumps > 0 else pd.DataFrame()
+            nonpumps_to_add = real_df[real_df["label"] == 0].sample(n=min(n_extra_nonpumps, real_nonpump * 3), replace=True, random_state=42) if n_extra_nonpumps > 0 else pd.DataFrame()
+            if len(pumps_to_add) > 0 or len(nonpumps_to_add) > 0:
+                real_augmented = pd.concat([pumps_to_add, nonpumps_to_add], ignore_index=True)
+                df = pd.concat([df, real_augmented], ignore_index=True)
+                print(f"[REAL-DATA] Augmented with {len(real_augmented)} real rows -> total {len(df)} samples")
+        else:
+            print("[REAL-DATA] Insufficient real pump/non-pump samples, using synthetic only")
+
     pump_count = int(df['label'].sum())
     nonpump_count = len(df) - pump_count
     print(f"Dataset: {len(df)} samples | Pumps: {pump_count} ({df['label'].mean()*100:.1f}%) | Non-pumps: {nonpump_count}")
@@ -340,8 +382,8 @@ def train_model():
     os.makedirs("solana_hybrid_sniper_ultra/ml", exist_ok=True)
     model_path = "solana_hybrid_sniper_ultra/ml/model.pkl"
     with open(model_path, "wb") as f:
-        pickle.dump({"model": model, "features": FEATURE_COLUMNS, "version": "4.0"}, f)
-    print(f"\nModel v4.0 saved to {model_path}")
+        pickle.dump({"model": model, "features": FEATURE_COLUMNS, "version": "5.0"}, f)
+    print(f"\nModel v5.0 saved to {model_path}")
 
     csv_path = "solana_hybrid_sniper_ultra/ml/training_data.csv"
     df.to_csv(csv_path, index=False)

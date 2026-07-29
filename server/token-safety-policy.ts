@@ -65,9 +65,21 @@ export function evaluateTokenSafetyPreflight(
     };
   }
 
-  const ageSeconds = input.pairCreatedAt ? (input.now - input.pairCreatedAt) / 1000 : 99999;
-  const minSells =
-    ageSeconds < 120 ? 2 : ageSeconds < 300 ? 5 : ageSeconds < 900 ? 8 : 10;
+  // pairCreatedAt can be 0 (epoch zero), null, or undefined. Treat falsy except 0
+  // as "unknown age" (= 99999s). When it IS 0 that's a valid epoch timestamp (1970),
+  // but for our purposes it means "no creation data" so we default to 99999 as well
+  // to avoid an absurdly large age that would bypass the sell-activity honeypot gate.
+  const ageSeconds = (input.pairCreatedAt != null && input.pairCreatedAt > 0)
+    ? (input.now - input.pairCreatedAt) / 1000
+    : 99999;
+  // PH-I: tightened honeypot gate (Phase 5). Fresh tokens <120s now need 4 sells
+  // (was 2 — too easily faked by a rug bot selling to itself). The absolute floor of 3
+  // ensures there is real two-way liquidity before admitting the token.
+  const BASE_MIN_SELLS = 3;
+  const ageTiered = ageSeconds < 120 ? 4 : ageSeconds < 300 ? 5 : ageSeconds < 900 ? 8 : 10;
+  // BEAST-ENHANCEMENT: Scale required sells dynamically with pool liquidity to block wash-trading on thin pools
+  const liqScaledSells = Math.floor(input.liquidityUsd / 100_000);
+  const minSells = Math.max(BASE_MIN_SELLS, ageTiered + liqScaledSells);
 
   if (input.m5Sells < minSells) {
     return {

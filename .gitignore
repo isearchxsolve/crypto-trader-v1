@@ -12,3 +12,4 @@ dist/
 node_modules/
 # GMGN secrets (added by setup-gmgn.mjs)
 gmgn_keys/
+.aider*

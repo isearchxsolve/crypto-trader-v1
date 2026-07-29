@@ -30,7 +30,7 @@ describe("token-safety-policy", () => {
         entryMinLiquidityUsd: 25_000,
         liquidityUsd: 50_000,
         m5Sells: 5,
-        pairCreatedAt: 0,
+        pairCreatedAt: 10_000, // age = 0s, minSells = 2
       });
 
       expect(result).toBeNull();
@@ -66,7 +66,7 @@ describe("token-safety-policy", () => {
 
       expect(result).toEqual({
         safe: false,
-        reason: "insufficient_sell_activity_honeypot_risk(1/2@60s)",
+        reason: "insufficient_sell_activity_honeypot_risk(1/4@60s)",
       });
     });
 
@@ -115,19 +115,19 @@ describe("token-safety-policy", () => {
       expect(result).toBeNull();
     });
 
-    it("treats missing pairCreatedAt as current time (age 0)", () => {
+    it("treats missing/null pairCreatedAt as unknown age (99999s)", () => {
       const result = evaluateTokenSafetyPreflight({
         checksEnabled: true,
         now: Date.now(),
         entryMinLiquidityUsd: 25_000,
         liquidityUsd: 50_000,
         m5Sells: 1,
-        pairCreatedAt: 0,
+        pairCreatedAt: undefined as any,
       });
 
       expect(result).toEqual({
         safe: false,
-        reason: "insufficient_sell_activity_honeypot_risk(1/2@0s)",
+        reason: "insufficient_sell_activity_honeypot_risk(1/10@99999s)",
       });
     });
   });
