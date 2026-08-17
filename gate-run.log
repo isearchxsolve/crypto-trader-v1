@@ -1,0 +1,265 @@
+npm notice run rest-express@1.0.0 npx
+npm notice run vitest run server tests
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.8 [39m[90mC:/god_ai/crypto-trader-v1_1[39m
+
+[90mstdout[2m | server/full-pipeline.monster.test.ts[2m > [22m[2mMONSTER MOONSHOT: Full Pipeline Integration (routes → Jupiter)
+[22m[39m[BIRDKEY] Birdeye retired — Helius whale tape + free RPC layer active. Smart money scoring via whaleNetBuyers fallback.
+
+[90mstdout[2m | server/full-pipeline.monster.test.ts[2m > [22m[2mMONSTER MOONSHOT: Full Pipeline Integration (routes → Jupiter)
+[22m[39m==================== 1000x ROI TRADING BOT ====================
+
+[90mstdout[2m | server/full-pipeline.monster.test.ts[2m > [22m[2mMONSTER MOONSHOT: Full Pipeline Integration (routes → Jupiter)
+[22m[39m[CONFIG] Mode: paper + moonbag + shadow
+[CONFIG] Paper seed: 0.03 SOL (config default — NOT the live wallet; real balance shown below)
+[CONFIG] ROI Target: 1000x
+[CONFIG] Win Rate Target: >80%
+[CONFIG] EDGE micro: minEdge=5% buffer=0.5% | normal: minEdge=-5% buffer=1%
+[CONFIG] Starting trading engine...
+[ENGINE] Live trading DISABLED — paper mode only
+
+[90mstdout[2m | server/full-pipeline.monster.test.ts[2m > [22m[2mMONSTER MOONSHOT: Full Pipeline Integration (routes → Jupiter)
+[22m[39m[ENGINE] Preserving stored wallet balance: 0.0000 SOL (auto-reset protocol disabled — drawdown visibility ON)
+[ENGINE] DB walletBalance is 0 — using startingBalance: 0.030 SOL
+
+[90mstdout[2m | server/full-pipeline.monster.test.ts[2m > [22m[2mMONSTER MOONSHOT: Full Pipeline Integration (routes → Jupiter)
+[22m[39m[ENGINE] peakBalance reset to 0.0300 SOL (stale DB peak 0.0000 discarded)
+
+[90mstdout[2m | server/full-pipeline.monster.test.ts[2m > [22m[2mMONSTER MOONSHOT: Full Pipeline Integration (routes → Jupiter)
+[22m[39m[ENGINE] ML Service connected
+[ENGINE] Fetching live SOL price from DexScreener...
+
+[90mstdout[2m | server/full-pipeline.monster.test.ts[2m > [22m[2mMONSTER MOONSHOT: Full Pipeline Integration (routes → Jupiter)
+[22m[39m[SECURITY] ADMIN_SECRET loaded — admin endpoints require authentication (requireAdmin active).
+
+[90mstdout[2m | server/routes.http.test.ts[2m > [22m[2mroutes.ts — HTTP endpoints via registerRoutes()
+[22m[39m[BIRDKEY] Birdeye retired — Helius whale tape + free RPC layer active. Smart money scoring via whaleNetBuyers fallback.
+
+[90mstdout[2m | server/routes.http.test.ts[2m > [22m[2mroutes.ts — HTTP endpoints via registerRoutes()
+[22m[39m==================== 1000x ROI TRADING BOT ====================
+
+[90mstdout[2m | server/routes.http.test.ts[2m > [22m[2mroutes.ts — HTTP endpoints via registerRoutes()
+[22m[39m[CONFIG] Mode: paper + moonbag + shadow
+[CONFIG] Paper seed: 0.03 SOL (config default — NOT the live wallet; real balance shown below)
+[CONFIG] ROI Target: 1000x
+[CONFIG] Win Rate Target: >80%
+[CONFIG] EDGE micro: minEdge=5% buffer=0.5% | normal: minEdge=-5% buffer=1%
+[CONFIG] Starting trading engine...
+[ENGINE] Live trading DISABLED — paper mode only
+
+[90mstdout[2m | server/routes.http.test.ts[2m > [22m[2mroutes.ts — HTTP endpoints via registerRoutes()
+[22m[39m[ENGINE] Preserving stored wallet balance: 0.0000 SOL (auto-reset protocol disabled — drawdown visibility ON)
+[ENGINE] DB walletBalance is 0 — using startingBalance: 0.030 SOL
+
+[90mstdout[2m | server/routes.http.test.ts[2m > [22m[2mroutes.ts — HTTP endpoints via registerRoutes()
+[22m[39m[ENGINE] peakBalance reset to 0.0300 SOL (stale DB peak 0.0000 discarded)
+
+[90mstdout[2m | server/routes.http.test.ts[2m > [22m[2mroutes.ts — HTTP endpoints via registerRoutes()
+[22m[39m[ENGINE] ML Service connected
+[ENGINE] Fetching live SOL price from DexScreener...
+
+[90mstdout[2m | server/routes.http.test.ts[2m > [22m[2mroutes.ts — HTTP endpoints via registerRoutes()
+[22m[39m[SECURITY] ADMIN_SECRET loaded — admin endpoints require authentication (requireAdmin active).
+
+[90mstderr[2m | server/full-pipeline.monster.test.ts[2m > [22m[2mMONSTER MOONSHOT: Full Pipeline Integration (routes → Jupiter)
+[22m[39m[ENGINE] Could not fetch live SOL price after 10 attempts — proceeding with cached fallback $70
+
+[90mstderr[2m | server/observability-e2e.test.ts[2m > [22m[2mMONSTER MOONSHOT: observability + resilience layers wired end-to-end
+[22m[39m[ENGINE] Could not fetch live SOL price after 10 attempts — proceeding with cached fallback $70
+
+[90mstdout[2m | server/full-pipeline.monster.test.ts[2m > [22m[2mMONSTER MOONSHOT: Full Pipeline Integration (routes → Jupiter)
+[22m[39m[GOLD HUNTER] Disabled - set GOLD_HUNTER_ENABLED=true to activate
+
+[90mstderr[2m | server/routes.http.test.ts[2m > [22m[2mroutes.ts — HTTP endpoints via registerRoutes()
+[22m[39m[ENGINE] Could not fetch live SOL price after 10 attempts — proceeding with cached fallback $70
+
+[90mstdout[2m | server/routes.http.test.ts[2m > [22m[2mroutes.ts — HTTP endpoints via registerRoutes()
+[22m[39m[GOLD HUNTER] Disabled - set GOLD_HUNTER_ENABLED=true to activate
+
+ [32m✓[39m server/routes.http.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 22774[2mms[22m[39m
+ [32m✓[39m server/observability-e2e.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 22772[2mms[22m[39m
+[90mstdout[2m | server/full-pipeline.monster.test.ts[2m > [22m[2mMONSTER MOONSHOT: Full Pipeline Integration (routes → Jupiter)[2m > [22m[2mLAYER 2: Business Logic (exported functions)[2m > [22m[2mexecuteEnhancedEdgeFilter is callable and returns a verdict object
+[22m[39m{"kind":"DISCOVERY_VETO","correlationId":"b7cb88cb-d83e-457b-84d6-dc63a137f250","tokenAddress":"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTt1sg","reason":"VOLUME_TOO_THIN_0.00;LIQ_CAP_RATIO_TOO_LOW_0.00%","payload":{"edgeScore":0,"checks":["goldScore_contrib(undefined)","liquidity_usd_100000","edge_raw_0.00buf_1.00"],"isMicroWallet":false},"source":"executeEnhancedEdgeFilter","eventId":"cb573883-2b68-4d15-a4b2-09bb94ad4487","timestamp":1786904886385}
+
+ [32m✓[39m server/full-pipeline.monster.test.ts [2m([22m[2m21 tests[22m[2m)[22m[33m 23008[2mms[22m[39m
+[90mstderr[2m | server/edgecase-monster.test.ts
+[22m[39mbigint: Failed to load bindings, pure JS will be used (try npm run rebuild?)
+
+[90mstderr[2m | server/main.integration.test.ts[2m > [22m[2mroutes.ts exported functions — real code paths against mocked deps
+[22m[39mbigint: Failed to load bindings, pure JS will be used (try npm run rebuild?)
+
+[90mstderr[2m | tests/smoke.test.ts[2m > [22m[2mSmoke: main file import boundary[2m > [22m[2mroutes.ts imports cleanly and exposes all core exports
+[22m[39mbigint: Failed to load bindings, pure JS will be used (try npm run rebuild?)
+
+[90mstdout[2m | server/main.integration.test.ts[2m > [22m[2mroutes.ts exported functions — real code paths against mocked deps
+[22m[39m[BIRDKEY] Birdeye retired — Helius whale tape + free RPC layer active. Smart money scoring via whaleNetBuyers fallback.
+
+[90mstdout[2m | server/main.integration.test.ts[2m > [22m[2mroutes.ts exported functions — real code paths against mocked deps[2m > [22m[2mexecuteEnhancedEdgeFilter[2m > [22m[2mreturns a scored decision object { allowed, reason, edgeScore } for a candidate
+[22m[39m[ENHANCED-EDGE] $UNKNOWN | score:70 edge:40.00% | checks:goldScore_contrib(70),price_move_40.0%,vol_ratio_4.0x | finalEdge:47.5
+{"kind":"DISCOVERY_ADMIT","correlationId":"d8668625-e80d-4291-bea2-0d2fb179cc96","tokenAddress":"TEST_MINT_123","reason":"ENHANCED_EDGE_PASS(edge=40.00%,score_47.5)","payload":{"edgeScore":47.48887888921631,"rawEdge":40,"boostFactor":1,"checks":["goldScore_contrib(70)","price_move_40.0%","vol_ratio_4.0x"],"isMicroWallet":false},"source":"executeEnhancedEdgeFilter","eventId":"8c6bc6cb-5cd1-4694-8d48-6affe3e35092","timestamp":1786904900200}
+
+[90mstdout[2m | server/main.integration.test.ts[2m > [22m[2mroutes.ts exported functions — real code paths against mocked deps[2m > [22m[2mexecuteEnhancedEdgeFilter[2m > [22m[2mhard-blocks a low-liquidity candidate (allowed=false, reason describes the block)
+[22m[39m{"kind":"DISCOVERY_VETO","correlationId":"d8668625-e80d-4291-bea2-0d2fb179cc96","tokenAddress":"LOW_LIQ_MINT","reason":"LIQUIDITY_TOO_LOW_50;VOLUME_TOO_THIN_0.20","payload":{"edgeScore":5.175000000000001,"checks":["goldScore_contrib(10)","edge_raw_1.00buf_1.00","liq_cap_ratio_5.00%","age_young_60s"],"isMicroWallet":false},"source":"executeEnhancedEdgeFilter","eventId":"e3871170-8bdc-4541-b96f-1e8a556fd5d6","timestamp":1786904900204}
+
+[90mstdout[2m | server/main.integration.test.ts
+[22m[39m[SECURITY] ADMIN_SECRET loaded — admin endpoints require authentication (requireAdmin active).
+
+ [32m✓[39m server/main.integration.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 11899[2mms[22m[39m
+[90mstdout[2m | tests/smoke.test.ts[2m > [22m[2mSmoke: main file import boundary[2m > [22m[2mroutes.ts imports cleanly and exposes all core exports
+[22m[39m[BIRDKEY] Birdeye retired — Helius whale tape + free RPC layer active. Smart money scoring via whaleNetBuyers fallback.
+
+[90mstderr[2m | tests/smoke.test.ts
+[22m[39m[SECURITY] ADMIN_SECRET env var is not set — all admin endpoints are publicly accessible. Set ADMIN_SECRET before going live.
+
+ [32m✓[39m tests/smoke.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 12040[2mms[22m[39m
+     [33m[2m✓[22m[39m routes.ts imports cleanly and exposes all core exports [33m 11935[2mms[22m[39m
+ [31m❯[39m server/edgecase-monster.test.ts [2m([22m[2m32 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 11476[2mms[22m[39m
+       [33m[2m✓[22m[39m constructs successfully with a single valid RPC URL [33m 818[2mms[22m[39m
+       [32m✓[39m constructs successfully with an empty RPC array (uses defaults)[32m 36[2mms[22m[39m
+       [32m✓[39m constructs with priority fee and jito tip configured[32m 23[2mms[22m[39m
+       [32m✓[39m RpcRotator constructs and tracks endpoints[32m 8[2mms[22m[39m
+       [32m✓[39m throws on invalid (non-base58) private key[32m 26[2mms[22m[39m
+       [33m[2m✓[22m[39m retries up to 3 nodes on RPC_TIMEOUT then succeeds [33m 460[2mms[22m[39m
+       [32m✓[39m throws immediately on non-retryable errors[32m 20[2mms[22m[39m
+       [32m✓[39m markUnhealthyByIndex flips healthy flag[32m 12[2mms[22m[39m
+       [32m✓[39m markCurrentUnhealthy flips the previous node[32m 8[2mms[22m[39m
+       [32m✓[39m caches Connection objects per URL (no re-creation)[32m 15[2mms[22m[39m
+       [32m✓[39m returns extremely large balance (> 2^53) as bigint[32m 19[2mms[22m[39m
+       [32m✓[39m returns BigInt(0) for zero balance[32m 6[2mms[22m[39m
+       [32m✓[39m normalizes BigInt(-1) sentinel (token-not-found) to BigInt(0)[32m 35[2mms[22m[39m
+       [33m[2m✓[22m[39m retries on RPC failure then succeeds (2-attempt loop) [33m 381[2mms[22m[39m
+       [32m✓[39m returns 1 SOL when rpc.exec returns 1_000_000_000 lamports[32m 7[2mms[22m[39m
+       [32m✓[39m returns 0 SOL when rpc.exec returns 0 lamports[32m 19[2mms[22m[39m
+       [33m[2m✓[22m[39m retries 3 times then succeeds on final attempt [33m 1626[2mms[22m[39m
+[31m       [31m×[31m marks current endpoint unhealthy on persistent failure[39m[33m 5047[2mms[22m[39m
+       [32m✓[39m blocks buy when balance < amount + MIN_FEE_BUFFER_SOL[32m 16[2mms[22m[39m
+       [32m✓[39m blocks buy when halted via runtime-hooks[32m 5[2mms[22m[39m
+       [33m[2m✓[22m[39m returns success on full fill (>= 70% of expected outAmount) [33m 1166[2mms[22m[39m
+       [33m[2m✓[22m[39m reports partial fill when token amount < 70% of expected [33m 1057[2mms[22m[39m
+       [32m✓[39m returns failure when quote fetch throws[32m 8[2mms[22m[39m
+       [32m✓[39m fails when token balance is zero and no amount provided[32m 7[2mms[22m[39m
+       [33m[2m✓[22m[39m returns success on full sell with mocked quote + balance [33m 524[2mms[22m[39m
+       [32m✓[39m returns failure when quote fetch throws[32m 15[2mms[22m[39m
+       [32m✓[39m disables Jito when tip is 0 and engine URL is null[32m 8[2mms[22m[39m
+       [32m✓[39m accepts large (but finite) jito tip[32m 15[2mms[22m[39m
+       [32m✓[39m preserves jito engine URL[32m 16[2mms[22m[39m
+       [32m✓[39m So111111... is valid base58 (no special chars)[32m 23[2mms[22m[39m
+       [32m✓[39m EPjFWdd5... is valid base58 (no special chars)[32m 4[2mms[22m[39m
+       [32m✓[39m Es9vMFrz... is valid base58 (no special chars)[32m 18[2mms[22m[39m
+[90mstderr[2m | server/jupiter.test.ts
+[22m[39mbigint: Failed to load bindings, pure JS will be used (try npm run rebuild?)
+
+[90mstderr[2m | server/jupiter.integration.test.ts
+[22m[39mbigint: Failed to load bindings, pure JS will be used (try npm run rebuild?)
+
+[90mstderr[2m | server/performance-monster.test.ts
+[22m[39mbigint: Failed to load bindings, pure JS will be used (try npm run rebuild?)
+
+ [32m✓[39m server/jupiter.test.ts [2m([22m[2m29 tests[22m[2m)[22m[33m 9193[2mms[22m[39m
+       [33m[2m✓[22m[39m executes function with connection and retries on timeout [33m 456[2mms[22m[39m
+       [33m[2m✓[22m[39m initializes with RPC URLs and keypair [33m 767[2mms[22m[39m
+       [33m[2m✓[22m[39m retries on RPC failure [33m 525[2mms[22m[39m
+       [33m[2m✓[22m[39m marks current unhealthy on failure [33m 4290[2mms[22m[39m
+       [33m[2m✓[22m[39m retries on RPC failure [33m 308[2mms[22m[39m
+       [33m[2m✓[22m[39m returns success result on successful buy [33m 1027[2mms[22m[39m
+       [33m[2m✓[22m[39m handles partial fill (<70% of expected) [33m 1022[2mms[22m[39m
+       [33m[2m✓[22m[39m returns success result on successful sell [33m 523[2mms[22m[39m
+ [32m✓[39m server/jupiter.integration.test.ts [2m([22m[2m27 tests[22m[2m)[22m[33m 9316[2mms[22m[39m
+     [33m[2m✓[22m[39m jupiter.ts imports cleanly and exports expected symbols [33m 757[2mms[22m[39m
+       [33m[2m✓[22m[39m retries on RPC failure then succeeds [33m 524[2mms[22m[39m
+       [33m[2m✓[22m[39m marks current endpoint unhealthy on persistent failure [33m 4237[2mms[22m[39m
+       [33m[2m✓[22m[39m retries on RPC failure then succeeds [33m 335[2mms[22m[39m
+       [33m[2m✓[22m[39m returns success with txSignature on full fill [33m 1022[2mms[22m[39m
+       [33m[2m✓[22m[39m handles partial fill (<70% of expected outAmount) [33m 1027[2mms[22m[39m
+       [33m[2m✓[22m[39m returns success with txSignature on full sell [33m 581[2mms[22m[39m
+       [33m[2m✓[22m[39m executes function with connection and retries on timeout [33m 454[2mms[22m[39m
+[90mstdout[2m | server/performance-monster.test.ts[2m > [22m[2mMONSTER MOONSHOT: Performance Benchmarks[2m > [22m[2mMONSTER MOONSHOT: summary[2m > [22m[2mperformance metrics report is generated without NaN
+[22m[39m
+🔥 MONSTER MOONSHOT PERFORMANCE REPORT 🌟
+
+summary self-test: ✅ PASS | min=10ms max=50ms avg=30.0ms p95=50ms p99=50ms (n=5 | target <1000ms)
+
+
+ [32m✓[39m server/performance-monster.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 6755[2mms[22m[39m
+       [33m[2m✓[22m[39m measures exec overhead for a no-op mocked fn (10 iterations) [33m 742[2mms[22m[39m
+       [33m[2m✓[22m[39m measures 3-attempt retry with mocked rpc.exec [33m 4699[2mms[22m[39m
+       [33m[2m✓[22m[39m measures 2-attempt retry with mocked rpc.exec [33m 988[2mms[22m[39m
+[90mstdout[2m | server/score-inversion.test.ts
+[22m[39m[BIRDKEY] Birdeye retired — Helius whale tape + free RPC layer active. Smart money scoring via whaleNetBuyers fallback.
+
+[90mstdout[2m | server/score-inversion.test.ts[2m > [22m[2mscore-inversion fix (shadow data 2026-06-26..07-04: score>=80 was the WORST band)[2m > [22m[2mcaps the combined smart-money + whale additive bonus at +15
+[22m[39m[BIRDKEY] 1 Birdeye API key(s) loaded — rotation active.
+
+[90mstdout[2m | server/score-inversion.test.ts
+[22m[39m[SECURITY] ADMIN_SECRET loaded — admin endpoints require authentication (requireAdmin active).
+
+ [32m✓[39m server/gold_standard_hunter.test.ts [2m([22m[2m57 tests[22m[2m)[22m[33m 307[2mms[22m[39m
+ [32m✓[39m server/score-inversion.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 592[2mms[22m[39m
+ [32m✓[39m server/pipeline-edge-cases.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 64[2mms[22m[39m
+ [32m✓[39m server/provider-circuit-breaker.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 256[2mms[22m[39m
+ [32m✓[39m server/full-pipeline.integration.test.ts [2m([22m[2m64 tests[22m[2m)[22m[33m 370[2mms[22m[39m
+ [32m✓[39m server/objective-edge.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 78[2mms[22m[39m
+ [32m✓[39m server/observability.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 99[2mms[22m[39m
+ [32m✓[39m server/trading-pipeline.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 178[2mms[22m[39m
+ [32m✓[39m server/token-safety-policy.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 136[2mms[22m[39m
+ [32m✓[39m server/risk-policy.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 240[2mms[22m[39m
+[90mstdout[2m | server/throughput-simulation.test.ts[2m > [22m[2mthroughput-simulation[2m > [22m[2mthroughput improved 2x+ vs baseline (no NEVER_GREEN_CUT)
+[22m[39m
+  NEVER_GREEN          35%  → 20.0s  
+  RAPID_DUMP           5%  → 10.0s  
+  BRIEF_GREEN_DUMP     10%  → 50.0s  
+  MOMENTUM_FADE        15%  → 90.0s  
+  TRAIL_STOP           10%  → 135.0s  
+  STAGNANT_GREEN       15%  → 1500.5s  
+  DIP_RECOVERY         10%  → 1800.5s  (time-stop)
+  ──────────────────────────────────────────────────
+  Weighted avg hold  444.6s  (baseline: 1068s)
+  Overhead/cycle     7s
+  Trades/min         0.133  (baseline: 0.056)
+  Trades/hour        8.0  (baseline: 3.4)
+  Improvement        2.4x
+  NOTE: 1 trade/min requires avg hold ≤53s. Dominant anchors:
+    STAGNANT_GREEN_KILL(1500s, 15%) and DIP_RECOVERY_FAILED(1800s, 10%)
+    together account for 25% of trades at 25-30min each.
+
+ [32m✓[39m server/throughput-simulation.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 181[2mms[22m[39m
+ [32m✓[39m server/beast-exit.test.ts [2m([22m[2m38 tests[22m[2m)[22m[32m 109[2mms[22m[39m
+ [32m✓[39m server/advanced-filters.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 144[2mms[22m[39m
+ [32m✓[39m server/beast-scanner.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 158[2mms[22m[39m
+ [32m✓[39m server/exit-anchors.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 61[2mms[22m[39m
+ [32m✓[39m server/ml-score-gate.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 82[2mms[22m[39m
+ [32m✓[39m server/beast-safety.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 175[2mms[22m[39m
+ [32m✓[39m server/lib/profit-session.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 117[2mms[22m[39m
+ [32m✓[39m server/exit-strategy.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+ [32m✓[39m server/risk-engine.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 111[2mms[22m[39m
+ [32m✓[39m server/token-safety-policy-edge.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 81[2mms[22m[39m
+ [32m✓[39m server/cost-model-edge.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 84[2mms[22m[39m
+ [32m✓[39m server/cost-model.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+ [32m✓[39m server/full-ecosystem.integration.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+ [32m✓[39m server/scanner-edge.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 60[2mms[22m[39m
+ [32m✓[39m server/beast-pipeline.integration.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 126[2mms[22m[39m
+ [32m✓[39m server/composite-scorer.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m server/exit-strategy-edge.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 77[2mms[22m[39m
+ [32m✓[39m server/newMintGate.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 200[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m server/edgecase-monster.test.ts[2m > [22mMONSTER MOONSHOT: Edge Cases & Error Handling[2m > [22mEDGE CASE 4: Wallet Balance Boundaries[2m > [22mmarks current endpoint unhealthy on persistent failure
+[31m[1mError[22m: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+[36m [2m❯[22m server/edgecase-monster.test.ts:[2m225:5[22m[39m
+    [90m223|[39m     })[33m;[39m
+    [90m224|[39m
+    [90m225|[39m     it('marks current endpoint unhealthy on persistent failure', async…
+    [90m   |[39m     [31m^[39m
+    [90m226|[39m       vi.spyOn(service['rpc'], 'exec').mockRejectedValue(new Error('RP…
+    [90m227|[39m       const markUnhealthy = vi.spyOn(service['rpc'], 'markCurrentUnhea…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m37 passed[39m[22m[90m (38)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m716 passed[39m[22m[90m (717)[39m
+[2m   Start at [22m 23:57:34
+[2m   Duration [22m 97.84s[2m (transform 19.91s, setup 0ms, import 49.92s, tests 133.54s, environment 55ms)[22m
+

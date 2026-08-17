@@ -1,0 +1,1206 @@
+npm notice run rest-express@1.0.0 npx
+npm notice run cross-env WALLET_PRIVATE_KEY= NODE_ENV=development BEAST_SAFETY_ENABLED=true BEAST_EXIT_ENABLED=true PROFIT_SESSION_FILTER=false tsx server/index.ts
+bigint: Failed to load bindings, pure JS will be used (try npm run rebuild?)
+[BIRDKEY] Birdeye retired — Helius whale tape + free RPC layer active. Smart money scoring via whaleNetBuyers fallback.
+◇ injected env (76) from .env // tip: ⌘ enable debugging { debug: true }
+[SAFETY] WALLET_PRIVATE_KEY explicitly emptied in environment — live trading stays DISABLED (.env value ignored).
+[SECURITY] ADMIN_SECRET loaded — admin endpoints require authentication (requireAdmin active).
+==================== 1000x ROI TRADING BOT ====================
+[CONFIG] MODE=paper from .env applied to trading mode.
+[CONFIG] PAPER_SEED=0.03 SOL from .env applied to paper starting balance.
+[CONFIG] Mode: paper + moonbag + shadow
+[CONFIG] Paper seed: 0.03 SOL (config default — NOT the live wallet; real balance shown below)
+[CONFIG] ROI Target: 1000x
+[CONFIG] Win Rate Target: >80%
+[CONFIG] EDGE micro: minEdge=5% buffer=0.5% | normal: minEdge=-5% buffer=1%
+[CONFIG] Starting trading engine...
+[ENGINE] Live trading DISABLED — paper mode only
+[ENGINE] Preserving stored wallet balance: 0.0092 SOL (auto-reset protocol disabled — drawdown visibility ON)
+[ENGINE] Restored wallet balance from DB: 0.009 SOL
+[ENGINE] ML Service not available
+[ENGINE] Fetching live SOL price from DexScreener...
+[ENGINE] SOL price locked at $75.23
+[GOLD HUNTER] Starting per-feed processing...
+[GOLD HUNTER] Active — signal/5s trending/30s trenches/20s cluster/30s dex/30s newMints/20s
+[PHASE-E] Descriptive-prior hypothesis active: estimatedPeakPct(liq) as stable prior,
+[PHASE-E] score composite has provisional correlation with outcomes. Hypothesis FALSIFIED if paper mean(f(x)) < +1.0% over >= 30 trades.
+[DEBUG] currentBalance: 0.0092, isMicroWallet: true
+[SCAN] Micro-Wallet Mode Active (Bal: 0.0092 SOL)
+[FETCHER-PATCH] old-profit funnel active | liq>=1000 vol5m>=500 minAge=0s minSells=2
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[GMGN] error: Command failed: gmgn-cli track smartmoney --chain sol --side buy --limit 500 --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch file.
+
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[SCANNER-QUEUE] Tracking 29 fast scanner tokens via free API (Waiting for $10k breakout)
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address 4LRRys4D1R47LpnT8nktXqjBwa6tuN3ujFdMBnvHpump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address GuUNEcqtzuHeCjaVrEVH3fzhpBSuLW65GbCW1bZt3Nmu --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address 6x7agqyHRQ365gA9PEq12NtY2KxrPiz3uqSwKvdXpump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address 5FtZqP17cxX51qHHQCcC3xcoQRqUzYWJh2bR5iPjpump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address 6qsMvCqrCHxhm9Vz9YYCiEEQ3abPUwCMwVRWTeGQpump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address 62VzMyMAcBUh4dexq2Dk5y1VvZiDGjiU9xyNYpZ7pump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address 39aRDUTryVByDa7AYXE7AQNUxznjCRX3rMb3Cnsspump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[SRC-XTRA] quality-only union=50 | jupVerified=0 jupTop=50 gkVol=0 (verified-set size=0, offset=0)
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address ASg9yDikmZfaY2zZyPEno7p58TwRa29PpYdsa4fBpump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address E8Hc2yEPn1oATBdoU9jiwoCQZcfLcwhPTVD5ATFkpump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address Baf4WhxNJpLJxtccU9yRrehLz8oLzCao2gJ9JZFXBNvv --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address GFQLVG2UKYydSCJ2WjkuMXijpgJ6hbs2nEsNwdZFpump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[QUALITY] Jupiter verified list refreshed: 43 tokens.
+[QUALITY] in=52 pass=46 jupVerified=0 cuts: notVerified=0 tooYoung=6 | flags: REQUIRE_VERIFIED=false MIN_AGE_MIN=5
+[SCORE-BREAKDOWN] $NiuLai combined=65 raw=69(liq12+bp16+vol3+px15+tx10+age0+bp1h5+fdv5=66/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-4(mc-8/age0/px4/flat0) | drivers: px5m=12.0% volMom=0.93 bp5m=0.71 ageS=7789 liq=$25726
+[SCORE-BREAKDOWN] $Frock combined=30 raw=46(liq12+bp0+vol6+px10+tx10+age0+bp1h1+fdv5=44/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-16(mc-8/age-8/px0/flat0) | drivers: px5m=5.0% volMom=1.37 bp5m=0.49 ageS=23543 liq=$30269
+[SCORE-BREAKDOWN] $REXLER combined=0 raw=28(liq12+bp0+vol3+px-4+tx10+age0+bp1h1+fdv5=27/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-3.2% volMom=0.66 bp5m=0.49 ageS=74024 liq=$35214
+[SCORE-BREAKDOWN] $4680 combined=44 raw=58(liq12+bp10+vol0+px15+tx10+age0+bp1h3+fdv5=55/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-14(mc-8/age0/px-6/flat0) | drivers: px5m=27.4% volMom=0.47 bp5m=0.57 ageS=8753 liq=$38658
+[SCORE-BREAKDOWN] $UOTF combined=13 raw=41(liq15+bp5+vol3+px2+tx8+age0+bp1h5+fdv1=39/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.4% volMom=0.97 bp5m=0.50 ageS=40946 liq=$273173
+[SCORE-BREAKDOWN] $XERIS combined=41 raw=61(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv3=58/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=0.5% volMom=0.96 bp5m=0.82 ageS=30931 liq=$160353
+[SCORE-BREAKDOWN] $USTF combined=37 raw=65(liq15+bp20+vol6+px5+tx10+age0+bp1h5+fdv1=62/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=1.7% volMom=1.06 bp5m=0.98 ageS=12200 liq=$277942
+[SCORE-BREAKDOWN] $ANICAT combined=38 raw=58(liq12+bp10+vol0+px15+tx10+age2+bp1h1+fdv5=55/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px-12/flat0) | drivers: px5m=46.6% volMom=0.27 bp5m=0.56 ageS=2796 liq=$20867
+[SCORE-BREAKDOWN] $SOLCAT combined=0 raw=21(liq10+bp0+vol0+px-4+tx8+age0+bp1h1+fdv5=20/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-3.3% volMom=0.23 bp5m=0.49 ageS=53866 liq=$13112
+[SCORE-BREAKDOWN] $NEPE combined=0 raw=21(liq10+bp5+vol6+px-10+tx4+age0+bp1h0+fdv5=20/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-17.3% volMom=1.44 bp5m=0.53 ageS=55552 liq=$11657
+[SCORE-BREAKDOWN] $memecoin combined=0 raw=18(liq8+bp5+vol0+px-10+tx8+age0+bp1h1+fdv5=17/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-17.0% volMom=0.25 bp5m=0.50 ageS=4980 liq=$6861
+[SCORE-BREAKDOWN] $NTDA combined=30 raw=58(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv0=55/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.8% volMom=0.81 bp5m=0.98 ageS=24371 liq=$742501
+[SCORE-BREAKDOWN] $NTDA combined=51 raw=63(liq15+bp16+vol9+px2+tx10+age0+bp1h5+fdv3=60/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc0/age0/px0/flat-12) | drivers: px5m=0.7% volMom=1.75 bp5m=0.67 ageS=4473 liq=$119393
+[SCORE-BREAKDOWN] $PAIRA combined=20 raw=40(liq12+bp5+vol9+px-10+tx10+age4+bp1h3+fdv5=38/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-41.2% volMom=1.78 bp5m=0.54 ageS=1386 liq=$26234
+[SCORE-BREAKDOWN] $Bo combined=51 raw=71(liq10+bp5+vol15+px15+tx10+age6+bp1h1+fdv5=67/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px-12/flat0) | drivers: px5m=43.5% volMom=11.60 bp5m=0.55 ageS=339 liq=$14076
+[SCORE-BREAKDOWN] $I2P combined=8 raw=28(liq8+bp0+vol0+px5+tx8+age0+bp1h1+fdv5=27/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=1.8% volMom=0.09 bp5m=0.44 ageS=7637 liq=$9682
+[SCORE-BREAKDOWN] $PUMPATHON combined=0 raw=15(liq8+bp0+vol0+px-10+tx8+age2+bp1h1+fdv5=14/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-23.6% volMom=0.11 bp5m=0.43 ageS=3172 liq=$9738
+[SCORE-BREAKDOWN] $Tortuga combined=0 raw=18(liq5+bp0+vol3+px-10+tx10+age4+bp1h0+fdv5=17/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-74.5% volMom=1.00 bp5m=0.40 ageS=1016 liq=$2816
+[SCORE-BREAKDOWN] $Unitree combined=33 raw=41(liq5+bp10+vol0+px12+tx4+age2+bp1h1+fdv5=39/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=9.8% volMom=0.08 bp5m=0.59 ageS=3014 liq=$3754
+[SCORE-BREAKDOWN] $LAYOOO combined=9 raw=29(liq15+bp5+vol3+px-4+tx6+age0+bp1h0+fdv3=28/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=-3.1% volMom=0.83 bp5m=0.54 ageS=11096 liq=$63837
+[SCORE-BREAKDOWN] $DEGS combined=41 raw=63(liq12+bp0+vol15+px15+tx10+age0+bp1h3+fdv5=60/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-22(mc-8/age-8/px-6/flat0) | drivers: px5m=38.5% volMom=4.89 bp5m=0.49 ageS=71168 liq=$48152
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address EPPxZq2cK5tPQ1ZcxEL3unGkCzoARCCbsDGTKXhipump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address Debq4wbfTCAidQF9dqPoZ2Gj1rEGoAdWoFjwKUPppump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address C8bJnFXuHStCvhZdaoaKf4gYvkx8kJFtW6viKtUupump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address vEgVi383kUhUe11qRH5mFu58CQqapRhMV3thZdPpump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch 
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address 8bDA3nAdbBV1qUkytVmKGmk8RPQhdSkNpKobbKaupump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[HELIUS-TAPE] 8TRVDZ whales=8 netBuy=4 netSell=3 wash=0 bundleSlots=0 (txs=100)
+[HELIUS-TAPE] DttSHb whales=10 netBuy=6 netSell=3 wash=1 bundleSlots=1 (txs=100)
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address 9JFeq768htrvFpXhSzHnJiwn4bQ1eJa1yo6gk47goa9p --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address 9rb6VAYHfCpQYrU6NG8NKgcXoom5BmD4Gc3deqyepump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address F2bJJH5fzdFUL6voZF64jQuoeziVjQoiWcSCz5cGexmE --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address 88jZ2hhPumpdjhgCWmmrzB8fFQZgF6w75UFpD5Expump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[HELIUS-TAPE] VQQz26 whales=10 netBuy=9 netSell=1 wash=5 bundleSlots=6 BUNDLE (txs=100)
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address 5Ya5MEehcWSHMD8ptmKN33MMD4V5yJxm74pGMd6afomo --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address AXGmqhcKcPC4bC7vNpxGtu5oEwoEEnyeQUdw9YwYWF1q --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address HrGqFD7jqZ3a41YvJXeQquzXwgsCR3Jv72wPzE9Dbrrr --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address iFYiJU8VP3FLhtjAR4p4pP3jkxhZUbv1KfyhbsLpump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch 
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address BYe3TbpReH8RXr3PsHeDoPAgNNrGivmb7Ukget7Fpump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address EkcTa8n14fXcHdfvZqCg72cTCutJnnKb19vcHwKTpump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address Hr66MMmcwwt6YNPUAVuSyjhrhFSnjCNxuPuAJ1Ubpump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address Dn1ESTknBBn8MkwY9mT4gP9Vr11dh4yhNfmA3Juopump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address 9oMa91M32dG8pCWuyvZuMNxtMj7xBjxAuMXex9ZTpump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address HXbqtbkRbmwdbSNv3c2CbeS1NYVEigp4BTwBKXJvpump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address 3dNkp3EsN5NGgDuRgSK2v7bRSzgQpcjLueN6cZjDpump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address GYh7wwyjSfEZPoovKkw26QcptEzqNZHCXQrLSTvwpump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[HELIUS-TAPE] swap fetch failed for HoQytHbvx4Rp1vpTiwzWwGQNq4su32tsfEbBLwHhpump: The operation was aborted due to timeout
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address 9kRQJNBbzv2igELvLvdQTXDWb4Nevm4Ri4BDcdgvRYLo --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address 2BZv5vqqX4BdCJYU16jXkdhJpe5L3979isiTETyupump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address F4Lyq5tJJGwEo1hhLweQPg6xG1aVKv4SZqAmDBQepump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address HWzUC1x4WAyHjvKM9XtAxmd9PwNwjySgt4PXDN7opump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address 752y1QBLEaug9K1XFsn4zLkM9JioFV3dCXH5diUpump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch 
+[HELIUS-TAPE] b88hnU whales=10 netBuy=6 netSell=3 wash=5 bundleSlots=3 BUNDLE (txs=100)
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address 8TRVDZhYRUHYyrftAfxHjYnsetKFzspUp9qq31pmpump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[HELIUS-TAPE] 4LRRys whales=10 netBuy=7 netSell=3 wash=5 bundleSlots=4 BUNDLE (txs=33)
+[BIRDKEY] No Birdeye API keys found. Set BIRDEYE_API_KEY_1, _2, etc. in .env
+[SCORE-BREAKDOWN] $NiuLai combined=80 raw=69(liq12+bp16+vol3+px15+tx10+age0+bp1h5+fdv5=66/95) ml=n/a(adjn/a dumpn/a) sm=22 wh=6 pen=-4(mc-8/age0/px4/flat0) | drivers: px5m=12.0% volMom=0.93 bp5m=0.71 ageS=7799 liq=$25726
+[SCORE-BREAKDOWN] $4680 combined=44 raw=58(liq12+bp10+vol0+px15+tx10+age0+bp1h3+fdv5=55/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-14(mc-8/age0/px-6/flat0) | drivers: px5m=27.4% volMom=0.47 bp5m=0.57 ageS=8763 liq=$38658
+[SCORE-BREAKDOWN] $XERIS combined=56 raw=61(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv3=58/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=18 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=0.5% volMom=0.96 bp5m=0.82 ageS=30941 liq=$160353
+[SCORE-BREAKDOWN] $USTF combined=52 raw=65(liq15+bp20+vol6+px5+tx10+age0+bp1h5+fdv1=62/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=25 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=1.7% volMom=1.06 bp5m=0.98 ageS=12210 liq=$277942
+[SCORE-BREAKDOWN] $NTDA combined=66 raw=63(liq15+bp16+vol9+px2+tx10+age0+bp1h5+fdv3=60/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=18 pen=-12(mc0/age0/px0/flat-12) | drivers: px5m=0.7% volMom=1.75 bp5m=0.67 ageS=4483 liq=$119393
+[SCORE-BREAKDOWN] $Bo combined=66 raw=71(liq10+bp5+vol15+px15+tx10+age6+bp1h1+fdv5=67/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=25 pen=-20(mc-8/age0/px-12/flat0) | drivers: px5m=43.5% volMom=11.60 bp5m=0.55 ageS=349 liq=$14076
+[DIAG-SCOREWALL] top5 (pre-safety): #1 $NiuLai score=80 mode=MG bp5m=0.71 px5m=11.96 volMom=0.93 liq=25726 age=7799s mlScore=N/A rej=[]  ||  #2 $NTDA score=66 mode=none bp5m=0.67 px5m=0.73 volMom=1.75 liq=119393 age=4483s mlScore=N/A rej=[age > 1800, px5m < 2, hwrBp5m < 0.75]  ||  #3 $Bo score=66 mode=none bp5m=0.55 px5m=43.52 volMom=11.60 liq=14076 age=349s mlScore=N/A rej=[bp5m < 0.6, liq < 20000, px5m > 35 (chase), hwrBp5m < 0.75]  ||  #4 $XERIS score=56 mode=HWR bp5m=0.82 px5m=0.52 volMom=0.96 liq=160353 age=30941s mlScore=N/A rej=[]  ||  #5 $USTF score=52 mode=HWR bp5m=0.98 px5m=1.66 volMom=1.06 liq=277942 age=12210s mlScore=N/A rej=[]
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[SAFETY] $NiuLai rugScore=1 rugScoreNorm=1 freeze=false mint=false veto=none
+[SCAN] Funnel: seen=1117 -> cutLiq=356 cutVol=582 cutAge=126 cutPrice=0 cutVolZero=0 cutHoneypot=1 cutTooNew=0 | survived=46 deduped=21 scored=21
+[SCAN] Discovery: 21 candidates found.
+[REGIME] Runner regime ON — hotRunners=3, peak5m=46.6%. Entries enabled.
+[SCORE-BREAKDOWN] $NiuLai combined=39 raw=59(liq12+bp16+vol3+px5+tx10+age0+bp1h5+fdv5=56/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=2.1% volMom=0.94 bp5m=0.71 ageS=7800 liq=$24485
+[SCORE-LATCH] $NiuLai - reconciled degraded entry re-score 39 -> authoritative same-cycle scan 80 (entry pass drops smart-money/whale + re-rolls ML). mode=MG ml=n/a gap=41 bp5m=0.00
+[OBJECTIVE-GATE] SKIP $NiuLai — modeled forward net EV -1.66% < margin 1.5% (peak~6%, capture~5.1%, RT-cost 6.76%, liq $24485, score 80). Not provably positive-EV -> reject. Set OBJECTIVE_GATE=false to disable.
+[SCORE-BREAKDOWN] $NTDA combined=51 raw=63(liq15+bp16+vol9+px2+tx10+age0+bp1h5+fdv3=60/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc0/age0/px0/flat-12) | drivers: px5m=0.8% volMom=1.88 bp5m=0.67 ageS=4485 liq=$119452
+[SCORE-LATCH] $NTDA - reconciled degraded entry re-score 51 -> authoritative same-cycle scan 66 (entry pass drops smart-money/whale + re-rolls ML). mode=none ml=n/a gap=15 bp5m=0.00
+[SCORE_GATE] SKIP $NTDA — Score: 66 (Min: 65) | Mode: none (Reason: age > 1800, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $Bo combined=53 raw=73(liq10+bp5+vol15+px15+tx10+age6+bp1h3+fdv5=69/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px-12/flat0) | drivers: px5m=55.5% volMom=8.67 bp5m=0.54 ageS=351 liq=$13912
+[SCORE-LATCH] $Bo - reconciled degraded entry re-score 53 -> authoritative same-cycle scan 66 (entry pass drops smart-money/whale + re-rolls ML). mode=none ml=n/a gap=13 bp5m=0.00
+[SCORE_GATE] SKIP $Bo — Score: 66 (Min: 65) | Mode: none (Reason: bp5m < 0.6, liq < 20000, px5m > 35 (chase), hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $XERIS combined=41 raw=61(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv3=58/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=0.1% volMom=0.89 bp5m=0.82 ageS=30943 liq=$160168
+[SCORE-LATCH] $XERIS - reconciled degraded entry re-score 41 -> authoritative same-cycle scan 56 (entry pass drops smart-money/whale + re-rolls ML). mode=HWR ml=n/a gap=15 bp5m=0.00
+[EV-ADMISSION] $XERIS admitted via forward-EV arbiter — forward net EV +1.64% >= margin 1.5% at liq $160168 (mode HWR) (descriptive score 56 below bar 65, mode HWR)
+[OBJECTIVE-GATE] PASS $XERIS — net EV +1.64% (peak~12%, capture~8.4%, RT 6.76%, liq $160168, score 56).
+[SIZING] Tier MICRO | bal 0.0092 SOL | pct 10% | boost 1.00x | throttle 100% | ddDelever 100% | size 0.0030 SOL
+[SAFETY] $XERIS rugScore=4301 rugScoreNorm=38 freeze=false mint=false veto=none
+[PAPER EDGE SKIP] $XERIS — edge 0.60% < 5% (micro=true).
+[SCORE-BREAKDOWN] $USTF combined=34 raw=62(liq15+bp20+vol3+px5+tx10+age0+bp1h5+fdv1=59/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=1.6% volMom=0.95 bp5m=0.99 ageS=12214 liq=$278330
+[SCORE-LATCH] $USTF - reconciled degraded entry re-score 34 -> authoritative same-cycle scan 52 (entry pass drops smart-money/whale + re-rolls ML). mode=HWR ml=n/a gap=18 bp5m=0.00
+[EV-ADMISSION] $USTF admitted via forward-EV arbiter — forward net EV +1.64% >= margin 1.5% at liq $278330 (mode HWR) (descriptive score 52 below bar 65, mode HWR)
+[OBJECTIVE-GATE] PASS $USTF — net EV +1.64% (peak~12%, capture~8.4%, RT 6.76%, liq $278330, score 52).
+[SIZING] Tier MICRO | bal 0.0092 SOL | pct 10% | boost 1.00x | throttle 100% | ddDelever 100% | size 0.0030 SOL
+[SAFETY] BLOCKED $USTF — insufficient_sell_activity_honeypot_risk(4/10@12214s)
+[SCORE-BREAKDOWN] $4680 combined=44 raw=58(liq12+bp10+vol0+px15+tx10+age0+bp1h3+fdv5=55/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-14(mc-8/age0/px-6/flat0) | drivers: px5m=25.7% volMom=0.35 bp5m=0.55 ageS=8767 liq=$38389
+[SCORE_GATE] SKIP $4680 — Score: 44 (Min: 65) | Mode: MG | Size: 0.0033 (Min: 0.003)
+[SCORE-BREAKDOWN] $DEGS combined=41 raw=63(liq12+bp0+vol15+px15+tx10+age0+bp1h3+fdv5=60/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-22(mc-8/age-8/px-6/flat0) | drivers: px5m=38.5% volMom=4.89 bp5m=0.49 ageS=71182 liq=$48152
+[SCORE_GATE] SKIP $DEGS — Score: 41 (Min: 65) | Mode: none (Reason: age > 1800, bp5m < 0.6, px5m > 35 (chase), hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $ANICAT combined=33 raw=53(liq12+bp5+vol0+px15+tx10+age2+bp1h1+fdv5=50/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px-12/flat0) | drivers: px5m=55.2% volMom=0.40 bp5m=0.53 ageS=2810 liq=$21519
+[SCORE-LATCH] $ANICAT - reconciled degraded entry re-score 33 -> authoritative same-cycle scan 38 (entry pass drops smart-money/whale + re-rolls ML). mode=none ml=n/a gap=5 bp5m=0.00
+[SCORE_GATE] SKIP $ANICAT — Score: 38 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, px5m > 35 (chase), hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $Unitree combined=33 raw=41(liq5+bp10+vol0+px12+tx4+age2+bp1h1+fdv5=39/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=9.8% volMom=0.08 bp5m=0.59 ageS=3029 liq=$3754
+[SCORE_GATE] SKIP $Unitree — Score: 33 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, liq < 20000, volMom < 0.1, hwrBp5m < 0.75, hwrLiq < 5000) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $Frock combined=18 raw=46(liq12+bp0+vol6+px8+tx10+age0+bp1h3+fdv5=44/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=3.5% volMom=1.22 bp5m=0.48 ageS=23558 liq=$30032
+[SCORE-LATCH] SKIP $Frock - scan 30 > entry 18 BUT bp5m=0.48<0.50 - token decayed since scan, not latching stale score.
+[SCORE_GATE] SKIP $Frock — Score: 18 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $NTDA combined=30 raw=58(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv0=55/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=1.0% volMom=0.87 bp5m=0.98 ageS=24386 liq=$743087
+[SCORE_GATE] SKIP $NTDA — Score: 30 (Min: 65) | Mode: none (Reason: score too low, age > 1800, px5m < 2) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $PAIRA combined=20 raw=40(liq12+bp5+vol9+px-10+tx10+age4+bp1h3+fdv5=38/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-43.7% volMom=1.70 bp5m=0.54 ageS=1401 liq=$26925
+[SCORE_GATE] SKIP $PAIRA — Score: 20 (Min: 65) | Mode: none (Reason: score too low, bp5m < 0.6, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $UOTF combined=11 raw=39(liq15+bp5+vol3+px2+tx6+age0+bp1h5+fdv1=37/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.4% volMom=0.99 bp5m=0.52 ageS=40962 liq=$273179
+[SCORE-LATCH] $UOTF - reconciled degraded entry re-score 11 -> authoritative same-cycle scan 13 (entry pass drops smart-money/whale + re-rolls ML). mode=none ml=n/a gap=2 bp5m=0.00
+[SCORE_GATE] SKIP $UOTF — Score: 13 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $LAYOOO combined=9 raw=29(liq15+bp5+vol3+px-4+tx6+age0+bp1h0+fdv3=28/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=-3.1% volMom=0.83 bp5m=0.54 ageS=11112 liq=$63837
+[SCORE_GATE] SKIP $LAYOOO — Score: 9 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, px5m < 2, hwrBp5m < 0.75, bp1h < 0.51) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $I2P combined=5 raw=25(liq8+bp0+vol0+px2+tx8+age0+bp1h1+fdv5=24/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=0.3% volMom=0.10 bp5m=0.42 ageS=7653 liq=$9601
+[SCORE-LATCH] SKIP $I2P - scan 8 > entry 5 BUT bp5m=0.42<0.50 - token decayed since scan, not latching stale score.
+[SCORE_GATE] SKIP $I2P — Score: 5 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, liq < 20000, volMom < 0.1, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[SCORE-BREAKDOWN] $REXLER combined=7 raw=35(liq12+bp5+vol3+px-3+tx10+age0+bp1h1+fdv5=33/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-3.0% volMom=0.66 bp5m=0.50 ageS=74040 liq=$35249
+[SCORE_GATE] SKIP $REXLER — Score: 7 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $SOLCAT combined=0 raw=27(liq10+bp5+vol0+px-3+tx8+age0+bp1h1+fdv5=26/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-2.0% volMom=0.25 bp5m=0.51 ageS=53883 liq=$13206
+[SCORE_GATE] SKIP $SOLCAT — Score: 0 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, liq < 20000, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $NEPE combined=0 raw=21(liq10+bp5+vol6+px-10+tx4+age0+bp1h0+fdv5=20/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-17.3% volMom=1.44 bp5m=0.53 ageS=55569 liq=$11657
+[SCORE_GATE] SKIP $NEPE — Score: 0 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, liq < 20000, px5m < 2, hwrBp5m < 0.75, bp1h < 0.51) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $memecoin combined=0 raw=15(liq8+bp0+vol0+px-10+tx8+age0+bp1h3+fdv5=14/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-9.8% volMom=0.17 bp5m=0.47 ageS=4997 liq=$6824
+[SCORE_GATE] SKIP $memecoin — Score: 0 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, liq < 20000, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $PUMPATHON combined=0 raw=17(liq8+bp0+vol0+px-10+tx10+age2+bp1h1+fdv5=16/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-22.4% volMom=0.12 bp5m=0.44 ageS=3189 liq=$9826
+[SCORE_GATE] SKIP $PUMPATHON — Score: 0 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, liq < 20000, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $Tortuga combined=0 raw=18(liq5+bp0+vol3+px-10+tx10+age4+bp1h0+fdv5=17/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-74.8% volMom=1.00 bp5m=0.40 ageS=1033 liq=$2790
+[SCORE_GATE] SKIP $Tortuga — Score: 0 (Min: 65) | Mode: none (Reason: score too low, bp5m < 0.6, liq < 20000, px5m < 2, hwrBp5m < 0.75, bp1h < 0.51, hwrLiq < 5000) | Size: 0.0030 (Min: 0.003)
+[PHASE-E] Descriptive-prior hypothesis active: estimatedPeakPct(liq) as stable prior,
+[PHASE-E] score composite has provisional correlation with outcomes. Hypothesis FALSIFIED if paper mean(f(x)) < +1.0% over >= 30 trades.
+[DEBUG] currentBalance: 0.0092, isMicroWallet: true
+[SCAN] Micro-Wallet Mode Active (Bal: 0.0092 SOL)
+[FETCHER-PATCH] old-profit funnel active | liq>=1000 vol5m>=500 minAge=0s minSells=2
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GMGN] error: Command failed: gmgn-cli track smartmoney --chain sol --side buy --limit 500 --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch file.
+
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli track smartmoney --chain sol --side buy --limit 500 --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch file.
+
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GOLD HUNTER] 🏆 0 signals | LEGENDARY: 0 | HIGH: 0
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[SCANNER-QUEUE] Tracking 29 fast scanner tokens via free API (Waiting for $10k breakout)
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[SRC-XTRA] quality-only union=74 | jupVerified=60 jupTop=50 gkVol=0 (verified-set size=43, offset=17)
+[QUALITY] in=54 pass=48 jupVerified=0 cuts: notVerified=0 tooYoung=6 | flags: REQUIRE_VERIFIED=false MIN_AGE_MIN=5
+[SCORE-BREAKDOWN] $NiuLai combined=65 raw=69(liq12+bp16+vol3+px15+tx10+age0+bp1h5+fdv5=66/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-4(mc-8/age0/px4/flat0) | drivers: px5m=12.8% volMom=0.97 bp5m=0.70 ageS=7841 liq=$25798
+[SCORE-BREAKDOWN] $Frock combined=15 raw=43(liq12+bp0+vol6+px5+tx10+age0+bp1h3+fdv5=41/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=2.3% volMom=1.26 bp5m=0.48 ageS=23595 liq=$29849
+[SCORE-BREAKDOWN] $REXLER combined=7 raw=35(liq12+bp5+vol3+px-3+tx10+age0+bp1h1+fdv5=33/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-3.0% volMom=0.66 bp5m=0.50 ageS=74076 liq=$35257
+[SCORE-BREAKDOWN] $4680 combined=43 raw=47(liq12+bp0+vol0+px15+tx10+age0+bp1h3+fdv5=45/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-4(mc-8/age0/px4/flat0) | drivers: px5m=15.0% volMom=0.38 bp5m=0.49 ageS=8805 liq=$38205
+[SCORE-BREAKDOWN] $UOTF combined=10 raw=38(liq15+bp5+vol3+px-1+tx8+age0+bp1h5+fdv1=36/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-0.1% volMom=1.00 bp5m=0.50 ageS=40998 liq=$272503
+[SCORE-BREAKDOWN] $XERIS combined=41 raw=61(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv3=58/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=0.3% volMom=0.92 bp5m=0.81 ageS=30983 liq=$160244
+[SCORE-BREAKDOWN] $USTF combined=37 raw=65(liq15+bp20+vol6+px5+tx10+age0+bp1h5+fdv1=62/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=1.8% volMom=1.01 bp5m=0.99 ageS=12252 liq=$278530
+[SCORE-BREAKDOWN] $ANICAT combined=33 raw=53(liq12+bp5+vol0+px15+tx10+age2+bp1h1+fdv5=50/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px-12/flat0) | drivers: px5m=47.9% volMom=0.42 bp5m=0.53 ageS=2848 liq=$20981
+[SCORE-BREAKDOWN] $SOLCAT combined=25 raw=41(liq10+bp5+vol0+px8+tx10+age0+bp1h1+fdv5=39/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-16(mc-8/age-8/px0/flat0) | drivers: px5m=4.5% volMom=0.37 bp5m=0.55 ageS=53918 liq=$13682
+[SCORE-BREAKDOWN] $NEPE combined=19 raw=47(liq10+bp10+vol9+px5+tx6+age0+bp1h0+fdv5=45/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=2.5% volMom=1.68 bp5m=0.55 ageS=55604 liq=$11958
+[SCORE-BREAKDOWN] $memecoin combined=0 raw=20(liq8+bp5+vol0+px-10+tx8+age0+bp1h3+fdv5=19/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-9.0% volMom=0.22 bp5m=0.50 ageS=5032 liq=$6861
+[SCORE-BREAKDOWN] $NTDA combined=30 raw=58(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv0=55/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.8% volMom=0.93 bp5m=0.98 ageS=24423 liq=$742519
+[SCORE-BREAKDOWN] $NTDA combined=66 raw=66(liq15+bp16+vol12+px2+tx10+age0+bp1h5+fdv3=63/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=0(mc0/age0/px0/flat0) | drivers: px5m=0.9% volMom=2.00 bp5m=0.67 ageS=4525 liq=$119473
+[SCORE-BREAKDOWN] $PAIRA combined=20 raw=40(liq12+bp5+vol9+px-10+tx10+age4+bp1h3+fdv5=38/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-51.0% volMom=1.82 bp5m=0.54 ageS=1438 liq=$25122
+[SCORE-BREAKDOWN] $Bo combined=47 raw=73(liq10+bp5+vol15+px15+tx10+age6+bp1h3+fdv5=69/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-26(mc-8/age0/px-18/flat0) | drivers: px5m=95.0% volMom=8.77 bp5m=0.54 ageS=391 liq=$15748
+[SCORE-BREAKDOWN] $I2P combined=33 raw=41(liq10+bp0+vol0+px15+tx8+age0+bp1h1+fdv5=39/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=16.1% volMom=0.18 bp5m=0.45 ageS=7689 liq=$10464
+[SCORE-BREAKDOWN] $PUMPATHON combined=0 raw=15(liq8+bp0+vol0+px-10+tx8+age2+bp1h1+fdv5=14/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-21.0% volMom=0.12 bp5m=0.36 ageS=3224 liq=$9827
+[SCORE-BREAKDOWN] $Tortuga combined=0 raw=15(liq5+bp0+vol0+px-10+tx10+age4+bp1h0+fdv5=14/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-59.2% volMom=0.48 bp5m=0.37 ageS=1068 liq=$2639
+[SCORE-BREAKDOWN] $Unitree combined=33 raw=41(liq5+bp10+vol0+px12+tx4+age2+bp1h1+fdv5=39/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=9.4% volMom=0.08 bp5m=0.58 ageS=3066 liq=$3849
+[SCORE-BREAKDOWN] $LAYOOO combined=14 raw=34(liq15+bp0+vol3+px5+tx6+age0+bp1h0+fdv3=32/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=1.8% volMom=0.84 bp5m=0.30 ageS=11148 liq=$64102
+[SCORE-BREAKDOWN] $DEGS combined=48 raw=60(liq12+bp0+vol12+px15+tx10+age0+bp1h3+fdv5=57/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc-8/age-8/px4/flat0) | drivers: px5m=10.3% volMom=2.93 bp5m=0.47 ageS=71220 liq=$49143
+[GMGN] error: Command failed: gmgn-cli track smartmoney --chain sol --side buy --limit 500 --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch file.
+
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[HELIUS-TAPE] swap fetch failed for HoQytHbvx4Rp1vpTiwzWwGQNq4su32tsfEbBLwHhpump: The operation was aborted due to timeout
+[HELIUS-TAPE] 8HKQfb whales=10 netBuy=5 netSell=4 wash=0 bundleSlots=0 (txs=44)
+[SCORE-BREAKDOWN] $NiuLai combined=80 raw=69(liq12+bp16+vol3+px15+tx10+age0+bp1h5+fdv5=66/95) ml=n/a(adjn/a dumpn/a) sm=22 wh=6 pen=-4(mc-8/age0/px4/flat0) | drivers: px5m=12.8% volMom=0.97 bp5m=0.70 ageS=7852 liq=$25798
+[SCORE-BREAKDOWN] $4680 combined=43 raw=47(liq12+bp0+vol0+px15+tx10+age0+bp1h3+fdv5=45/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-4(mc-8/age0/px4/flat0) | drivers: px5m=15.0% volMom=0.38 bp5m=0.49 ageS=8816 liq=$38205
+[SCORE-BREAKDOWN] $XERIS combined=56 raw=61(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv3=58/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=18 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=0.3% volMom=0.92 bp5m=0.81 ageS=30994 liq=$160244
+[SCORE-BREAKDOWN] $USTF combined=52 raw=65(liq15+bp20+vol6+px5+tx10+age0+bp1h5+fdv1=62/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=25 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=1.8% volMom=1.01 bp5m=0.99 ageS=12263 liq=$278530
+[SCORE-BREAKDOWN] $NTDA combined=81 raw=66(liq15+bp16+vol12+px2+tx10+age0+bp1h5+fdv3=63/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=18 pen=0(mc0/age0/px0/flat0) | drivers: px5m=0.9% volMom=2.00 bp5m=0.67 ageS=4536 liq=$119473
+[SCORE-BREAKDOWN] $DEGS combined=63 raw=60(liq12+bp0+vol12+px15+tx10+age0+bp1h3+fdv5=57/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=6 pen=-12(mc-8/age-8/px4/flat0) | drivers: px5m=10.3% volMom=2.93 bp5m=0.47 ageS=71231 liq=$49143
+[DIAG-SCOREWALL] top5 (pre-safety): #1 $NTDA score=81 mode=none bp5m=0.67 px5m=0.88 volMom=2.00 liq=119473 age=4536s mlScore=N/A rej=[age > 1800, px5m < 2, hwrBp5m < 0.75]  ||  #2 $NiuLai score=80 mode=MG bp5m=0.70 px5m=12.77 volMom=0.97 liq=25798 age=7852s mlScore=N/A rej=[]  ||  #3 $DEGS score=63 mode=MG bp5m=0.47 px5m=10.25 volMom=2.93 liq=49143 age=71231s mlScore=N/A rej=[]  ||  #4 $XERIS score=56 mode=HWR bp5m=0.81 px5m=0.26 volMom=0.92 liq=160244 age=30994s mlScore=N/A rej=[]  ||  #5 $USTF score=52 mode=HWR bp5m=0.99 px5m=1.79 volMom=1.01 liq=278530 age=12263s mlScore=N/A rej=[]
+[SAFETY] $NTDA rugScore=2701 rugScoreNorm=32 freeze=false mint=false veto=none
+[SCAN] Funnel: seen=1147 -> cutLiq=362 cutVol=594 cutAge=137 cutPrice=0 cutVolZero=0 cutHoneypot=0 cutTooNew=0 | survived=48 deduped=21 scored=21
+[SCAN] Discovery: 21 candidates found.
+[REGIME] Runner regime ON — hotRunners=1, peak5m=95.0%. Entries enabled.
+[SCORE-BREAKDOWN] $NTDA combined=66 raw=66(liq15+bp16+vol12+px2+tx10+age0+bp1h5+fdv3=63/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=0(mc0/age0/px0/flat0) | drivers: px5m=0.9% volMom=2.00 bp5m=0.67 ageS=4537 liq=$119473
+[SCORE-LATCH] $NTDA - reconciled degraded entry re-score 66 -> authoritative same-cycle scan 81 (entry pass drops smart-money/whale + re-rolls ML). mode=none ml=n/a gap=15 bp5m=0.00
+[SCORE_GATE] SKIP $NTDA — Score: 81 (Min: 65) | Mode: none (Reason: age > 1800, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $NiuLai combined=59 raw=67(liq12+bp16+vol6+px10+tx10+age0+bp1h5+fdv5=64/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=6.7% volMom=1.06 bp5m=0.70 ageS=7853 liq=$25566
+[SCORE-LATCH] $NiuLai - reconciled degraded entry re-score 59 -> authoritative same-cycle scan 80 (entry pass drops smart-money/whale + re-rolls ML). mode=MG ml=n/a gap=21 bp5m=0.00
+[OBJECTIVE-GATE] SKIP $NiuLai — modeled forward net EV 0.04% < margin 1.5% (peak~8%, capture~6.8%, RT-cost 6.76%, liq $25566, score 80). Not provably positive-EV -> reject. Set OBJECTIVE_GATE=false to disable.
+[SCORE-BREAKDOWN] $DEGS combined=48 raw=60(liq12+bp0+vol12+px15+tx10+age0+bp1h3+fdv5=57/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc-8/age-8/px4/flat0) | drivers: px5m=10.3% volMom=2.93 bp5m=0.47 ageS=71233 liq=$49143
+[SCORE-LATCH] SKIP $DEGS - scan 63 > entry 48 BUT bp5m=0.47<0.50 - token decayed since scan, not latching stale score.
+[SCORE_GATE] SKIP $DEGS — Score: 48 (Min: 65) | Mode: MG | Size: 0.0037 (Min: 0.003)
+[SCORE-BREAKDOWN] $XERIS combined=41 raw=61(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv3=58/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=0.4% volMom=0.96 bp5m=0.82 ageS=30996 liq=$160372
+[SCORE-LATCH] $XERIS - reconciled degraded entry re-score 41 -> authoritative same-cycle scan 56 (entry pass drops smart-money/whale + re-rolls ML). mode=HWR ml=n/a gap=15 bp5m=0.00
+[EV-ADMISSION] $XERIS admitted via forward-EV arbiter — forward net EV +1.64% >= margin 1.5% at liq $160372 (mode HWR) (descriptive score 56 below bar 65, mode HWR)
+[OBJECTIVE-GATE] PASS $XERIS — net EV +1.64% (peak~12%, capture~8.4%, RT 6.76%, liq $160372, score 56).
+[SIZING] Tier MICRO | bal 0.0092 SOL | pct 10% | boost 1.00x | throttle 100% | ddDelever 100% | size 0.0030 SOL
+[PAPER EDGE SKIP] $XERIS — edge 0.60% < 5% (micro=true).
+[SCORE-BREAKDOWN] $USTF combined=37 raw=65(liq15+bp20+vol6+px5+tx10+age0+bp1h5+fdv1=62/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=1.6% volMom=1.01 bp5m=0.99 ageS=12265 liq=$278494
+[SCORE-LATCH] $USTF - reconciled degraded entry re-score 37 -> authoritative same-cycle scan 52 (entry pass drops smart-money/whale + re-rolls ML). mode=HWR ml=n/a gap=15 bp5m=0.00
+[EV-ADMISSION] $USTF admitted via forward-EV arbiter — forward net EV +1.64% >= margin 1.5% at liq $278494 (mode HWR) (descriptive score 52 below bar 65, mode HWR)
+[OBJECTIVE-GATE] PASS $USTF — net EV +1.64% (peak~12%, capture~8.4%, RT 6.76%, liq $278494, score 52).
+[SIZING] Tier MICRO | bal 0.0092 SOL | pct 10% | boost 1.00x | throttle 100% | ddDelever 100% | size 0.0030 SOL
+[SAFETY] BLOCKED $USTF — insufficient_sell_activity_honeypot_risk(4/10@12266s)
+[SCORE-BREAKDOWN] $Bo combined=47 raw=73(liq10+bp5+vol15+px15+tx10+age6+bp1h3+fdv5=69/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-26(mc-8/age0/px-18/flat0) | drivers: px5m=93.9% volMom=8.81 bp5m=0.54 ageS=405 liq=$15701
+[SCORE_GATE] SKIP $Bo — Score: 47 (Min: 65) | Mode: none (Reason: bp5m < 0.6, liq < 20000, px5m > 35 (chase), hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $4680 combined=43 raw=47(liq12+bp0+vol0+px15+tx10+age0+bp1h3+fdv5=45/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-4(mc-8/age0/px4/flat0) | drivers: px5m=14.3% volMom=0.38 bp5m=0.49 ageS=8819 liq=$38079
+[SCORE_GATE] SKIP $4680 — Score: 43 (Min: 65) | Mode: MG | Size: 0.0033 (Min: 0.003)
+[SCORE-BREAKDOWN] $ANICAT combined=33 raw=53(liq12+bp5+vol0+px15+tx10+age2+bp1h1+fdv5=50/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px-12/flat0) | drivers: px5m=47.9% volMom=0.42 bp5m=0.53 ageS=2862 liq=$20981
+[SCORE_GATE] SKIP $ANICAT — Score: 33 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, px5m > 35 (chase), hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $I2P combined=33 raw=41(liq10+bp0+vol0+px15+tx8+age0+bp1h1+fdv5=39/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=16.1% volMom=0.18 bp5m=0.45 ageS=7703 liq=$10464
+[SCORE_GATE] SKIP $I2P — Score: 33 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, liq < 20000, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $Unitree combined=45 raw=49(liq5+bp13+vol0+px15+tx6+age2+bp1h1+fdv5=47/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-4(mc-8/age0/px4/flat0) | drivers: px5m=13.9% volMom=0.09 bp5m=0.62 ageS=3080 liq=$3849
+[SCORE_GATE] SKIP $Unitree — Score: 45 (Min: 65) | Mode: none (Reason: age > 1800, liq < 20000, volMom < 0.1, hwrBp5m < 0.75, hwrLiq < 5000) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $NTDA combined=30 raw=58(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv0=55/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.8% volMom=0.93 bp5m=0.98 ageS=24438 liq=$742519
+[SCORE_GATE] SKIP $NTDA — Score: 30 (Min: 65) | Mode: none (Reason: score too low, age > 1800, px5m < 2) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $SOLCAT combined=42 raw=54(liq10+bp10+vol0+px15+tx10+age0+bp1h1+fdv5=51/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc-8/age-8/px4/flat0) | drivers: px5m=10.9% volMom=0.44 bp5m=0.57 ageS=53933 liq=$14034
+[SCORE_GATE] SKIP $SOLCAT — Score: 42 (Min: 65) | Mode: MG | Size: 0.0032 (Min: 0.003)
+[SCORE-BREAKDOWN] $PAIRA combined=20 raw=40(liq12+bp5+vol9+px-10+tx10+age4+bp1h3+fdv5=38/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-44.7% volMom=1.68 bp5m=0.55 ageS=1453 liq=$26733
+[SCORE_GATE] SKIP $PAIRA — Score: 20 (Min: 65) | Mode: none (Reason: score too low, bp5m < 0.6, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $NEPE combined=0 raw=23(liq10+bp0+vol0+px5+tx2+age0+bp1h0+fdv5=22/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=2.5% volMom=0.49 bp5m=0.40 ageS=55619 liq=$11958
+[SCORE-LATCH] SKIP $NEPE - scan 19 > entry 0 BUT bp5m=0.40<0.50 - token decayed since scan, not latching stale score.
+[SCORE_GATE] SKIP $NEPE — Score: 0 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, liq < 20000, tx5m < 8, hwrBp5m < 0.75, bp1h < 0.51) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $Frock combined=16 raw=44(liq12+bp0+vol6+px8+tx10+age0+bp1h1+fdv5=42/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=3.0% volMom=1.10 bp5m=0.48 ageS=23610 liq=$29496
+[SCORE_GATE] SKIP $Frock — Score: 16 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $LAYOOO combined=27 raw=47(liq15+bp10+vol3+px8+tx6+age0+bp1h0+fdv3=45/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=3.1% volMom=0.83 bp5m=0.59 ageS=11164 liq=$64252
+[SCORE_GATE] SKIP $LAYOOO — Score: 27 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, hwrBp5m < 0.75, bp1h < 0.51) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $UOTF combined=10 raw=38(liq15+bp5+vol3+px-1+tx8+age0+bp1h5+fdv1=36/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-0.1% volMom=1.00 bp5m=0.50 ageS=41014 liq=$272503
+[SCORE_GATE] SKIP $UOTF — Score: 10 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $REXLER combined=0 raw=27(liq12+bp5+vol3+px-10+tx10+age0+bp1h1+fdv5=26/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-11.8% volMom=0.95 bp5m=0.50 ageS=74092 liq=$33690
+[SCORE-LATCH] $REXLER - reconciled degraded entry re-score 0 -> authoritative same-cycle scan 7 (entry pass drops smart-money/whale + re-rolls ML). mode=none ml=n/a gap=7 bp5m=0.00
+[SCORE_GATE] SKIP $REXLER — Score: 7 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $memecoin combined=8 raw=28(liq8+bp5+vol0+px-4+tx10+age0+bp1h3+fdv5=27/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-4.0% volMom=0.23 bp5m=0.53 ageS=5049 liq=$6902
+[SCORE_GATE] SKIP $memecoin — Score: 8 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, liq < 20000, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $PUMPATHON combined=0 raw=17(liq8+bp0+vol0+px-10+tx10+age2+bp1h1+fdv5=16/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-20.6% volMom=0.12 bp5m=0.36 ageS=3241 liq=$9852
+[SCORE_GATE] SKIP $PUMPATHON — Score: 0 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, liq < 20000, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $Tortuga combined=0 raw=15(liq5+bp0+vol0+px-10+tx10+age4+bp1h0+fdv5=14/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-58.3% volMom=0.49 bp5m=0.37 ageS=1085 liq=$2683
+[SCORE_GATE] SKIP $Tortuga — Score: 0 (Min: 65) | Mode: none (Reason: score too low, bp5m < 0.6, liq < 20000, px5m < 2, hwrBp5m < 0.75, bp1h < 0.51, hwrLiq < 5000) | Size: 0.0030 (Min: 0.003)
+[PHASE-E] Descriptive-prior hypothesis active: estimatedPeakPct(liq) as stable prior,
+[PHASE-E] score composite has provisional correlation with outcomes. Hypothesis FALSIFIED if paper mean(f(x)) < +1.0% over >= 30 trades.
+[DEBUG] currentBalance: 0.0092, isMicroWallet: true
+[SCAN] Micro-Wallet Mode Active (Bal: 0.0092 SOL)
+[FETCHER-PATCH] old-profit funnel active | liq>=1000 vol5m>=500 minAge=0s minSells=2
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli track smartmoney --chain sol --side buy --limit 500 --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch file.
+
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli track smartmoney --chain sol --side buy --limit 500 --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch file.
+
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GOLD HUNTER] 🏆 0 signals | LEGENDARY: 0 | HIGH: 0
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[SCANNER-QUEUE] Tracking 29 fast scanner tokens via free API (Waiting for $10k breakout)
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[SRC-XTRA] quality-only union=74 | jupVerified=60 jupTop=50 gkVol=0 (verified-set size=43, offset=34)
+[QUALITY] in=55 pass=50 jupVerified=0 cuts: notVerified=0 tooYoung=5 | flags: REQUIRE_VERIFIED=false MIN_AGE_MIN=5
+[SCORE-BREAKDOWN] $NiuLai combined=56 raw=64(liq12+bp16+vol3+px10+tx10+age0+bp1h5+fdv5=61/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=5.2% volMom=0.92 bp5m=0.69 ageS=7894 liq=$25375
+[SCORE-BREAKDOWN] $Frock combined=28 raw=44(liq12+bp0+vol6+px8+tx10+age0+bp1h1+fdv5=42/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-16(mc-8/age-8/px0/flat0) | drivers: px5m=4.2% volMom=1.10 bp5m=0.48 ageS=23648 liq=$29662
+[SCORE-BREAKDOWN] $REXLER combined=0 raw=25(liq12+bp0+vol6+px-10+tx10+age0+bp1h1+fdv5=24/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-10.4% volMom=1.02 bp5m=0.49 ageS=74129 liq=$33969
+[SCORE-BREAKDOWN] $4680 combined=45 raw=53(liq12+bp5+vol0+px15+tx10+age0+bp1h3+fdv5=50/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=15.4% volMom=0.39 bp5m=0.50 ageS=8858 liq=$38282
+[SCORE-BREAKDOWN] $PUMPATHON combined=4 raw=24(liq10+bp0+vol0+px-5+tx10+age2+bp1h1+fdv5=23/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-4.1% volMom=0.18 bp5m=0.39 ageS=3277 liq=$10959
+[SCORE-BREAKDOWN] $UOTF combined=3 raw=31(liq15+bp0+vol3+px-1+tx6+age0+bp1h5+fdv1=29/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-0.2% volMom=0.96 bp5m=0.44 ageS=41051 liq=$272443
+[SCORE-BREAKDOWN] $XERIS combined=38 raw=58(liq15+bp20+vol3+px-1+tx10+age0+bp1h5+fdv3=55/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=-0.4% volMom=0.89 bp5m=0.80 ageS=31036 liq=$159675
+[SCORE-BREAKDOWN] $USTF combined=34 raw=62(liq15+bp20+vol3+px5+tx10+age0+bp1h5+fdv1=59/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=1.9% volMom=0.95 bp5m=0.99 ageS=12305 liq=$278842
+[SCORE-BREAKDOWN] $SOLCAT combined=45 raw=57(liq10+bp10+vol3+px15+tx10+age0+bp1h1+fdv5=54/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc-8/age-8/px4/flat0) | drivers: px5m=13.2% volMom=0.65 bp5m=0.57 ageS=53971 liq=$14196
+[SCORE-BREAKDOWN] $NEPE combined=40 raw=52(liq10+bp10+vol3+px15+tx6+age0+bp1h0+fdv5=49/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc-8/age-8/px4/flat0) | drivers: px5m=11.9% volMom=0.92 bp5m=0.55 ageS=55657 liq=$12558
+[SCORE-BREAKDOWN] $memecoin combined=11 raw=31(liq8+bp10+vol0+px-5+tx8+age0+bp1h3+fdv5=29/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-4.3% volMom=0.22 bp5m=0.57 ageS=5085 liq=$6889
+[SCORE-BREAKDOWN] $NTDA combined=30 raw=58(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv0=55/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.8% volMom=0.94 bp5m=0.98 ageS=24477 liq=$743163
+[SCORE-BREAKDOWN] $NTDA combined=54 raw=66(liq15+bp16+vol9+px5+tx10+age0+bp1h5+fdv3=63/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc0/age0/px0/flat-12) | drivers: px5m=1.8% volMom=1.85 bp5m=0.67 ageS=4579 liq=$119539
+[SCORE-BREAKDOWN] $NTDA combined=36 raw=64(liq15+bp20+vol6+px2+tx10+age0+bp1h5+fdv3=61/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=1.2% volMom=1.04 bp5m=0.83 ageS=69073 liq=$171171
+[SCORE-BREAKDOWN] $PAIRA combined=20 raw=40(liq12+bp5+vol9+px-10+tx10+age4+bp1h3+fdv5=38/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-19.4% volMom=1.92 bp5m=0.54 ageS=1492 liq=$32291
+[SCORE-BREAKDOWN] $Bo combined=51 raw=59(liq10+bp5+vol15+px2+tx10+age6+bp1h3+fdv5=56/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=1.3% volMom=7.08 bp5m=0.53 ageS=445 liq=$14422
+[SCORE-BREAKDOWN] $ANICAT combined=39 raw=53(liq12+bp5+vol0+px15+tx10+age2+bp1h1+fdv5=50/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-14(mc-8/age0/px-6/flat0) | drivers: px5m=29.5% volMom=0.49 bp5m=0.53 ageS=2902 liq=$20942
+[SCORE-BREAKDOWN] $I2P combined=33 raw=41(liq10+bp0+vol0+px15+tx8+age0+bp1h1+fdv5=39/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=15.3% volMom=0.19 bp5m=0.45 ageS=7743 liq=$10422
+[SCORE-BREAKDOWN] $Yoru combined=36 raw=40(liq8+bp5+vol0+px15+tx4+age0+bp1h1+fdv5=38/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-4(mc-8/age0/px4/flat0) | drivers: px5m=12.7% volMom=0.23 bp5m=0.54 ageS=3637 liq=$9243
+[SCORE-BREAKDOWN] $Tortuga combined=0 raw=15(liq5+bp0+vol0+px-10+tx10+age4+bp1h0+fdv5=14/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-59.7% volMom=0.50 bp5m=0.37 ageS=1122 liq=$2618
+[SCORE-BREAKDOWN] $Unitree combined=45 raw=49(liq5+bp13+vol0+px15+tx6+age2+bp1h1+fdv5=47/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-4(mc-8/age0/px4/flat0) | drivers: px5m=11.1% volMom=0.08 bp5m=0.60 ageS=3120 liq=$3888
+[SCORE-BREAKDOWN] $LAYOOO combined=14 raw=34(liq15+bp0+vol3+px5+tx6+age0+bp1h0+fdv3=32/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=2.1% volMom=0.89 bp5m=0.24 ageS=11202 liq=$64161
+[SCORE-BREAKDOWN] $DEGS combined=7 raw=35(liq12+bp0+vol9+px-4+tx8+age0+bp1h3+fdv5=33/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-4.0% volMom=1.71 bp5m=0.48 ageS=71274 liq=$48272
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[HELIUS-TAPE] 8TRVDZ whales=5 netBuy=2 netSell=3 wash=0 bundleSlots=1 (txs=100)
+[HELIUS-TAPE] DttSHb whales=10 netBuy=7 netSell=2 wash=1 bundleSlots=1 (txs=100)
+[HELIUS-TAPE] HNco6i whales=10 netBuy=5 netSell=2 wash=5 bundleSlots=8 BUNDLE (txs=77)
+[HELIUS-TAPE] HoQytH whales=10 netBuy=3 netSell=6 wash=0 bundleSlots=1 (txs=21)
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[HELIUS-TAPE] C8mP8y whales=10 netBuy=9 netSell=1 wash=5 bundleSlots=6 BUNDLE (txs=100)
+[HELIUS-TAPE] iFYiJU whales=10 netBuy=5 netSell=4 wash=5 bundleSlots=3 BUNDLE (txs=40)
+[HELIUS-TAPE] b88hnU whales=10 netBuy=5 netSell=4 wash=5 bundleSlots=4 BUNDLE (txs=100)
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[HELIUS-TAPE] 4LRRys whales=10 netBuy=6 netSell=4 wash=5 bundleSlots=4 BUNDLE (txs=29)
+[SCORE-BREAKDOWN] $NiuLai combined=62 raw=64(liq12+bp16+vol3+px10+tx10+age0+bp1h5+fdv5=61/95) ml=n/a(adjn/a dumpn/a) sm=14 wh=-8 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=5.2% volMom=0.92 bp5m=0.69 ageS=7901 liq=$25375
+[SCORE-BREAKDOWN] $4680 combined=52 raw=53(liq12+bp5+vol0+px15+tx10+age0+bp1h3+fdv5=50/95) ml=n/a(adjn/a dumpn/a) sm=22 wh=-8 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=15.4% volMom=0.39 bp5m=0.50 ageS=8865 liq=$38282
+[SCORE-BREAKDOWN] $XERIS combined=53 raw=58(liq15+bp20+vol3+px-1+tx10+age0+bp1h5+fdv3=55/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=25 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=-0.4% volMom=0.89 bp5m=0.80 ageS=31043 liq=$159675
+[SCORE-BREAKDOWN] $SOLCAT combined=60 raw=57(liq10+bp10+vol3+px15+tx10+age0+bp1h1+fdv5=54/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=18 pen=-12(mc-8/age-8/px4/flat0) | drivers: px5m=13.2% volMom=0.65 bp5m=0.57 ageS=53978 liq=$14196
+[SCORE-BREAKDOWN] $NEPE combined=55 raw=52(liq10+bp10+vol3+px15+tx6+age0+bp1h0+fdv5=49/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=6 pen=-12(mc-8/age-8/px4/flat0) | drivers: px5m=11.9% volMom=0.92 bp5m=0.55 ageS=55664 liq=$12558
+[SCORE-BREAKDOWN] $NTDA combined=69 raw=66(liq15+bp16+vol9+px5+tx10+age0+bp1h5+fdv3=63/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=6 pen=-12(mc0/age0/px0/flat-12) | drivers: px5m=1.8% volMom=1.85 bp5m=0.67 ageS=4585 liq=$119539
+[SCORE-BREAKDOWN] $NTDA combined=51 raw=64(liq15+bp20+vol6+px2+tx10+age0+bp1h5+fdv3=61/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=25 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=1.2% volMom=1.04 bp5m=0.83 ageS=69079 liq=$171171
+[SCORE-BREAKDOWN] $Bo combined=66 raw=59(liq10+bp5+vol15+px2+tx10+age6+bp1h3+fdv5=56/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=12 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=1.3% volMom=7.08 bp5m=0.53 ageS=451 liq=$14422
+[DIAG-SCOREWALL] top5 (pre-safety): #1 $NTDA score=69 mode=none bp5m=0.67 px5m=1.84 volMom=1.85 liq=119539 age=4585s mlScore=N/A rej=[age > 1800, px5m < 2, hwrBp5m < 0.75]  ||  #2 $Bo score=66 mode=none bp5m=0.53 px5m=1.31 volMom=7.08 liq=14422 age=451s mlScore=N/A rej=[bp5m < 0.6, liq < 20000, px5m < 2, hwrBp5m < 0.75]  ||  #3 $NiuLai score=62 mode=MG bp5m=0.69 px5m=5.19 volMom=0.92 liq=25375 age=7901s mlScore=N/A rej=[]  ||  #4 $SOLCAT score=60 mode=MG bp5m=0.57 px5m=13.21 volMom=0.65 liq=14196 age=53978s mlScore=N/A rej=[]  ||  #5 $NEPE score=55 mode=MG bp5m=0.55 px5m=11.94 volMom=0.92 liq=12558 age=55664s mlScore=N/A rej=[]
+[SCAN] Funnel: seen=1150 -> cutLiq=377 cutVol=580 cutAge=138 cutPrice=0 cutVolZero=0 cutHoneypot=0 cutTooNew=0 | survived=50 deduped=23 scored=23
+[SCAN] Discovery: 23 candidates found.
+[REGIME] Runner regime ON — hotRunners=3, peak5m=29.5%. Entries enabled.
+[SCORE-BREAKDOWN] $NTDA combined=54 raw=66(liq15+bp16+vol9+px5+tx10+age0+bp1h5+fdv3=63/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc0/age0/px0/flat-12) | drivers: px5m=1.8% volMom=1.85 bp5m=0.67 ageS=4585 liq=$119539
+[SCORE-LATCH] $NTDA - reconciled degraded entry re-score 54 -> authoritative same-cycle scan 69 (entry pass drops smart-money/whale + re-rolls ML). mode=none ml=n/a gap=15 bp5m=0.00
+[SCORE_GATE] SKIP $NTDA — Score: 69 (Min: 65) | Mode: none (Reason: age > 1800, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $Bo combined=48 raw=56(liq10+bp5+vol15+px-1+tx10+age6+bp1h3+fdv5=53/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=-0.8% volMom=7.12 bp5m=0.54 ageS=451 liq=$14263
+[SCORE-LATCH] $Bo - reconciled degraded entry re-score 48 -> authoritative same-cycle scan 66 (entry pass drops smart-money/whale + re-rolls ML). mode=none ml=n/a gap=18 bp5m=0.00
+[SCORE_GATE] SKIP $Bo — Score: 66 (Min: 65) | Mode: none (Reason: bp5m < 0.6, liq < 20000, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $NiuLai combined=42 raw=62(liq12+bp16+vol6+px5+tx10+age0+bp1h5+fdv5=59/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=2.7% volMom=1.04 bp5m=0.69 ageS=7902 liq=$25064
+[SCORE-LATCH] $NiuLai - reconciled degraded entry re-score 42 -> authoritative same-cycle scan 62 (entry pass drops smart-money/whale + re-rolls ML). mode=MG ml=n/a gap=20 bp5m=0.00
+[SCORE_GATE] SKIP $NiuLai — Score: 62 (Min: 65) | Mode: MG | Size: 0.0032 (Min: 0.003)
+[SCORE-BREAKDOWN] $SOLCAT combined=45 raw=57(liq10+bp10+vol3+px15+tx10+age0+bp1h1+fdv5=54/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc-8/age-8/px4/flat0) | drivers: px5m=13.4% volMom=0.65 bp5m=0.58 ageS=53979 liq=$14208
+[SCORE-LATCH] $SOLCAT - reconciled degraded entry re-score 45 -> authoritative same-cycle scan 60 (entry pass drops smart-money/whale + re-rolls ML). mode=MG ml=n/a gap=15 bp5m=0.00
+[SCORE_GATE] SKIP $SOLCAT — Score: 60 (Min: 65) | Mode: MG | Size: 0.0034 (Min: 0.003)
+[SCORE-BREAKDOWN] $NEPE combined=40 raw=52(liq10+bp10+vol3+px15+tx6+age0+bp1h0+fdv5=49/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc-8/age-8/px4/flat0) | drivers: px5m=11.9% volMom=0.92 bp5m=0.55 ageS=55665 liq=$12558
+[SCORE-LATCH] $NEPE - reconciled degraded entry re-score 40 -> authoritative same-cycle scan 55 (entry pass drops smart-money/whale + re-rolls ML). mode=MG ml=n/a gap=15 bp5m=0.00
+[SCORE_GATE] SKIP $NEPE — Score: 55 (Min: 65) | Mode: MG | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $XERIS combined=41 raw=61(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv3=58/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=0.5% volMom=0.81 bp5m=0.81 ageS=31045 liq=$160592
+[SCORE-LATCH] $XERIS - reconciled degraded entry re-score 41 -> authoritative same-cycle scan 53 (entry pass drops smart-money/whale + re-rolls ML). mode=HWR ml=n/a gap=12 bp5m=0.00
+[EV-ADMISSION] $XERIS admitted via forward-EV arbiter — forward net EV +1.64% >= margin 1.5% at liq $160592 (mode HWR) (descriptive score 53 below bar 65, mode HWR)
+[OBJECTIVE-GATE] PASS $XERIS — net EV +1.64% (peak~12%, capture~8.4%, RT 6.76%, liq $160592, score 53).
+[SIZING] Tier MICRO | bal 0.0092 SOL | pct 10% | boost 1.00x | throttle 100% | ddDelever 100% | size 0.0030 SOL
+[SAFETY] $XERIS rugScore=4301 rugScoreNorm=38 freeze=false mint=false veto=none
+[GMGN] error: Command failed: gmgn-cli track smartmoney --chain sol --side buy --limit 500 --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch file.
+
+[PAPER EDGE SKIP] $XERIS — edge -0.45% < 5% (micro=true).
+[SCORE-BREAKDOWN] $4680 combined=39 raw=47(liq12+bp0+vol0+px15+tx10+age0+bp1h3+fdv5=45/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=15.4% volMom=0.39 bp5m=0.49 ageS=8868 liq=$38280
+[SCORE-LATCH] SKIP $4680 - scan 52 > entry 39 BUT bp5m=0.49<0.50 - token decayed since scan, not latching stale score.
+[SCORE_GATE] SKIP $4680 — Score: 39 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $NTDA combined=36 raw=64(liq15+bp20+vol6+px2+tx10+age0+bp1h5+fdv3=61/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=1.2% volMom=1.04 bp5m=0.83 ageS=69083 liq=$171171
+[SCORE-LATCH] $NTDA - reconciled degraded entry re-score 36 -> authoritative same-cycle scan 51 (entry pass drops smart-money/whale + re-rolls ML). mode=HWR ml=n/a gap=15 bp5m=0.00
+[EV-ADMISSION] $NTDA admitted via forward-EV arbiter — forward net EV +1.64% >= margin 1.5% at liq $171171 (mode HWR) (descriptive score 51 below bar 65, mode HWR)
+[OBJECTIVE-GATE] PASS $NTDA — net EV +1.64% (peak~12%, capture~8.4%, RT 6.76%, liq $171171, score 51).
+[SIZING] Tier MICRO | bal 0.0092 SOL | pct 10% | boost 1.00x | throttle 100% | ddDelever 100% | size 0.0030 SOL
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[SAFETY] $NTDA rugScore=2701 rugScoreNorm=32 freeze=false mint=false veto=none
+[PAPER EDGE SKIP] $NTDA — edge -1.15% < 5% (micro=true).
+[SCORE-BREAKDOWN] $Unitree combined=45 raw=49(liq5+bp13+vol0+px15+tx6+age2+bp1h1+fdv5=47/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-4(mc-8/age0/px4/flat0) | drivers: px5m=11.1% volMom=0.08 bp5m=0.60 ageS=3131 liq=$3888
+[SCORE_GATE] SKIP $Unitree — Score: 45 (Min: 65) | Mode: none (Reason: age > 1800, liq < 20000, volMom < 0.1, hwrBp5m < 0.75, hwrLiq < 5000) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $ANICAT combined=39 raw=53(liq12+bp5+vol0+px15+tx10+age2+bp1h1+fdv5=50/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-14(mc-8/age0/px-6/flat0) | drivers: px5m=29.5% volMom=0.49 bp5m=0.53 ageS=2913 liq=$20942
+[SCORE_GATE] SKIP $ANICAT — Score: 39 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $Yoru combined=37 raw=45(liq8+bp10+vol0+px15+tx4+age0+bp1h1+fdv5=43/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=15.0% volMom=0.20 bp5m=0.58 ageS=3648 liq=$9350
+[SCORE_GATE] SKIP $Yoru — Score: 37 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, liq < 20000, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $USTF combined=37 raw=65(liq15+bp20+vol6+px5+tx10+age0+bp1h5+fdv1=62/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=1.8% volMom=1.04 bp5m=0.99 ageS=12318 liq=$278838
+[EV-ADMISSION] $USTF admitted via forward-EV arbiter — forward net EV +1.64% >= margin 1.5% at liq $278838 (mode HWR) (descriptive score 37 below bar 65, mode HWR)
+[OBJECTIVE-GATE] PASS $USTF — net EV +1.64% (peak~12%, capture~8.4%, RT 6.76%, liq $278838, score 37).
+[SIZING] Tier MICRO | bal 0.0092 SOL | pct 10% | boost 1.00x | throttle 100% | ddDelever 100% | size 0.0030 SOL
+[SAFETY] BLOCKED $USTF — insufficient_sell_activity_honeypot_risk(4/10@12318s)
+[SCORE-BREAKDOWN] $I2P combined=33 raw=41(liq10+bp0+vol0+px15+tx8+age0+bp1h1+fdv5=39/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=15.3% volMom=0.19 bp5m=0.45 ageS=7755 liq=$10422
+[SCORE_GATE] SKIP $I2P — Score: 33 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, liq < 20000, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $NTDA combined=33 raw=61(liq15+bp20+vol6+px2+tx10+age0+bp1h5+fdv0=58/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.9% volMom=1.01 bp5m=0.98 ageS=24489 liq=$743722
+[SCORE_GATE] SKIP $NTDA — Score: 33 (Min: 65) | Mode: none (Reason: score too low, age > 1800, px5m < 2) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $Frock combined=15 raw=43(liq12+bp0+vol6+px5+tx10+age0+bp1h3+fdv5=41/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=1.9% volMom=1.12 bp5m=0.48 ageS=23661 liq=$29327
+[SCORE-LATCH] SKIP $Frock - scan 28 > entry 15 BUT bp5m=0.48<0.50 - token decayed since scan, not latching stale score.
+[SCORE_GATE] SKIP $Frock — Score: 15 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[GMGN] error: Command failed: gmgn-cli token info --chain sol --address 6oodnVEfzeQ6uriHvvcCnMh3wsk9NJkKCKza4i4Qpump --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch
+[SCORE-BREAKDOWN] $PAIRA combined=20 raw=40(liq12+bp5+vol9+px-10+tx10+age4+bp1h3+fdv5=38/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-9.3% volMom=1.51 bp5m=0.51 ageS=1505 liq=$30802
+[SCORE_GATE] SKIP $PAIRA — Score: 20 (Min: 65) | Mode: none (Reason: score too low, bp5m < 0.6, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $LAYOOO combined=22 raw=42(liq15+bp0+vol6+px8+tx8+age0+bp1h0+fdv3=40/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=3.1% volMom=1.21 bp5m=0.24 ageS=11215 liq=$64161
+[SCORE_GATE] SKIP $LAYOOO — Score: 22 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, hwrBp5m < 0.75, bp1h < 0.51) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $memecoin combined=14 raw=34(liq8+bp10+vol0+px-4+tx10+age0+bp1h3+fdv5=32/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-3.6% volMom=0.22 bp5m=0.58 ageS=5099 liq=$6921
+[SCORE_GATE] SKIP $memecoin — Score: 14 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, liq < 20000, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $DEGS combined=48 raw=60(liq12+bp0+vol12+px15+tx10+age0+bp1h3+fdv5=57/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc-8/age-8/px4/flat0) | drivers: px5m=10.3% volMom=2.93 bp5m=0.47 ageS=71287 liq=$49143
+[SCORE_GATE] SKIP $DEGS — Score: 48 (Min: 65) | Mode: MG | Size: 0.0037 (Min: 0.003)
+[SCORE-BREAKDOWN] $PUMPATHON combined=2 raw=22(liq10+bp0+vol0+px-7+tx10+age2+bp1h1+fdv5=21/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-6.5% volMom=0.17 bp5m=0.36 ageS=3291 liq=$10801
+[SCORE-LATCH] SKIP $PUMPATHON - scan 4 > entry 2 BUT bp5m=0.36<0.50 - token decayed since scan, not latching stale score.
+[SCORE_GATE] SKIP $PUMPATHON — Score: 2 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, liq < 20000, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $UOTF combined=11 raw=39(liq15+bp5+vol3+px2+tx6+age0+bp1h5+fdv1=37/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.4% volMom=0.94 bp5m=0.52 ageS=41066 liq=$273267
+[SCORE_GATE] SKIP $UOTF — Score: 11 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $REXLER combined=0 raw=22(liq12+bp0+vol3+px-10+tx10+age0+bp1h1+fdv5=21/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-13.6% volMom=0.98 bp5m=0.49 ageS=74144 liq=$33337
+[SCORE_GATE] SKIP $REXLER — Score: 0 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $Tortuga combined=0 raw=15(liq5+bp0+vol0+px-10+tx10+age4+bp1h0+fdv5=14/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-59.2% volMom=0.49 bp5m=0.37 ageS=1136 liq=$2642
+[SCORE_GATE] SKIP $Tortuga — Score: 0 (Min: 65) | Mode: none (Reason: score too low, bp5m < 0.6, liq < 20000, px5m < 2, hwrBp5m < 0.75, bp1h < 0.51, hwrLiq < 5000) | Size: 0.0030 (Min: 0.003)
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[PHASE-E] Descriptive-prior hypothesis active: estimatedPeakPct(liq) as stable prior,
+[PHASE-E] score composite has provisional correlation with outcomes. Hypothesis FALSIFIED if paper mean(f(x)) < +1.0% over >= 30 trades.
+[DEBUG] currentBalance: 0.0092, isMicroWallet: true
+[SCAN] Micro-Wallet Mode Active (Bal: 0.0092 SOL)
+[FETCHER-PATCH] old-profit funnel active | liq>=1000 vol5m>=500 minAge=0s minSells=2
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GMGN] error: Command failed: gmgn-cli track smartmoney --chain sol --side buy --limit 500 --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch file.
+
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli track smartmoney --chain sol --side buy --limit 500 --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch file.
+
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GOLD HUNTER] 🏆 0 signals | LEGENDARY: 0 | HIGH: 0
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[SCANNER-QUEUE] Tracking 30 fast scanner tokens via free API (Waiting for $10k breakout)
+[SRC-XTRA] quality-only union=74 | jupVerified=52 jupTop=50 gkVol=0 (verified-set size=43, offset=8)
+[QUALITY] in=55 pass=50 jupVerified=0 cuts: notVerified=0 tooYoung=5 | flags: REQUIRE_VERIFIED=false MIN_AGE_MIN=5
+[SCORE-BREAKDOWN] $NiuLai combined=54 raw=62(liq12+bp16+vol3+px8+tx10+age0+bp1h5+fdv5=59/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=4.4% volMom=0.76 bp5m=0.68 ageS=7949 liq=$24990
+[SCORE-BREAKDOWN] $Frock combined=27 raw=43(liq12+bp0+vol3+px10+tx10+age0+bp1h1+fdv5=41/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-16(mc-8/age-8/px0/flat0) | drivers: px5m=6.1% volMom=0.80 bp5m=0.43 ageS=23703 liq=$28987
+[SCORE-BREAKDOWN] $REXLER combined=13 raw=41(liq12+bp10+vol3+px-2+tx10+age0+bp1h1+fdv5=39/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-1.7% volMom=0.97 bp5m=0.56 ageS=74184 liq=$34510
+[SCORE-BREAKDOWN] $4680 combined=22 raw=42(liq12+bp5+vol0+px5+tx10+age0+bp1h3+fdv5=40/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=2.9% volMom=0.44 bp5m=0.53 ageS=8913 liq=$37972
+[SCORE-BREAKDOWN] $PUMPATHON combined=15 raw=35(liq10+bp0+vol0+px5+tx10+age2+bp1h1+fdv5=33/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=2.0% volMom=0.14 bp5m=0.37 ageS=3332 liq=$10976
+[SCORE-BREAKDOWN] $UOTF combined=3 raw=31(liq15+bp0+vol3+px-1+tx6+age0+bp1h5+fdv1=29/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-0.1% volMom=0.98 bp5m=0.48 ageS=41106 liq=$272554
+[SCORE-BREAKDOWN] $XERIS combined=41 raw=61(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv3=58/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=0.2% volMom=0.87 bp5m=0.81 ageS=31091 liq=$160372
+[SCORE-BREAKDOWN] $USTF combined=34 raw=62(liq15+bp20+vol3+px5+tx10+age0+bp1h5+fdv1=59/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=1.6% volMom=0.92 bp5m=0.99 ageS=12360 liq=$279047
+[SCORE-BREAKDOWN] $SOLCAT combined=45 raw=57(liq10+bp10+vol3+px15+tx10+age0+bp1h1+fdv5=54/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc-8/age-8/px4/flat0) | drivers: px5m=13.4% volMom=0.64 bp5m=0.58 ageS=54026 liq=$14046
+[SCORE-BREAKDOWN] $NEPE combined=37 raw=49(liq10+bp10+vol3+px15+tx4+age0+bp1h0+fdv5=47/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc-8/age-8/px4/flat0) | drivers: px5m=14.5% volMom=0.83 bp5m=0.58 ageS=55712 liq=$12558
+[SCORE-BREAKDOWN] $memecoin combined=12 raw=32(liq8+bp10+vol0+px-4+tx8+age0+bp1h3+fdv5=30/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-3.0% volMom=0.20 bp5m=0.57 ageS=5140 liq=$6866
+[SCORE-BREAKDOWN] $NTDA combined=30 raw=58(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv0=55/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.8% volMom=0.94 bp5m=0.98 ageS=24531 liq=$743795
+[SCORE-BREAKDOWN] $NTDA combined=51 raw=63(liq15+bp16+vol9+px2+tx10+age0+bp1h5+fdv3=60/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc0/age0/px0/flat-12) | drivers: px5m=0.5% volMom=1.53 bp5m=0.67 ageS=4633 liq=$119526
+[SCORE-BREAKDOWN] $NTDA combined=36 raw=64(liq15+bp20+vol6+px2+tx10+age0+bp1h5+fdv3=61/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.4% volMom=1.16 bp5m=0.82 ageS=69127 liq=$171198
+[SCORE-BREAKDOWN] $LATINAS combined=46 raw=54(liq10+bp10+vol3+px15+tx8+age0+bp1h0+fdv5=51/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=23.6% volMom=0.51 bp5m=0.57 ageS=4459 liq=$14731
+[SCORE-BREAKDOWN] $PAIRA combined=20 raw=40(liq12+bp5+vol9+px-10+tx10+age4+bp1h3+fdv5=38/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-10.6% volMom=1.55 bp5m=0.52 ageS=1546 liq=$30601
+[SCORE-BREAKDOWN] $ANICAT combined=4 raw=24(liq10+bp5+vol0+px-10+tx10+age2+bp1h1+fdv5=23/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-12.1% volMom=0.48 bp5m=0.53 ageS=2956 liq=$18140
+[SCORE-BREAKDOWN] $I2P combined=38 raw=46(liq10+bp5+vol0+px15+tx8+age0+bp1h1+fdv5=44/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=19.9% volMom=0.29 bp5m=0.53 ageS=7797 liq=$10703
+[SCORE-BREAKDOWN] $Bo combined=46 raw=54(liq10+bp5+vol15+px-3+tx10+age6+bp1h3+fdv5=51/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=-3.0% volMom=5.81 bp5m=0.54 ageS=499 liq=$15044
+[SCORE-BREAKDOWN] $Tortuga combined=0 raw=15(liq5+bp0+vol0+px-10+tx10+age4+bp1h0+fdv5=14/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-63.0% volMom=0.32 bp5m=0.27 ageS=1176 liq=$2517
+[SCORE-BREAKDOWN] $DEGS combined=14 raw=42(liq12+bp5+vol9+px-2+tx8+age0+bp1h3+fdv5=40/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-1.9% volMom=1.85 bp5m=0.51 ageS=71328 liq=$48872
+[SCORE-BREAKDOWN] $LAYOOO combined=36 raw=44(liq15+bp0+vol6+px10+tx8+age0+bp1h0+fdv3=42/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc0/age-8/px0/flat0) | drivers: px5m=5.2% volMom=1.14 bp5m=0.24 ageS=11256 liq=$64955
+[HELIUS-TAPE] 6oodnV whales=10 netBuy=1 netSell=3 wash=5 bundleSlots=7 BUNDLE (txs=99)
+[SCORE-BREAKDOWN] $NiuLai combined=60 raw=62(liq12+bp16+vol3+px8+tx10+age0+bp1h5+fdv5=59/95) ml=n/a(adjn/a dumpn/a) sm=14 wh=-8 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=4.4% volMom=0.76 bp5m=0.68 ageS=7950 liq=$24990
+[SCORE-BREAKDOWN] $XERIS combined=56 raw=61(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv3=58/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=25 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=0.2% volMom=0.87 bp5m=0.81 ageS=31092 liq=$160372
+[SCORE-BREAKDOWN] $SOLCAT combined=60 raw=57(liq10+bp10+vol3+px15+tx10+age0+bp1h1+fdv5=54/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=18 pen=-12(mc-8/age-8/px4/flat0) | drivers: px5m=13.4% volMom=0.64 bp5m=0.58 ageS=54027 liq=$14046
+[SCORE-BREAKDOWN] $NTDA combined=66 raw=63(liq15+bp16+vol9+px2+tx10+age0+bp1h5+fdv3=60/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=6 pen=-12(mc0/age0/px0/flat-12) | drivers: px5m=0.5% volMom=1.53 bp5m=0.67 ageS=4634 liq=$119526
+[SCORE-BREAKDOWN] $NTDA combined=51 raw=64(liq15+bp20+vol6+px2+tx10+age0+bp1h5+fdv3=61/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=25 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.4% volMom=1.16 bp5m=0.82 ageS=69128 liq=$171198
+[SCORE-BREAKDOWN] $LATINAS combined=45 raw=54(liq10+bp10+vol3+px15+tx8+age0+bp1h0+fdv5=51/95) ml=n/a(adjn/a dumpn/a) sm=7 wh=-8 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=23.6% volMom=0.51 bp5m=0.57 ageS=4460 liq=$14731
+[DIAG-SCOREWALL] top5 (pre-safety): #1 $NTDA score=66 mode=none bp5m=0.67 px5m=0.52 volMom=1.53 liq=119526 age=4634s mlScore=N/A rej=[age > 1800, px5m < 2, hwrBp5m < 0.75]  ||  #2 $NiuLai score=60 mode=MG bp5m=0.68 px5m=4.38 volMom=0.76 liq=24990 age=7950s mlScore=N/A rej=[]  ||  #3 $SOLCAT score=60 mode=MG bp5m=0.58 px5m=13.43 volMom=0.64 liq=14046 age=54027s mlScore=N/A rej=[]  ||  #4 $XERIS score=56 mode=HWR bp5m=0.81 px5m=0.23 volMom=0.87 liq=160372 age=31092s mlScore=N/A rej=[]  ||  #5 $NTDA score=51 mode=HWR bp5m=0.82 px5m=0.39 volMom=1.16 liq=171198 age=69128s mlScore=N/A rej=[]
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[SAFETY] $NTDA rugScore=2701 rugScoreNorm=32 freeze=false mint=false veto=none
+[SCAN] Funnel: seen=1149 -> cutLiq=378 cutVol=592 cutAge=122 cutPrice=0 cutVolZero=0 cutHoneypot=2 cutTooNew=0 | survived=50 deduped=22 scored=22
+[SCAN] Discovery: 22 candidates found.
+[REGIME] Runner regime ON — hotRunners=3, peak5m=23.6%. Entries enabled.
+[SCORE-BREAKDOWN] $NTDA combined=51 raw=63(liq15+bp16+vol9+px2+tx10+age0+bp1h5+fdv3=60/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc0/age0/px0/flat-12) | drivers: px5m=0.6% volMom=1.65 bp5m=0.67 ageS=4636 liq=$119583
+[SCORE-LATCH] $NTDA - reconciled degraded entry re-score 51 -> authoritative same-cycle scan 66 (entry pass drops smart-money/whale + re-rolls ML). mode=none ml=n/a gap=15 bp5m=0.00
+[SCORE_GATE] SKIP $NTDA — Score: 66 (Min: 65) | Mode: none (Reason: age > 1800, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $NiuLai combined=39 raw=59(liq12+bp16+vol3+px5+tx10+age0+bp1h5+fdv5=56/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=2.0% volMom=0.87 bp5m=0.68 ageS=7952 liq=$24690
+[SCORE-LATCH] $NiuLai - reconciled degraded entry re-score 39 -> authoritative same-cycle scan 60 (entry pass drops smart-money/whale + re-rolls ML). mode=MG ml=n/a gap=21 bp5m=0.00
+[SCORE_GATE] SKIP $NiuLai — Score: 60 (Min: 65) | Mode: MG | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $SOLCAT combined=45 raw=57(liq10+bp10+vol3+px15+tx10+age0+bp1h1+fdv5=54/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc-8/age-8/px4/flat0) | drivers: px5m=13.5% volMom=0.64 bp5m=0.58 ageS=54030 liq=$14053
+[SCORE-LATCH] $SOLCAT - reconciled degraded entry re-score 45 -> authoritative same-cycle scan 60 (entry pass drops smart-money/whale + re-rolls ML). mode=MG ml=n/a gap=15 bp5m=0.00
+[SCORE_GATE] SKIP $SOLCAT — Score: 60 (Min: 65) | Mode: MG | Size: 0.0034 (Min: 0.003)
+[SCORE-BREAKDOWN] $XERIS combined=41 raw=61(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv3=58/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=0.4% volMom=0.97 bp5m=0.81 ageS=31095 liq=$160551
+[SCORE-LATCH] $XERIS - reconciled degraded entry re-score 41 -> authoritative same-cycle scan 56 (entry pass drops smart-money/whale + re-rolls ML). mode=HWR ml=n/a gap=15 bp5m=0.00
+[EV-ADMISSION] $XERIS admitted via forward-EV arbiter — forward net EV +1.64% >= margin 1.5% at liq $160551 (mode HWR) (descriptive score 56 below bar 65, mode HWR)
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[OBJECTIVE-GATE] PASS $XERIS — net EV +1.64% (peak~12%, capture~8.4%, RT 6.76%, liq $160551, score 56).
+[SIZING] Tier MICRO | bal 0.0092 SOL | pct 10% | boost 1.00x | throttle 100% | ddDelever 100% | size 0.0030 SOL
+[PAPER EDGE SKIP] $XERIS — edge 0.60% < 5% (micro=true).
+[SCORE-BREAKDOWN] $NTDA combined=36 raw=64(liq15+bp20+vol6+px2+tx10+age0+bp1h5+fdv3=61/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.4% volMom=1.17 bp5m=0.83 ageS=69131 liq=$171251
+[SCORE-LATCH] $NTDA - reconciled degraded entry re-score 36 -> authoritative same-cycle scan 51 (entry pass drops smart-money/whale + re-rolls ML). mode=HWR ml=n/a gap=15 bp5m=0.00
+[EV-ADMISSION] $NTDA admitted via forward-EV arbiter — forward net EV +1.64% >= margin 1.5% at liq $171251 (mode HWR) (descriptive score 51 below bar 65, mode HWR)
+[OBJECTIVE-GATE] PASS $NTDA — net EV +1.64% (peak~12%, capture~8.4%, RT 6.76%, liq $171251, score 51).
+[SIZING] Tier MICRO | bal 0.0092 SOL | pct 10% | boost 1.00x | throttle 100% | ddDelever 100% | size 0.0030 SOL
+[PAPER EDGE SKIP] $NTDA — edge -1.15% < 5% (micro=true).
+[SCORE-BREAKDOWN] $Bo combined=46 raw=54(liq10+bp5+vol15+px-3+tx10+age6+bp1h3+fdv5=51/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=-3.0% volMom=5.81 bp5m=0.54 ageS=503 liq=$15044
+[SCORE_GATE] SKIP $Bo — Score: 46 (Min: 65) | Mode: none (Reason: bp5m < 0.6, liq < 20000, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $LATINAS combined=48 raw=56(liq10+bp10+vol3+px15+tx10+age0+bp1h0+fdv5=53/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=17.0% volMom=0.63 bp5m=0.56 ageS=4464 liq=$14296
+[SCORE_GATE] SKIP $LATINAS — Score: 48 (Min: 65) | Mode: MG | Size: 0.0037 (Min: 0.003)
+[SCORE-BREAKDOWN] $I2P combined=33 raw=41(liq10+bp0+vol0+px15+tx8+age0+bp1h1+fdv5=39/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=23.4% volMom=0.23 bp5m=0.45 ageS=7802 liq=$10878
+[SCORE-LATCH] SKIP $I2P - scan 38 > entry 33 BUT bp5m=0.45<0.50 - token decayed since scan, not latching stale score.
+[SCORE_GATE] SKIP $I2P — Score: 33 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, liq < 20000, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $NEPE combined=37 raw=49(liq10+bp10+vol3+px15+tx4+age0+bp1h0+fdv5=47/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc-8/age-8/px4/flat0) | drivers: px5m=14.5% volMom=0.83 bp5m=0.58 ageS=55717 liq=$12558
+[SCORE_GATE] SKIP $NEPE — Score: 37 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, liq < 20000, hwrBp5m < 0.75, bp1h < 0.51) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $LAYOOO combined=36 raw=44(liq15+bp0+vol6+px10+tx8+age0+bp1h0+fdv3=42/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc0/age-8/px0/flat0) | drivers: px5m=5.2% volMom=1.14 bp5m=0.24 ageS=11261 liq=$64955
+[SCORE_GATE] SKIP $LAYOOO — Score: 36 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, hwrBp5m < 0.75, bp1h < 0.51) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $USTF combined=34 raw=62(liq15+bp20+vol3+px5+tx10+age0+bp1h5+fdv1=59/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=1.7% volMom=0.92 bp5m=0.99 ageS=12366 liq=$279218
+[SCORE_GATE] SKIP $USTF — Score: 34 (Min: 65) | Mode: none (Reason: score too low, age > 1800, px5m < 2) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $NTDA combined=30 raw=58(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv0=55/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.3% volMom=0.94 bp5m=0.98 ageS=24537 liq=$742174
+[SCORE_GATE] SKIP $NTDA — Score: 30 (Min: 65) | Mode: none (Reason: score too low, age > 1800, px5m < 2) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $Frock combined=10 raw=38(liq12+bp0+vol3+px5+tx10+age0+bp1h1+fdv5=36/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=1.7% volMom=0.86 bp5m=0.45 ageS=23709 liq=$28356
+[SCORE-LATCH] SKIP $Frock - scan 27 > entry 10 BUT bp5m=0.45<0.50 - token decayed since scan, not latching stale score.
+[SCORE_GATE] SKIP $Frock — Score: 10 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[SCORE-BREAKDOWN] $4680 combined=15 raw=35(liq12+bp5+vol0+px-2+tx10+age0+bp1h3+fdv5=33/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-1.2% volMom=0.41 bp5m=0.52 ageS=8919 liq=$37177
+[SCORE-LATCH] $4680 - reconciled degraded entry re-score 15 -> authoritative same-cycle scan 22 (entry pass drops smart-money/whale + re-rolls ML). mode=none ml=n/a gap=7 bp5m=0.00
+[SCORE_GATE] SKIP $4680 — Score: 22 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $PAIRA combined=20 raw=40(liq12+bp5+vol9+px-10+tx10+age4+bp1h3+fdv5=38/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-10.6% volMom=1.55 bp5m=0.52 ageS=1552 liq=$30590
+[SCORE_GATE] SKIP $PAIRA — Score: 20 (Min: 65) | Mode: none (Reason: score too low, bp5m < 0.6, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $PUMPATHON combined=4 raw=24(liq10+bp0+vol0+px-5+tx10+age2+bp1h1+fdv5=23/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-4.8% volMom=0.17 bp5m=0.37 ageS=3339 liq=$10561
+[SCORE-LATCH] SKIP $PUMPATHON - scan 15 > entry 4 BUT bp5m=0.37<0.50 - token decayed since scan, not latching stale score.
+[SCORE_GATE] SKIP $PUMPATHON — Score: 4 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, liq < 20000, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $DEGS combined=14 raw=42(liq12+bp5+vol9+px-2+tx8+age0+bp1h3+fdv5=40/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-1.9% volMom=1.85 bp5m=0.51 ageS=71335 liq=$48872
+[SCORE_GATE] SKIP $DEGS — Score: 14 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $REXLER combined=12 raw=40(liq12+bp10+vol3+px-3+tx10+age0+bp1h1+fdv5=38/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-2.3% volMom=0.94 bp5m=0.55 ageS=74191 liq=$34396
+[SCORE-LATCH] $REXLER - reconciled degraded entry re-score 12 -> authoritative same-cycle scan 13 (entry pass drops smart-money/whale + re-rolls ML). mode=none ml=n/a gap=1 bp5m=0.00
+[SCORE_GATE] SKIP $REXLER — Score: 13 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $memecoin combined=21 raw=41(liq8+bp13+vol0+px2+tx8+age0+bp1h3+fdv5=39/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=0.5% volMom=0.23 bp5m=0.60 ageS=5147 liq=$7014
+[SCORE_GATE] SKIP $memecoin — Score: 21 (Min: 65) | Mode: none (Reason: score too low, age > 1800, liq < 20000, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $ANICAT combined=4 raw=24(liq10+bp5+vol0+px-10+tx10+age2+bp1h1+fdv5=23/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-13.6% volMom=0.50 bp5m=0.54 ageS=2963 liq=$17976
+[SCORE_GATE] SKIP $ANICAT — Score: 4 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, liq < 20000, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $UOTF combined=14 raw=42(liq15+bp5+vol6+px2+tx6+age0+bp1h5+fdv1=40/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.5% volMom=1.06 bp5m=0.52 ageS=41114 liq=$273374
+[SCORE_GATE] SKIP $UOTF — Score: 14 (Min: 65) | Mode: none (Reason: score too low, age > 1800, bp5m < 0.6, px5m < 2, hwrBp5m < 0.75) | Size: 0.0030 (Min: 0.003)
+[SCORE-BREAKDOWN] $Tortuga combined=0 raw=15(liq5+bp0+vol0+px-10+tx10+age4+bp1h0+fdv5=14/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-63.0% volMom=0.32 bp5m=0.27 ageS=1184 liq=$2517
+[SCORE_GATE] SKIP $Tortuga — Score: 0 (Min: 65) | Mode: none (Reason: score too low, bp5m < 0.6, liq < 20000, px5m < 2, hwrBp5m < 0.75, bp1h < 0.51, hwrLiq < 5000) | Size: 0.0030 (Min: 0.003)
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[PHASE-E] Descriptive-prior hypothesis active: estimatedPeakPct(liq) as stable prior,
+[PHASE-E] score composite has provisional correlation with outcomes. Hypothesis FALSIFIED if paper mean(f(x)) < +1.0% over >= 30 trades.
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli track smartmoney --chain sol --side buy --limit 500 --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch file.
+
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[GMGN] error: Command failed: gmgn-cli track smartmoney --chain sol --side buy --limit 500 --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch file.
+
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[DEBUG] currentBalance: 0.0092, isMicroWallet: true
+[SCAN] Micro-Wallet Mode Active (Bal: 0.0092 SOL)
+[GOLD HUNTER] 🏆 0 signals | LEGENDARY: 0 | HIGH: 0
+[FETCHER-PATCH] old-profit funnel active | liq>=1000 vol5m>=500 minAge=0s minSells=2
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+Browserslist: browsers data (caniuse-lite) is 10 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GMGN] error: Command failed: gmgn-cli track smartmoney --chain sol --side buy --limit 500 --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch file.
+
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[SCANNER-QUEUE] Tracking 30 fast scanner tokens via free API (Waiting for $10k breakout)
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[SRC-XTRA] quality-only union=74 | jupVerified=60 jupTop=50 gkVol=0 (verified-set size=43, offset=25)
+[QUALITY] in=58 pass=50 jupVerified=0 cuts: notVerified=0 tooYoung=8 | flags: REQUIRE_VERIFIED=false MIN_AGE_MIN=5
+[SCORE-BREAKDOWN] $NiuLai combined=58 raw=66(liq12+bp16+vol3+px12+tx10+age0+bp1h5+fdv5=63/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=8.3% volMom=0.86 bp5m=0.68 ageS=8059 liq=$25562
+[SCORE-BREAKDOWN] $Frock combined=0 raw=25(liq12+bp0+vol0+px-6+tx10+age0+bp1h3+fdv5=24/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-5.2% volMom=0.29 bp5m=0.48 ageS=23813 liq=$29449
+[SCORE-BREAKDOWN] $REXLER combined=15 raw=43(liq12+bp5+vol3+px5+tx10+age0+bp1h1+fdv5=41/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=2.0% volMom=0.73 bp5m=0.54 ageS=74294 liq=$35231
+[SCORE-BREAKDOWN] $4680 combined=9 raw=29(liq12+bp5+vol0+px-7+tx10+age0+bp1h3+fdv5=28/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-6.4% volMom=0.27 bp5m=0.54 ageS=9023 liq=$37375
+[SCORE-BREAKDOWN] $UOTF combined=6 raw=34(liq15+bp0+vol3+px2+tx6+age0+bp1h5+fdv1=32/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.4% volMom=1.00 bp5m=0.48 ageS=41216 liq=$273526
+[SCORE-BREAKDOWN] $XERIS combined=41 raw=61(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv3=58/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=0.5% volMom=0.99 bp5m=0.82 ageS=31201 liq=$160693
+[SCORE-BREAKDOWN] $USTF combined=37 raw=65(liq15+bp20+vol6+px5+tx10+age0+bp1h5+fdv1=62/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=1.9% volMom=1.07 bp5m=0.99 ageS=12470 liq=$280075
+[SCORE-BREAKDOWN] $ANICAT combined=22 raw=42(liq12+bp5+vol0+px5+tx10+age2+bp1h1+fdv5=40/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=1.7% volMom=0.46 bp5m=0.55 ageS=3066 liq=$20706
+[SCORE-BREAKDOWN] $SOLCAT combined=18 raw=46(liq10+bp13+vol3+px2+tx10+age0+bp1h1+fdv5=44/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=1.4% volMom=0.80 bp5m=0.63 ageS=54136 liq=$13215
+[SCORE-BREAKDOWN] $NEPE combined=34 raw=46(liq10+bp5+vol3+px15+tx6+age0+bp1h0+fdv5=44/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc-8/age-8/px4/flat0) | drivers: px5m=13.1% volMom=0.87 bp5m=0.55 ageS=55822 liq=$12479
+[SCORE-BREAKDOWN] $memecoin combined=36 raw=44(liq8+bp10+vol0+px10+tx8+age0+bp1h1+fdv5=42/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=5.4% volMom=0.23 bp5m=0.58 ageS=5250 liq=$7071
+[SCORE-BREAKDOWN] $NTDA combined=30 raw=58(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv0=55/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.7% volMom=0.93 bp5m=0.98 ageS=24641 liq=$745316
+[SCORE-BREAKDOWN] $NTDA combined=51 raw=63(liq15+bp16+vol9+px2+tx10+age0+bp1h5+fdv3=60/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc0/age0/px0/flat-12) | drivers: px5m=1.4% volMom=1.60 bp5m=0.68 ageS=4743 liq=$119726
+[SCORE-BREAKDOWN] $NTDA combined=36 raw=64(liq15+bp20+vol6+px2+tx10+age0+bp1h5+fdv3=61/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.3% volMom=1.22 bp5m=0.83 ageS=69237 liq=$170861
+[SCORE-BREAKDOWN] $LATINAS combined=34 raw=42(liq10+bp0+vol3+px12+tx10+age0+bp1h0+fdv5=40/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=9.7% volMom=0.62 bp5m=0.49 ageS=4569 liq=$14058
+[SCORE-BREAKDOWN] $I2P combined=38 raw=46(liq10+bp5+vol0+px15+tx8+age0+bp1h1+fdv5=44/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=16.4% volMom=0.30 bp5m=0.53 ageS=7907 liq=$10481
+[SCORE-BREAKDOWN] $PAIRA combined=49 raw=57(liq12+bp5+vol3+px12+tx10+age4+bp1h3+fdv5=54/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=9.9% volMom=0.90 bp5m=0.51 ageS=1656 liq=$28232
+[SCORE-BREAKDOWN] $Bo combined=41 raw=49(liq10+bp10+vol15+px-10+tx10+age4+bp1h3+fdv5=47/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=-33.6% volMom=3.38 bp5m=0.56 ageS=609 liq=$11562
+[SCORE-BREAKDOWN] $PUMPATHON combined=0 raw=17(liq8+bp0+vol0+px-10+tx10+age2+bp1h1+fdv5=16/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-15.5% volMom=0.22 bp5m=0.45 ageS=3442 liq=$8835
+[SCORE-BREAKDOWN] $Yoru combined=0 raw=17(liq8+bp0+vol0+px-4+tx6+age0+bp1h1+fdv5=16/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-3.1% volMom=0.29 bp5m=0.33 ageS=3801 liq=$9225
+[SCORE-BREAKDOWN] $Tortuga combined=1 raw=21(liq5+bp0+vol0+px-4+tx10+age4+bp1h0+fdv5=20/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-3.7% volMom=0.26 bp5m=0.38 ageS=1286 liq=$2714
+[SCORE-BREAKDOWN] $Unitree combined=28 raw=36(liq5+bp5+vol0+px10+tx6+age2+bp1h1+fdv5=34/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=5.4% volMom=0.10 bp5m=0.50 ageS=3284 liq=$3918
+[SCORE-BREAKDOWN] $LAYOOO combined=41 raw=49(liq15+bp0+vol9+px10+tx10+age0+bp1h0+fdv3=47/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc0/age-8/px0/flat0) | drivers: px5m=6.8% volMom=1.90 bp5m=0.34 ageS=11366 liq=$60172
+[SCORE-BREAKDOWN] $DEGS combined=3 raw=31(liq12+bp0+vol6+px-3+tx6+age0+bp1h3+fdv5=29/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-2.3% volMom=1.23 bp5m=0.45 ageS=71438 liq=$48166
+[HELIUS-TAPE] DttSHb whales=10 netBuy=7 netSell=2 wash=5 bundleSlots=3 BUNDLE (txs=100)
+[HELIUS-TAPE] 8TRVDZ whales=4 netBuy=2 netSell=2 wash=0 bundleSlots=0 (txs=100)
+[HELIUS-TAPE] VQQz26 whales=10 netBuy=0 netSell=9 wash=0 bundleSlots=0 (txs=100)
+[HELIUS-TAPE] b88hnU whales=10 netBuy=5 netSell=3 wash=5 bundleSlots=3 BUNDLE (txs=100)
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[HELIUS-TAPE] GuUNEc whales=10 netBuy=7 netSell=2 wash=5 bundleSlots=3 BUNDLE (txs=47)
+[HELIUS-TAPE] C8mP8y whales=10 netBuy=9 netSell=1 wash=5 bundleSlots=5 BUNDLE (txs=100)
+[GMGN] error: Command failed: gmgn-cli track smartmoney --chain sol --side buy --limit 500 --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch file.
+
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[GMGN] error: Command failed: gmgn-cli track smartmoney --chain sol --side buy --limit 500 --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch file.
+
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GOLD HUNTER] 🏆 0 signals | LEGENDARY: 0 | HIGH: 0
+[HELIUS-TAPE] swap fetch failed for 9sfCHMLWSVy6MD6zr7pR1gD3qbT7C6K1E3dMf2ZBpump: The operation was aborted due to timeout
+[SCORE-BREAKDOWN] $NiuLai combined=72 raw=66(liq12+bp16+vol3+px12+tx10+age0+bp1h5+fdv5=63/95) ml=n/a(adjn/a dumpn/a) sm=14 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=8.3% volMom=0.86 bp5m=0.68 ageS=8070 liq=$25562
+[SCORE-BREAKDOWN] $XERIS combined=56 raw=61(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv3=58/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=25 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=0.5% volMom=0.99 bp5m=0.82 ageS=31212 liq=$160693
+[SCORE-BREAKDOWN] $USTF combined=17 raw=65(liq15+bp20+vol6+px5+tx10+age0+bp1h5+fdv1=62/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=-20 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=1.9% volMom=1.07 bp5m=0.99 ageS=12481 liq=$280075
+[SCORE-BREAKDOWN] $NTDA combined=66 raw=63(liq15+bp16+vol9+px2+tx10+age0+bp1h5+fdv3=60/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=12 pen=-12(mc0/age0/px0/flat-12) | drivers: px5m=1.4% volMom=1.60 bp5m=0.68 ageS=4754 liq=$119726
+[SCORE-BREAKDOWN] $NTDA combined=51 raw=64(liq15+bp20+vol6+px2+tx10+age0+bp1h5+fdv3=61/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=25 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.3% volMom=1.22 bp5m=0.83 ageS=69248 liq=$170861
+[SCORE-BREAKDOWN] $PAIRA combined=64 raw=57(liq12+bp5+vol3+px12+tx10+age4+bp1h3+fdv5=54/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=25 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=9.9% volMom=0.90 bp5m=0.51 ageS=1667 liq=$28232
+[SCORE-BREAKDOWN] $LAYOOO combined=41 raw=49(liq15+bp0+vol9+px10+tx10+age0+bp1h0+fdv3=47/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc0/age-8/px0/flat0) | drivers: px5m=6.8% volMom=1.90 bp5m=0.34 ageS=11377 liq=$60172
+[DIAG-SCOREWALL] top5 (pre-safety): #1 $NiuLai score=72 mode=MG bp5m=0.68 px5m=8.26 volMom=0.86 liq=25562 age=8070s mlScore=N/A rej=[]  ||  #2 $NTDA score=66 mode=none bp5m=0.68 px5m=1.42 volMom=1.60 liq=119726 age=4754s mlScore=N/A rej=[age > 1800, px5m < 2, hwrBp5m < 0.75]  ||  #3 $PAIRA score=64 mode=MG bp5m=0.51 px5m=9.87 volMom=0.90 liq=28232 age=1667s mlScore=N/A rej=[]  ||  #4 $XERIS score=56 mode=HWR bp5m=0.82 px5m=0.47 volMom=0.99 liq=160693 age=31212s mlScore=N/A rej=[]  ||  #5 $NTDA score=51 mode=HWR bp5m=0.83 px5m=0.35 volMom=1.22 liq=170861 age=69248s mlScore=N/A rej=[]
+[SAFETY] $NiuLai rugScore=1 rugScoreNorm=1 freeze=false mint=false veto=none
+[SCAN] Funnel: seen=1120 -> cutLiq=363 cutVol=581 cutAge=118 cutPrice=0 cutVolZero=0 cutHoneypot=0 cutTooNew=0 | survived=50 deduped=24 scored=24
+[SCAN] Discovery: 24 candidates found.
+[REGIME] Cold feed — standing down on new entries (hotRunners=0/1 @≥10% & $300 & bp0.55, peak5m=16.4% < 20%). Open positions still managed.
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[PHASE-E] Descriptive-prior hypothesis active: estimatedPeakPct(liq) as stable prior,
+[PHASE-E] score composite has provisional correlation with outcomes. Hypothesis FALSIFIED if paper mean(f(x)) < +1.0% over >= 30 trades.
+[DEBUG] currentBalance: 0.0092, isMicroWallet: true
+[SCAN] Micro-Wallet Mode Active (Bal: 0.0092 SOL)
+[FETCHER-PATCH] old-profit funnel active | liq>=1000 vol5m>=500 minAge=0s minSells=2
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli track smartmoney --chain sol --side buy --limit 500 --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch file.
+
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[SCANNER-QUEUE] Tracking 30 fast scanner tokens via free API (Waiting for $10k breakout)
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[SRC-XTRA] quality-only union=74 | jupVerified=60 jupTop=50 gkVol=0 (verified-set size=43, offset=42)
+[QUALITY] in=58 pass=46 jupVerified=0 cuts: notVerified=0 tooYoung=12 | flags: REQUIRE_VERIFIED=false MIN_AGE_MIN=5
+[SCORE-BREAKDOWN] $NiuLai combined=25 raw=45(liq12+bp16+vol3+px-8+tx10+age0+bp1h5+fdv5=43/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-7.6% volMom=0.74 bp5m=0.68 ageS=8108 liq=$24484
+[SCORE-BREAKDOWN] $Frock combined=33 raw=45(liq12+bp0+vol0+px15+tx10+age0+bp1h1+fdv5=43/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc-8/age-8/px4/flat0) | drivers: px5m=11.9% volMom=0.40 bp5m=0.44 ageS=23862 liq=$31186
+[SCORE-BREAKDOWN] $REXLER combined=35 raw=51(liq12+bp10+vol0+px12+tx8+age0+bp1h1+fdv5=48/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-16(mc-8/age-8/px0/flat0) | drivers: px5m=8.9% volMom=0.28 bp5m=0.60 ageS=74343 liq=$35393
+[SCORE-BREAKDOWN] $4680 combined=12 raw=32(liq12+bp5+vol0+px-5+tx10+age0+bp1h3+fdv5=30/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-4.4% volMom=0.27 bp5m=0.51 ageS=9072 liq=$37115
+[SCORE-BREAKDOWN] $UOTF combined=11 raw=39(liq15+bp5+vol3+px2+tx6+age0+bp1h5+fdv1=37/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.9% volMom=0.85 bp5m=0.52 ageS=41265 liq=$273756
+[SCORE-BREAKDOWN] $XERIS combined=41 raw=61(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv3=58/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=0.2% volMom=0.91 bp5m=0.81 ageS=31250 liq=$160604
+[SCORE-BREAKDOWN] $SOLCAT combined=11 raw=39(liq10+bp13+vol3+px-5+tx10+age0+bp1h1+fdv5=37/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-4.7% volMom=0.67 bp5m=0.64 ageS=54185 liq=$13578
+[SCORE-BREAKDOWN] $memecoin combined=11 raw=31(liq8+bp5+vol0+px2+tx8+age0+bp1h1+fdv5=29/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=0.8% volMom=0.27 bp5m=0.52 ageS=5299 liq=$6884
+[SCORE-BREAKDOWN] $NTDA combined=30 raw=58(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv0=55/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.9% volMom=0.88 bp5m=0.98 ageS=24690 liq=$746360
+[SCORE-BREAKDOWN] $NTDA combined=48 raw=60(liq15+bp16+vol9+px-1+tx10+age0+bp1h5+fdv3=57/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc0/age0/px0/flat-12) | drivers: px5m=-0.5% volMom=1.57 bp5m=0.67 ageS=4792 liq=$119218
+[SCORE-BREAKDOWN] $NTDA combined=36 raw=64(liq15+bp20+vol6+px2+tx10+age0+bp1h5+fdv3=61/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.4% volMom=1.08 bp5m=0.83 ageS=69286 liq=$171443
+[SCORE-BREAKDOWN] $LATINAS combined=32 raw=40(liq10+bp0+vol3+px10+tx10+age0+bp1h0+fdv5=38/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=5.5% volMom=0.69 bp5m=0.46 ageS=4618 liq=$13762
+[SCORE-BREAKDOWN] $ANICAT combined=9 raw=29(liq10+bp10+vol0+px-10+tx10+age2+bp1h1+fdv5=28/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-13.2% volMom=0.32 bp5m=0.57 ageS=3115 liq=$18440
+[SCORE-BREAKDOWN] $I2P combined=16 raw=36(liq10+bp5+vol0+px5+tx8+age0+bp1h1+fdv5=34/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=2.9% volMom=0.17 bp5m=0.53 ageS=7956 liq=$10521
+[SCORE-BREAKDOWN] $PAIRA combined=27 raw=47(liq12+bp10+vol3+px-2+tx10+age4+bp1h3+fdv5=45/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-1.2% volMom=0.93 bp5m=0.56 ageS=1705 liq=$26634
+[SCORE-BREAKDOWN] $Bo combined=41 raw=49(liq10+bp10+vol15+px-10+tx10+age4+bp1h3+fdv5=47/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=-26.2% volMom=3.02 bp5m=0.55 ageS=658 liq=$13019
+[SCORE-BREAKDOWN] $PUMPATHON combined=7 raw=27(liq8+bp10+vol0+px-10+tx10+age2+bp1h1+fdv5=26/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-20.3% volMom=0.29 bp5m=0.56 ageS=3491 liq=$8652
+[SCORE-BREAKDOWN] $Yoru combined=0 raw=17(liq8+bp0+vol0+px-4+tx6+age0+bp1h1+fdv5=16/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-3.1% volMom=0.31 bp5m=0.33 ageS=3850 liq=$9225
+[SCORE-BREAKDOWN] $Tortuga combined=14 raw=34(liq5+bp0+vol0+px8+tx10+age4+bp1h0+fdv5=32/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=3.3% volMom=0.25 bp5m=0.41 ageS=1335 liq=$2704
+[SCORE-BREAKDOWN] $Unitree combined=23 raw=31(liq5+bp0+vol0+px10+tx6+age2+bp1h1+fdv5=29/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=5.4% volMom=0.11 bp5m=0.48 ageS=3333 liq=$3988
+[SCORE-BREAKDOWN] $LAYOOO combined=50 raw=58(liq15+bp0+vol12+px15+tx10+age0+bp1h0+fdv3=55/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc0/age-8/px0/flat0) | drivers: px5m=16.0% volMom=2.22 bp5m=0.35 ageS=11415 liq=$74301
+[SCORE-BREAKDOWN] $DEGS combined=5 raw=33(liq12+bp0+vol3+px2+tx6+age0+bp1h3+fdv5=31/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.5% volMom=0.99 bp5m=0.46 ageS=71487 liq=$49291
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[HELIUS-TAPE] swap fetch failed for 9sfCHMLWSVy6MD6zr7pR1gD3qbT7C6K1E3dMf2ZBpump: The operation was aborted due to timeout
+[SCORE-BREAKDOWN] $XERIS combined=56 raw=61(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv3=58/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=25 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=0.2% volMom=0.91 bp5m=0.81 ageS=31258 liq=$160604
+[SCORE-BREAKDOWN] $NTDA combined=51 raw=64(liq15+bp20+vol6+px2+tx10+age0+bp1h5+fdv3=61/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=25 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.4% volMom=1.08 bp5m=0.83 ageS=69294 liq=$171443
+[SCORE-BREAKDOWN] $LAYOOO combined=50 raw=58(liq15+bp0+vol12+px15+tx10+age0+bp1h0+fdv3=55/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc0/age-8/px0/flat0) | drivers: px5m=16.0% volMom=2.22 bp5m=0.35 ageS=11423 liq=$74301
+[DIAG-SCOREWALL] top5 (pre-safety): #1 $XERIS score=56 mode=HWR bp5m=0.81 px5m=0.23 volMom=0.91 liq=160604 age=31258s mlScore=N/A rej=[]  ||  #2 $NTDA score=51 mode=HWR bp5m=0.83 px5m=0.39 volMom=1.08 liq=171443 age=69294s mlScore=N/A rej=[]  ||  #3 $LAYOOO score=50 mode=MG bp5m=0.35 px5m=16.00 volMom=2.22 liq=74301 age=11423s mlScore=N/A rej=[]  ||  #4 $NTDA score=48 mode=none bp5m=0.67 px5m=-0.46 volMom=1.57 liq=119218 age=4792s mlScore=N/A rej=[age > 1800, px5m < 2, hwrBp5m < 0.75]  ||  #5 $Bo score=41 mode=none bp5m=0.55 px5m=-26.20 volMom=3.02 liq=13019 age=658s mlScore=N/A rej=[bp5m < 0.6, liq < 20000, px5m < 2, hwrBp5m < 0.75]
+[SAFETY] $XERIS rugScore=4301 rugScoreNorm=38 freeze=false mint=false veto=none
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[SCAN] Funnel: seen=1149 -> cutLiq=377 cutVol=600 cutAge=114 cutPrice=0 cutVolZero=0 cutHoneypot=0 cutTooNew=0 | survived=46 deduped=22 scored=22
+[SCAN] Discovery: 22 candidates found.
+[REGIME] Cold feed — standing down on new entries (hotRunners=0/1 @≥10% & $300 & bp0.55, peak5m=16.0% < 20%). Open positions still managed.
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[PHASE-E] Descriptive-prior hypothesis active: estimatedPeakPct(liq) as stable prior,
+[PHASE-E] score composite has provisional correlation with outcomes. Hypothesis FALSIFIED if paper mean(f(x)) < +1.0% over >= 30 trades.
+[DEBUG] currentBalance: 0.0092, isMicroWallet: true
+[SCAN] Micro-Wallet Mode Active (Bal: 0.0092 SOL)
+[FETCHER-PATCH] old-profit funnel active | liq>=1000 vol5m>=500 minAge=0s minSells=2
+[GMGN] error: Command failed: gmgn-cli track smartmoney --chain sol --side buy --limit 500 --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch file.
+
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli track smartmoney --chain sol --side buy --limit 500 --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch file.
+
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GOLD HUNTER] 🏆 0 signals | LEGENDARY: 0 | HIGH: 0
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[SCANNER-QUEUE] Tracking 30 fast scanner tokens via free API (Waiting for $10k breakout)
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[SRC-XTRA] quality-only union=74 | jupVerified=44 jupTop=50 gkVol=0 (verified-set size=43, offset=16)
+[QUALITY] in=51 pass=45 jupVerified=0 cuts: notVerified=0 tooYoung=6 | flags: REQUIRE_VERIFIED=false MIN_AGE_MIN=5
+[SCORE-BREAKDOWN] $NiuLai combined=27 raw=47(liq12+bp16+vol3+px-6+tx10+age0+bp1h5+fdv5=45/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-5.8% volMom=0.87 bp5m=0.68 ageS=8151 liq=$24738
+[SCORE-BREAKDOWN] $Frock combined=33 raw=45(liq12+bp0+vol0+px15+tx10+age0+bp1h1+fdv5=43/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc-8/age-8/px4/flat0) | drivers: px5m=12.3% volMom=0.41 bp5m=0.44 ageS=23905 liq=$31247
+[SCORE-BREAKDOWN] $REXLER combined=35 raw=51(liq12+bp10+vol0+px12+tx8+age0+bp1h1+fdv5=48/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-16(mc-8/age-8/px0/flat0) | drivers: px5m=8.0% volMom=0.29 bp5m=0.58 ageS=74386 liq=$35237
+[SCORE-BREAKDOWN] $4680 combined=5 raw=25(liq12+bp0+vol0+px-6+tx10+age0+bp1h3+fdv5=24/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-5.2% volMom=0.28 bp5m=0.47 ageS=9115 liq=$36573
+[SCORE-BREAKDOWN] $UOTF combined=16 raw=44(liq15+bp5+vol6+px2+tx8+age0+bp1h5+fdv1=42/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.5% volMom=1.02 bp5m=0.50 ageS=41308 liq=$273232
+[SCORE-BREAKDOWN] $XERIS combined=44 raw=64(liq15+bp20+vol6+px2+tx10+age0+bp1h5+fdv3=61/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=0.6% volMom=1.07 bp5m=0.82 ageS=31293 liq=$160926
+[SCORE-BREAKDOWN] $SOLCAT combined=14 raw=42(liq10+bp16+vol3+px-5+tx10+age0+bp1h1+fdv5=40/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-4.1% volMom=0.68 bp5m=0.66 ageS=54228 liq=$13627
+[SCORE-BREAKDOWN] $NTDA combined=30 raw=58(liq15+bp20+vol3+px2+tx10+age0+bp1h5+fdv0=55/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.8% volMom=0.84 bp5m=0.98 ageS=24733 liq=$746830
+[SCORE-BREAKDOWN] $NTDA combined=51 raw=63(liq15+bp16+vol9+px2+tx10+age0+bp1h5+fdv3=60/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-12(mc0/age0/px0/flat-12) | drivers: px5m=0.7% volMom=1.75 bp5m=0.67 ageS=4835 liq=$119986
+[SCORE-BREAKDOWN] $NTDA combined=36 raw=64(liq15+bp20+vol6+px2+tx10+age0+bp1h5+fdv3=61/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.4% volMom=1.04 bp5m=0.83 ageS=69329 liq=$171547
+[SCORE-BREAKDOWN] $LATINAS combined=34 raw=42(liq10+bp0+vol3+px12+tx10+age0+bp1h0+fdv5=40/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=7.2% volMom=0.72 bp5m=0.48 ageS=4661 liq=$13884
+[SCORE-BREAKDOWN] $ANICAT combined=24 raw=44(liq12+bp10+vol0+px2+tx10+age2+bp1h1+fdv5=42/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=1.0% volMom=0.27 bp5m=0.56 ageS=3158 liq=$21150
+[SCORE-BREAKDOWN] $I2P combined=13 raw=33(liq10+bp5+vol0+px2+tx8+age0+bp1h1+fdv5=31/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=1.0% volMom=0.16 bp5m=0.50 ageS=7999 liq=$10482
+[SCORE-BREAKDOWN] $PAIRA combined=22 raw=42(liq12+bp13+vol3+px-10+tx10+age4+bp1h3+fdv5=40/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-31.6% volMom=0.67 bp5m=0.62 ageS=1748 liq=$26460
+[SCORE-BREAKDOWN] $Bo combined=33 raw=41(liq10+bp5+vol12+px-10+tx10+age4+bp1h3+fdv5=39/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=-23.0% volMom=2.49 bp5m=0.55 ageS=701 liq=$12455
+[SCORE-BREAKDOWN] $PUMPATHON combined=11 raw=31(liq8+bp13+vol0+px-10+tx10+age2+bp1h1+fdv5=29/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=-32.7% volMom=0.25 bp5m=0.60 ageS=3534 liq=$8752
+[SCORE-BREAKDOWN] $Yoru combined=6 raw=26(liq8+bp0+vol0+px8+tx4+age0+bp1h0+fdv5=25/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=3.8% volMom=0.33 bp5m=0.47 ageS=3893 liq=$9442
+[SCORE-BREAKDOWN] $Tortuga combined=14 raw=34(liq5+bp0+vol0+px8+tx10+age4+bp1h0+fdv5=32/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-20(mc-8/age0/px0/flat-12) | drivers: px5m=3.9% volMom=0.23 bp5m=0.41 ageS=1378 liq=$2694
+[SCORE-BREAKDOWN] $Unitree combined=23 raw=31(liq5+bp0+vol0+px10+tx6+age2+bp1h1+fdv5=29/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc-8/age0/px0/flat0) | drivers: px5m=6.0% volMom=0.11 bp5m=0.43 ageS=3376 liq=$4041
+[SCORE-BREAKDOWN] $LAYOOO combined=47 raw=55(liq15+bp0+vol9+px15+tx10+age0+bp1h0+fdv3=52/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc0/age-8/px0/flat0) | drivers: px5m=19.2% volMom=1.99 bp5m=0.42 ageS=11458 liq=$76430
+[SCORE-BREAKDOWN] $DEGS combined=0 raw=27(liq12+bp0+vol3+px-1+tx6+age0+bp1h1+fdv5=26/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=-0.9% volMom=0.79 bp5m=0.48 ageS=71530 liq=$48550
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[HELIUS-TAPE] b88hnU whales=10 netBuy=6 netSell=2 wash=5 bundleSlots=5 BUNDLE (txs=100)
+[HELIUS-TAPE] DttSHb whales=10 netBuy=7 netSell=3 wash=5 bundleSlots=3 BUNDLE (txs=100)
+[HELIUS-TAPE] C8mP8y whales=10 netBuy=9 netSell=1 wash=5 bundleSlots=5 BUNDLE (txs=100)
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli track smartmoney --chain sol --side buy --limit 500 --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch file.
+
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[HELIUS-TAPE] swap fetch failed for 9sfCHMLWSVy6MD6zr7pR1gD3qbT7C6K1E3dMf2ZBpump: The operation was aborted due to timeout
+[SCORE-BREAKDOWN] $XERIS combined=59 raw=64(liq15+bp20+vol6+px2+tx10+age0+bp1h5+fdv3=61/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=25 pen=-20(mc0/age-8/px0/flat-12) | drivers: px5m=0.6% volMom=1.07 bp5m=0.82 ageS=31301 liq=$160926
+[SCORE-BREAKDOWN] $NTDA combined=66 raw=63(liq15+bp16+vol9+px2+tx10+age0+bp1h5+fdv3=60/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=25 pen=-12(mc0/age0/px0/flat-12) | drivers: px5m=0.7% volMom=1.75 bp5m=0.67 ageS=4843 liq=$119986
+[SCORE-BREAKDOWN] $NTDA combined=51 raw=64(liq15+bp20+vol6+px2+tx10+age0+bp1h5+fdv3=61/95) ml=n/a(adjn/a dumpn/a) sm=30 wh=25 pen=-28(mc-8/age-8/px0/flat-12) | drivers: px5m=0.4% volMom=1.04 bp5m=0.83 ageS=69337 liq=$171547
+[SCORE-BREAKDOWN] $LAYOOO combined=47 raw=55(liq15+bp0+vol9+px15+tx10+age0+bp1h0+fdv3=52/95) ml=n/a(adjn/a dumpn/a) sm=0 wh=0 pen=-8(mc0/age-8/px0/flat0) | drivers: px5m=19.2% volMom=1.99 bp5m=0.42 ageS=11466 liq=$76430
+[DIAG-SCOREWALL] top5 (pre-safety): #1 $NTDA score=66 mode=none bp5m=0.67 px5m=0.65 volMom=1.75 liq=119986 age=4843s mlScore=N/A rej=[age > 1800, px5m < 2, hwrBp5m < 0.75]  ||  #2 $XERIS score=59 mode=HWR bp5m=0.82 px5m=0.62 volMom=1.07 liq=160926 age=31301s mlScore=N/A rej=[]  ||  #3 $NTDA score=51 mode=HWR bp5m=0.83 px5m=0.39 volMom=1.04 liq=171547 age=69337s mlScore=N/A rej=[]  ||  #4 $LAYOOO score=47 mode=MG bp5m=0.42 px5m=19.16 volMom=1.99 liq=76430 age=11466s mlScore=N/A rej=[]  ||  #5 $REXLER score=35 mode=none bp5m=0.58 px5m=7.97 volMom=0.29 liq=35237 age=74386s mlScore=N/A rej=[score too low, age > 1800, bp5m < 0.6, hwrBp5m < 0.75]
+[SAFETY] $NTDA rugScore=2701 rugScoreNorm=32 freeze=false mint=false veto=none
+[SCAN] Funnel: seen=1146 -> cutLiq=377 cutVol=605 cutAge=113 cutPrice=0 cutVolZero=0 cutHoneypot=0 cutTooNew=0 | survived=45 deduped=21 scored=21
+[SCAN] Discovery: 21 candidates found.
+[REGIME] Cold feed — standing down on new entries (hotRunners=0/1 @≥10% & $300 & bp0.55, peak5m=19.2% < 20%). Open positions still managed.
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[PHASE-E] Descriptive-prior hypothesis active: estimatedPeakPct(liq) as stable prior,
+[PHASE-E] score composite has provisional correlation with outcomes. Hypothesis FALSIFIED if paper mean(f(x)) < +1.0% over >= 30 trades.
+[DEBUG] currentBalance: 0.0092, isMicroWallet: true
+[SCAN] Micro-Wallet Mode Active (Bal: 0.0092 SOL)
+[FETCHER-PATCH] old-profit funnel active | liq>=1000 vol5m>=500 minAge=0s minSells=2
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[GMGN] error: Command failed: gmgn-cli track smartmoney --chain sol --side buy --limit 500 --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch file.
+
+[GMGN] error: Command failed: gmgn-cli track smartmoney --chain sol --side buy --limit 500 --raw
+'gmgn-cli' is not recognized as an internal or external command,
+operable program or batch file.
+
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trending --chain sol --interval 1h --platform Pump.fun --platform letsbonk --platform pump_mayhem --platform believe --platform boop --filter renounced --filter frozen 
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GOLD HUNTER] 🏆 0 signals | LEGENDARY: 0 | HIGH: 0
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type near_completion --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 5 --max-in
+[GMGN] error: Command failed: gmgn-cli market trenches --chain sol --type completed --launchpad-platform Pump.fun --launchpad-platform letsbonk --min-smart-degen-count 2 --max-creator-created-count 10 --min-holder-
+[GMGN] error: Command failed: gmgn-cli market signal --chain sol --groups "[{\"signal_type\":[11,12],\"mc_min\":20000,\"mc_max\":10000000}]" --raw
+'gmgn-cli' is not recognized as an internal or external command,
+o
+[GMGN-DEBUG] signal poll: 0 type-11/12 signal(s) parsed

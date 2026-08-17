@@ -1,0 +1,873 @@
+◇ injected env (68) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+[2026-08-16T17:36:37.135Z] DexScreener discovery: 43 mint(s) queued
+[2026-08-16T17:36:37.137Z] Evaluating JrAKpuwftAeAikJt1hWRUismqBzvVfcxo4HFrhppump
+[2026-08-16T17:36:38.120Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T17:36:38.323Z] Evaluating Dhe7DYTdpFy5ZxtmXrp6Yd84ifnhdeJuAWRQX9v1pump
+[2026-08-16T17:36:38.682Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T17:36:38.892Z] Evaluating H5KRbZ5QdeGHTu7PxF88KgA9EUi2zeV85wwaoC9kpump
+[2026-08-16T17:36:39.259Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T17:36:39.465Z] Evaluating Eqvned3qYoiyuyjEpAHeiaPS6qBFzLrUzaxRu8eApump
+[2026-08-16T17:36:40.694Z] ★ CANDIDATE [score=45] Eqvned3qYoiyuyjEpAHeiaPS6qBFzLrUzaxRu8eApump | LP $17486 | age 0.7h | https://dexscreener.com/solana/2btutxaxnzn2k7otteei8rqyr5c1gp7ftcyxc1ybku9v
+[2026-08-16T17:36:40.898Z] Evaluating H5jMr2aVeMk6mciZfHfnyDRJ9wGmkVWARhJuvU4opump
+[2026-08-16T17:36:41.313Z]   DexScreener: vol/liq 85.67 (wash)
+[2026-08-16T17:36:41.559Z] Evaluating 24kPFtyfA9e5s713dStdHGupBdbhc3H59d8qW3erpump
+[2026-08-16T17:36:41.909Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T17:36:42.111Z] Evaluating GV23fCQ4fQFqehtnpdfVSurT34K8z4bjKsNxTZ5Vpump
+[2026-08-16T17:36:42.446Z]   DexScreener: age 13685.5h > 72h
+[2026-08-16T17:36:42.649Z] Evaluating CdWhJnfuzz5p7bohmmMQHidJWH3eUomgYT6xMcpbrMAM
+[2026-08-16T17:36:43.012Z]   DexScreener: age 10700.1h > 72h
+[2026-08-16T17:36:43.215Z] Evaluating 9JMaquFPeYrEVhtpriZb5ZC75fYyddYeABTeCeptpump
+[2026-08-16T17:36:43.630Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T17:36:43.833Z] Evaluating 162bTQX9iBxV4rq2VZ3iYoTDPt6UGCEHzVPDwu7pump
+[2026-08-16T17:36:44.937Z] ★ CANDIDATE [score=70] 162bTQX9iBxV4rq2VZ3iYoTDPt6UGCEHzVPDwu7pump | LP $17476 | age 0.3h | https://dexscreener.com/solana/5vuokoyyu8feuhdm6yjqvhubthpthjirn4peac3nys7f
+[2026-08-16T17:36:45.260Z] Evaluating 3MhmXovYu5rbkzS7jf9UxcLWVUUrZuVbU6NfpgitLqNG
+[2026-08-16T17:36:45.615Z]   DexScreener: age 99999.0h > 72h
+[2026-08-16T17:36:45.816Z] Evaluating BcPofhfnosLot3cnyt8qzAqbwqik9H4uRM7cPUv4pump
+[2026-08-16T17:36:46.202Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T17:36:46.417Z] Evaluating EyLsRtadq13k4xUmBeKBhw4Y5nUHnNkLdNR558cspump
+[2026-08-16T17:36:46.755Z]   DexScreener: vol/liq 34.69 (wash)
+[2026-08-16T17:36:46.971Z] Evaluating 2CbvtfULS6wi9AqVt2XTm5EughnpG6GN6uXXcc1Ppump
+[2026-08-16T17:36:47.317Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T17:36:47.523Z] Evaluating 2JLR9uMDfa86uJmVsM3AvtWdmURfGb2DJqJBQszzNj3n
+[2026-08-16T17:36:49.076Z]   Holders: top1 67.5%
+[2026-08-16T17:36:49.287Z] Evaluating XYX3usBuiYzt7cRDtJy8PWrwiRWkwmxwobVQfT9pump
+[2026-08-16T17:36:49.644Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T17:36:49.884Z] Evaluating DhawosbryrgWW8wBSuq3X6WLymv3dkmsyRcYHt4zpump
+[2026-08-16T17:36:50.270Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T17:36:50.471Z] Evaluating Cxzz4qHAfjUWVmgih4Juw7W2Jj29STm81HejfGNvpump
+[2026-08-16T17:36:52.013Z]   Holders: top1 54.7%
+[2026-08-16T17:36:52.230Z] Evaluating CGyigWe1xkdNZhAhWRWsEhi2kHR8PmhgMpwPrv3rpump
+[2026-08-16T17:36:52.582Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T17:36:52.808Z] Evaluating Lt28D1t7wE47rdxiTgB3LSRvGJ1Y499uANkEQYBpump
+[2026-08-16T17:36:53.148Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T17:36:53.351Z] Evaluating AG4fodovUEAS1eG419d2X7Wh6Y2fq2MnAdA1YR9bpump
+[2026-08-16T17:36:53.717Z]   DexScreener: vol/liq 25.32 (wash)
+[2026-08-16T17:36:53.920Z] Evaluating 7JfCzKVjkfBP3Dz2Une9UpLJKsCY22wFjShmRU9Wpump
+[2026-08-16T17:36:54.284Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T17:36:54.497Z] Evaluating 4MbrwEDCvZiZxPkcpj4jEuM7KvhmTcVW1mDr6Woypump
+[2026-08-16T17:36:54.853Z]   DexScreener: vol/liq 169.51 (wash)
+[2026-08-16T17:36:55.060Z] Evaluating 5k6zDXzhPhJkZB14C21cZH7VHkHVGHAw5bTCtJ96pump
+[2026-08-16T17:36:55.403Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T17:36:55.612Z] Evaluating 8frBTEgMqEcTkZfhaXjKWjeWFKkd3uDE8voBcTrgpump
+[2026-08-16T17:36:56.649Z]   Holders: top1 33.9%
+[2026-08-16T17:36:56.853Z] Evaluating 9TnyQNgUHwf9AAHwnQnexTVFvctgfw1nXFtMa5Mqpump
+[2026-08-16T17:36:57.223Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T17:36:57.433Z] Evaluating BmDWM5NYWWZm4P2qBrhBNb6jbxsN3estLAkaWg8dpump
+[2026-08-16T17:36:57.779Z]   DexScreener: vol/liq 96.28 (wash)
+[2026-08-16T17:36:57.986Z] Evaluating 69tJh32kgR7u6Vqyrw2xnwLoCsjY5AiG8PqNivM7pump
+[2026-08-16T17:36:58.332Z]   DexScreener: vol/liq 156.78 (wash)
+[2026-08-16T17:36:58.540Z] Evaluating 3iE8bsaBXASBWQ8kEixqkpNHs1rHBzUYwQVFuXpgpump
+[2026-08-16T17:36:59.410Z]   Holders: top1 88.6%
+[2026-08-16T17:36:59.622Z] Evaluating 6Fjp4SHuPkjJusTxgm2ft6dpyYeGedkBUm7GHzPbpump
+[2026-08-16T17:37:00.507Z] ★ CANDIDATE [score=30] 6Fjp4SHuPkjJusTxgm2ft6dpyYeGedkBUm7GHzPbpump | LP $24086 | age 42.3h | https://dexscreener.com/solana/ew32ajewxbml3b7b9hjfkbvxwnpzdzpezgedqezyhgu
+[2026-08-16T17:37:00.714Z] Evaluating 6WS1NsTCjB1VFvVL8CjqUkB4VtK4fQ3sMPrN5e7rpump
+[2026-08-16T17:37:01.195Z]   DexScreener: vol/liq 29.10 (wash)
+[2026-08-16T17:37:01.534Z] Evaluating tUgWWjQc6xSszvMdtWvXPYFPX1iv8CsQN8t4XB3pump
+[2026-08-16T17:37:02.114Z] DexScreener discovery: 10 mint(s) queued
+[2026-08-16T17:37:02.226Z]   DexScreener: vol/liq 33.30 (wash)
+[2026-08-16T17:37:02.429Z] Evaluating 5upMUvnBmnAKqMoMFADSixXdJU39oxsbSTBWhMVnpump
+[2026-08-16T17:37:02.836Z]   DexScreener: vol/liq 54.63 (wash)
+[2026-08-16T17:37:03.081Z] Evaluating HtV29ziKFJuNw3suzkpozEgysas1vD3fkfTkeK2gpump
+[2026-08-16T17:37:03.504Z]   DexScreener: vol/liq 102.87 (wash)
+[2026-08-16T17:37:03.713Z] Evaluating CYgt7CQj1QnShj9kx6L8vmgAFk3GmBTpRaMBdbfypump
+[2026-08-16T17:37:04.112Z]   DexScreener: vol/liq 48.84 (wash)
+[2026-08-16T17:37:04.327Z] Evaluating F6LHzhjpbT3Z5f1xPNUNbmb84BjazjZZoK8MqhWGpump
+[2026-08-16T17:37:04.661Z]   DexScreener: vol/liq 29.21 (wash)
+[2026-08-16T17:37:04.868Z] Evaluating 8RsVHSqBmaqfCT2LrsyPa9YKiWrbmu3sg1sGbvwfpump
+[2026-08-16T17:37:05.875Z]   Holders: top1 88.8%
+[2026-08-16T17:37:06.086Z] Evaluating 6ehEcTMCc85aNF4x9CWx8HuvWGhxQtvKdhKVf2HDpump
+[2026-08-16T17:37:06.447Z]   DexScreener: age 2144.2h > 72h
+[2026-08-16T17:37:06.657Z] Evaluating 93UgNUpVbpb4BqLBFFn2UjmmBmQp3Z15jdPMTDEgaray
+[2026-08-16T17:37:07.031Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T17:37:07.242Z] Evaluating aUWH9iX3BKKeMHP6aoAf2r2KPjLq8h9Kim2YC48pump
+[2026-08-16T17:37:08.120Z] ★ CANDIDATE [score=75] aUWH9iX3BKKeMHP6aoAf2r2KPjLq8h9Kim2YC48pump | LP $44622 | age 43.9h | https://dexscreener.com/solana/b2cupqoxnczg6ta3vmba992xcvxuphzb7n2nvy1t5nu3
+[2026-08-16T17:37:08.349Z] Evaluating AzbsonxtqEdAA1APoiHX8M6uGVG2nEfcqoeoc2sEpump
+[2026-08-16T17:37:09.453Z] ★ CANDIDATE [score=70] AzbsonxtqEdAA1APoiHX8M6uGVG2nEfcqoeoc2sEpump | LP $10654 | age 4.5h | https://dexscreener.com/solana/6eghtpyye54xrjvdhdmvpg6lerkxr3tj1f79blbsbmue
+[2026-08-16T17:37:09.665Z] Evaluating 73UveQK7FzQb4ecjpQBCqJd3gKT2MEXG6fhsQuDApump
+[2026-08-16T17:37:10.041Z]   DexScreener: vol/liq 461.95 (wash)
+[2026-08-16T17:39:37.228Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T17:39:37.228Z] Evaluating HxurL4CD3z2epExkkDzbkyVqTBEBdURZe9XR1SBvpump
+[2026-08-16T17:39:37.913Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T17:42:37.942Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T17:42:37.942Z] Evaluating 5STRSXMndEbWFhJyGHNNBD1E687Bt8r8hwcU4Lcqpump
+[2026-08-16T17:42:38.587Z]   DexScreener: vol/liq 497.56 (wash)
+[2026-08-16T17:43:28.396Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T17:43:28.397Z] Evaluating 7EpvnnQQhmcGZvWTxoKP59fGcEw27hFovdBWXvdepump
+[2026-08-16T17:43:29.134Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T17:44:44.162Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T17:44:44.162Z] Evaluating BvjcVYa4rfbqnszqEB9Koh3MSSo21pPkiZh6gCADpump
+[2026-08-16T17:44:44.955Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T18:00:45.020Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T18:00:45.020Z] Evaluating 5LGjfznue74qpGTZdtcocZ4EvNVBXKyAgexVMe61pump
+[2026-08-16T18:00:46.487Z] ★ CANDIDATE [score=65] 5LGjfznue74qpGTZdtcocZ4EvNVBXKyAgexVMe61pump | LP $44042 | age 0.5h | https://dexscreener.com/solana/98nyczpuxhx6uw6mhaaewkpy2kfjx2yx32fsfeaoh48u
+[2026-08-16T18:00:46.699Z] Evaluating 7J7iTLRTrAySn7v5w1y5giCD59EL9uwtkVfMkJy3pump
+[2026-08-16T18:00:47.082Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T18:02:28.327Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T18:02:28.328Z] Evaluating DBJpbXaLBackHxXJTfLTSGM9JWUAWeXAJ8PC5anYpump
+[2026-08-16T18:02:29.096Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T18:04:35.648Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T18:04:35.648Z] Evaluating FUF7ikJSz8ySPtFqW8juGTywZCx269UUdhmMxGqXpump
+[2026-08-16T18:04:36.869Z]   DexScreener: vol/liq 434.94 (wash)
+[2026-08-16T18:07:33.714Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T18:07:33.714Z] Evaluating A7fo36jiGoEwgVaRkjmo1AoYAz74nZTu8qqBBDRPpump
+[2026-08-16T18:07:34.623Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T18:10:36.477Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T18:10:36.477Z] Evaluating APSzZKWeCb4PXkavuDiGzi51LR5ob5GmuGzcAVj7pump
+[2026-08-16T18:10:37.184Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T18:10:37.387Z] Evaluating 3hQzx1Ac5YhRXXWjvj1wApcAMta57f5igoDX7r8epump
+[2026-08-16T18:10:37.741Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T18:12:44.072Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T18:12:44.072Z] Evaluating 8TRVDZhYRUHYyrftAfxHjYnsetKFzspUp9qq31pmpump
+[2026-08-16T18:12:45.433Z] ★ CANDIDATE [score=70] 8TRVDZhYRUHYyrftAfxHjYnsetKFzspUp9qq31pmpump | LP $21028 | age 0.2h | https://dexscreener.com/solana/b7uwagitsgboekbu3gc1rbzkdcnj6yb4umjrd46iubss
+[2026-08-16T18:15:43.032Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T18:15:43.032Z] Evaluating 6tHdwp18puTHSkiJnxTmv1wK5UWJxKXMJu2TNcfrpump
+[2026-08-16T18:15:43.670Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T18:18:47.334Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T18:18:47.335Z] Evaluating 3h83VHiEaeS8oJ5pGMZrq9ozJZ1yGTpN5jEX4Gvkpump
+[2026-08-16T18:18:48.283Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T18:19:39.745Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T18:19:39.746Z] Evaluating B77seMgJQrQTmDdFsHwyfHyewmRQbfTAsZCmXxMBpump
+[2026-08-16T18:19:40.567Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T18:22:46.205Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T18:22:46.205Z] Evaluating JrxRH2nEX3S9uYzGMGLP6y2G6X9rUue6zZwSLtdpump
+[2026-08-16T18:22:47.830Z] ★ CANDIDATE [score=70] JrxRH2nEX3S9uYzGMGLP6y2G6X9rUue6zZwSLtdpump | LP $12177 | age 0.1h | https://dexscreener.com/solana/fuhbwvohvtjc47fykb2zicrwjst1nkfr55wf266qvpjs
+[2026-08-16T18:26:44.189Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T18:26:44.189Z] Evaluating AjxSSbdQd6omQMnpQKFq5q4yuzFa3hpGdBdFHnarpump
+[2026-08-16T18:26:46.081Z] ★ CANDIDATE [score=70] AjxSSbdQd6omQMnpQKFq5q4yuzFa3hpGdBdFHnarpump | LP $17643 | age 0.1h | https://dexscreener.com/solana/9emtnvpj4ylvjtx9n41mhhwv9untakvn8jnsv1ihu9al
+[2026-08-16T18:32:46.448Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T18:32:46.448Z] Evaluating 88jZ2hhPumpdjhgCWmmrzB8fFQZgF6w75UFpD5Expump
+[2026-08-16T18:32:47.084Z]   DexScreener: age 5316.3h > 72h
+[2026-08-16T18:32:47.309Z] Evaluating 5Ya5MEehcWSHMD8ptmKN33MMD4V5yJxm74pGMd6afomo
+[2026-08-16T18:32:47.547Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T18:40:36.509Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T18:40:36.509Z] Evaluating F2bJJH5fzdFUL6voZF64jQuoeziVjQoiWcSCz5cGexmE
+[2026-08-16T18:40:37.322Z]   DexScreener: age 1941.0h > 72h
+[2026-08-16T18:44:26.621Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T18:44:26.621Z] Evaluating 9JFeq768htrvFpXhSzHnJiwn4bQ1eJa1yo6gk47goa9p
+[2026-08-16T18:44:28.451Z] ★ CANDIDATE [score=35] 9JFeq768htrvFpXhSzHnJiwn4bQ1eJa1yo6gk47goa9p | LP $11559 | age 0.3h | https://dexscreener.com/solana/9remi6ypxdszjwec7d3xqx9q7j1qrbzektjeydmyde5e
+[2026-08-16T18:44:28.662Z] Evaluating 9rb6VAYHfCpQYrU6NG8NKgcXoom5BmD4Gc3deqyepump
+[2026-08-16T18:44:28.941Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T18:57:39.658Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T18:57:39.658Z] Evaluating 8bDA3nAdbBV1qUkytVmKGmk8RPQhdSkNpKobbKaupump
+[2026-08-16T18:57:40.336Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T19:00:39.459Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T19:00:39.459Z] Evaluating vEgVi383kUhUe11qRH5mFu58CQqapRhMV3thZdPpump
+[2026-08-16T19:00:46.576Z]   DexScreener: age 99999.0h > 72h
+[2026-08-16T19:07:35.315Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T19:07:35.315Z] Evaluating 8uD3m4YycAfBQYEkpaZq8LjSQUNWXzHWxU74qvfHpump
+[2026-08-16T19:07:36.064Z]   DexScreener: vol/liq 22.10 (wash)
+[2026-08-16T19:11:34.344Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T19:11:34.344Z] Evaluating Debq4wbfTCAidQF9dqPoZ2Gj1rEGoAdWoFjwKUPppump
+[2026-08-16T19:11:35.094Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T19:11:35.304Z] Evaluating C8bJnFXuHStCvhZdaoaKf4gYvkx8kJFtW6viKtUupump
+[2026-08-16T19:11:35.606Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T19:14:39.933Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T19:14:39.933Z] Evaluating GFQLVG2UKYydSCJ2WjkuMXijpgJ6hbs2nEsNwdZFpump
+[2026-08-16T19:14:40.707Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T19:14:40.917Z] Evaluating EPPxZq2cK5tPQ1ZcxEL3unGkCzoARCCbsDGTKXhipump
+[2026-08-16T19:14:41.202Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T19:16:52.216Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T19:16:52.216Z] Evaluating Baf4WhxNJpLJxtccU9yRrehLz8oLzCao2gJ9JZFXBNvv
+[2026-08-16T19:16:52.911Z]   DexScreener: no solana pair
+[2026-08-16T19:20:47.947Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T19:20:47.947Z] Evaluating E8Hc2yEPn1oATBdoU9jiwoCQZcfLcwhPTVD5ATFkpump
+[2026-08-16T19:20:48.689Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T19:22:32.328Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T19:22:32.328Z] Evaluating ASg9yDikmZfaY2zZyPEno7p58TwRa29PpYdsa4fBpump
+[2026-08-16T19:22:33.048Z]   DexScreener: vol/liq 0.14 (dead)
+[2026-08-16T19:31:20.004Z] DexScreener discovery: 3 mint(s) queued
+[2026-08-16T19:31:20.004Z] Evaluating 6qsMvCqrCHxhm9Vz9YYCiEEQ3abPUwCMwVRWTeGQpump
+[2026-08-16T19:31:23.229Z] ★ CANDIDATE [score=60] 6qsMvCqrCHxhm9Vz9YYCiEEQ3abPUwCMwVRWTeGQpump | LP $13742 | age 0.3h | https://dexscreener.com/solana/gqxe74gdwy4byssnejwrannw8w5gncola9ay5ggp6tew
+[2026-08-16T19:31:23.431Z] Evaluating 62VzMyMAcBUh4dexq2Dk5y1VvZiDGjiU9xyNYpZ7pump
+[2026-08-16T19:31:29.588Z]   DexScreener: dex err: fetch failed
+[2026-08-16T19:31:29.799Z] Evaluating 39aRDUTryVByDa7AYXE7AQNUxznjCRX3rMb3Cnsspump
+[2026-08-16T19:31:32.707Z] ★ CANDIDATE [score=60] 39aRDUTryVByDa7AYXE7AQNUxznjCRX3rMb3Cnsspump | LP $10926 | age 0.4h | https://dexscreener.com/solana/6xtojdfuysbcq8mgfaqb2tfra84yd1nlsawrimertnge
+[2026-08-16T19:33:28.609Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T19:33:28.610Z] Evaluating 5FtZqP17cxX51qHHQCcC3xcoQRqUzYWJh2bR5iPjpump
+[2026-08-16T19:33:29.441Z]   DexScreener: age 3253.9h > 72h
+[2026-08-16T19:36:27.831Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T19:36:27.832Z] Evaluating 6x7agqyHRQ365gA9PEq12NtY2KxrPiz3uqSwKvdXpump
+[2026-08-16T19:36:28.552Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T19:58:34.646Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T19:58:34.647Z] Evaluating GuUNEcqtzuHeCjaVrEVH3fzhpBSuLW65GbCW1bZt3Nmu
+[2026-08-16T19:58:36.809Z] ★ CANDIDATE [score=80] GuUNEcqtzuHeCjaVrEVH3fzhpBSuLW65GbCW1bZt3Nmu | LP $39556 | age 0.2h | https://dexscreener.com/solana/chufs3zvatwctnupo9sjdkuecswsezqrznrcvutcln3o
+[2026-08-16T20:00:42.993Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T20:00:42.994Z] Evaluating 4LRRys4D1R47LpnT8nktXqjBwa6tuN3ujFdMBnvHpump
+[2026-08-16T20:00:43.705Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T20:10:36.970Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T20:10:36.970Z] Evaluating 2HtutbHpCNCy4jBux1K4taVxshFCHgarydADjUjRpump
+[2026-08-16T20:10:37.731Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T20:10:37.950Z] Evaluating 6oodnVEfzeQ6uriHvvcCnMh3wsk9NJkKCKza4i4Qpump
+[2026-08-16T20:10:39.112Z] ★ CANDIDATE [score=70] 6oodnVEfzeQ6uriHvvcCnMh3wsk9NJkKCKza4i4Qpump | LP $13892 | age 1.2h | https://dexscreener.com/solana/ge7e4s7qffavvgr381nhbue78zw7kpe8mxucjurwzqz8
+[2026-08-16T20:19:42.615Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T20:19:42.615Z] Evaluating 3aiQF78negEPUKKmgKdEPNv2NozQwX6kaLzi1WbGwbPf
+[2026-08-16T20:19:44.698Z]   Holders: top1 32.9%
+[2026-08-16T20:22:44.728Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T20:22:44.728Z] Evaluating 13SdzM99wo4GxPGQkWmrw5XTseyCFcLzE5P9LoNLpump
+[2026-08-16T20:22:45.499Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T20:27:29.443Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T20:27:29.443Z] Evaluating 22UqgFh39e9Wj6ThwcbHcwAZZHEVyUMNGUFBNrN6pump
+[2026-08-16T20:27:30.217Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T20:37:47.259Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T20:37:47.259Z] Evaluating 3mmFwF7mQxqTWyFf8kBk8ZAjHw6JG79ZiJv56Mmdpump
+[2026-08-16T20:37:48.089Z]   DexScreener: vol/liq 25.17 (wash)
+[2026-08-16T20:37:48.290Z] Evaluating 7o6wqzMsXy7PnNc4aZrp497MWAe71LoE6QSKWWkopump
+[2026-08-16T20:37:48.783Z]   DexScreener: age 192.6h > 72h
+[2026-08-16T20:43:41.082Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T20:43:41.082Z] Evaluating 568sXg3JkMhdb2bV9PEqyi8X67rTEFQYh5wpMno3pump
+[2026-08-16T20:43:41.962Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T20:43:42.170Z] Evaluating HK9wX7BLvJzZaoGr4Y7gE1pmfqiRhCwUwvaSk4NVpump
+[2026-08-16T20:43:42.690Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T20:47:53.556Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T20:47:53.557Z] Evaluating BAaLVF5EEmUZVkeyNuuZnUb5piCJZwNwVSKgSmpwpump
+[2026-08-16T20:47:55.318Z] ★ CANDIDATE [score=45] BAaLVF5EEmUZVkeyNuuZnUb5piCJZwNwVSKgSmpwpump | LP $21190 | age 0.6h | https://dexscreener.com/solana/5v4kzaegj2bdrtdsv8dp7bndz3d8xmzagmuqbqjvwvdw
+[2026-08-16T20:49:35.165Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T20:49:35.165Z] Evaluating G5WsEp3voREADpMVG11LVQGBmvXbH5PpvjQeFMyapump
+[2026-08-16T20:49:36.446Z] ★ CANDIDATE [score=45] G5WsEp3voREADpMVG11LVQGBmvXbH5PpvjQeFMyapump | LP $20385 | age 0.3h | https://dexscreener.com/solana/9lwad8mvenxqj2fpgtvsqek5x5xjpttdaazn5ugpmvxm
+[2026-08-16T20:49:36.648Z] Evaluating 9KcrdRf26ZA71VHp3Lc7BgxgT3PVhXnbPXHMmCNREZVc
+[2026-08-16T20:49:37.475Z]   Holders: top1 82.8%
+[2026-08-16T20:51:45.264Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T20:51:45.264Z] Evaluating 3xNDTyMgPXrtuZhzU1eYLEfqPe4Kwdr8FFrhomyHpump
+[2026-08-16T20:51:46.043Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T20:55:36.458Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T20:55:36.458Z] Evaluating DcQyHTsrHQAhs6AX7tgcHCSB3WbY5EJdeQ4Tvqpdpump
+[2026-08-16T20:55:37.181Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T21:00:45.271Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T21:00:45.271Z] Evaluating 4iTLntFsAnM9PdpCDCMJm781ZTqr4rCvDp5LbD1z3XvV
+[2026-08-16T21:00:46.624Z]   Holders: top1 40.2%
+[2026-08-16T21:02:53.470Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T21:02:53.470Z] Evaluating hSbtbwx9ozcxash2hbpjJ6YtNTDPyNdAf1K1Moypump
+[2026-08-16T21:02:55.526Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T21:04:35.080Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T21:04:35.080Z] Evaluating HpmDuJKUEUTBSKHc8NL1xBazaasQqnCGrFyDne8Xpump
+[2026-08-16T21:04:35.802Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T21:08:49.105Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T21:08:49.105Z] Evaluating ErBHiqVEnHVkL5DghVoD5FgNiMmSx5jPgzL8Ju4Apump
+[2026-08-16T21:08:49.882Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T21:14:44.990Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T21:14:44.990Z] Evaluating 4fyAxFkjHS15Q2DMMGyCSWsMDqDtHEb6MAZDWyfHpump
+[2026-08-16T21:14:45.652Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T21:18:39.100Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T21:18:39.100Z] Evaluating 3yTM6BXCiVpmJ8vyK4hHuXihLXC61Eii2AZtKvY7pump
+[2026-08-16T21:18:39.801Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T21:21:38.596Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T21:21:38.596Z] Evaluating F4ish8hWFM4Rgvj2nhp4xs9yUicW86GcWUAq7dXMpump
+[2026-08-16T21:21:39.339Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T21:22:54.559Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T21:22:54.559Z] Evaluating 2zZFDWoNuXdqCLWqivTW1NZw3T4NDvwzZthxpebzpump
+[2026-08-16T21:22:56.256Z]   Holders: top1 27.7%
+[2026-08-16T21:25:56.244Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T21:25:56.244Z] Evaluating FdQMjCVEa77pqH1NbP381Dz32b2QR4xsJRDwM8icpump
+[2026-08-16T21:25:57.566Z] ★ CANDIDATE [score=40] FdQMjCVEa77pqH1NbP381Dz32b2QR4xsJRDwM8icpump | LP $25068 | age 40.0h | https://dexscreener.com/solana/aeczfthm37a3qo38t63z5dctk81vuwddnhrn84j2hm9k
+[2026-08-16T21:30:42.566Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T21:30:42.567Z] Evaluating CXKuSxyoY1FF42eS2BLr7gJrTK1hLrdmbho8D26Npump
+[2026-08-16T21:30:43.167Z]   DexScreener: vol/liq 34.95 (wash)
+[2026-08-16T21:36:46.964Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T21:36:46.964Z] Evaluating 3aCxyyRaCWG7ohTvWtzkwbHiyWnBpjmrij8bmuhNpump
+[2026-08-16T21:36:47.722Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T21:36:47.931Z] Evaluating DhFUnX7qcrGfCmjJzgYtF2GTGiBXPey3hdTAKLfWBKpc
+[2026-08-16T21:36:48.366Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T21:39:52.973Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T21:39:52.973Z] Evaluating rUB9KY84m9iCa3GDUCheksoQ528xfUHYRe5uW3Ppump
+[2026-08-16T21:39:53.712Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T21:39:53.938Z] Evaluating BgCEjZtQUgCj14L2S6JHuuvdngniLTnPP7ahVyWpump
+[2026-08-16T21:39:54.259Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T21:43:46.301Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T21:43:46.302Z] Evaluating 2G5xGewckH2SwotaX2prsXm4Ja5YhpkEy3bzvxAypump
+[2026-08-16T21:43:46.997Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T21:57:37.450Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T21:57:37.451Z] Evaluating kVho1VUktTpKphQuHacMZFrcAshxDE7z67ydVuApump
+[2026-08-16T21:57:38.329Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T21:58:51.925Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T21:58:51.925Z] Evaluating ChNjp6FG5RD2tYnMjvWeFUeSCwx4VUpPaBvfK7Npump
+[2026-08-16T21:58:52.586Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T21:59:43.311Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T21:59:43.311Z] Evaluating HC9PTG3nf6sVUz14sGxPdgC3sBVYgviUpn4RRwJNpump
+[2026-08-16T21:59:44.046Z]   DexScreener: age 78.9h > 72h
+[2026-08-16T21:59:44.251Z] Evaluating DsD7FeiwqwAhfCLNzQapYMYvNeb5gZ7UHHkC5z9Vpump
+[2026-08-16T21:59:44.521Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T22:00:35.138Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T22:00:35.139Z] Evaluating 5JkrVwcPMrSXXebi6z8EpjpVJ4oYoavGQxZfLNSfpump
+[2026-08-16T22:00:36.811Z]   Holders: top1 33.4%
+[2026-08-16T22:03:33.391Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T22:03:33.391Z] Evaluating 7jeybC3j6drRuKeKYsD8B75cpceynNd6wcD1p1Efpump
+[2026-08-16T22:03:34.202Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T22:08:43.674Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T22:08:43.675Z] Evaluating DWsrPtFNVRpD9W5yAEEwYj9zRoSiz3r82HGu9YtDpump
+[2026-08-16T22:08:45.312Z]   Holders: top1 40.5%
+[2026-08-16T22:09:35.371Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T22:09:35.371Z] Evaluating 6NstHok8WNvd6rWpE26LL5otoedpCCwF7V2NMK4hpump
+[2026-08-16T22:09:36.175Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T22:11:43.652Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T22:11:43.653Z] Evaluating 42HdcF3EBt92VYW5gWM7mC4BDsf4mbL6wj2jz1YubDD7
+[2026-08-16T22:11:45.184Z] ★ CANDIDATE [score=35] 42HdcF3EBt92VYW5gWM7mC4BDsf4mbL6wj2jz1YubDD7 | LP $10230 | age 0.6h | https://dexscreener.com/solana/hmabxc8asfhvycnhgfkc1hjutcuqz5pedspejk7gezz4
+[2026-08-16T22:14:45.870Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T22:14:45.870Z] Evaluating 25izCnWxkXwvjri5nLAzuTZxqTsYU3obriwV4mi9pump
+[2026-08-16T22:14:47.458Z] ★ CANDIDATE [score=70] 25izCnWxkXwvjri5nLAzuTZxqTsYU3obriwV4mi9pump | LP $11710 | age 0.0h | https://dexscreener.com/solana/9ebgpuaqgenlwuzdyjzrjcb8te7zzaynat7x3eqgdmb8
+[2026-08-16T22:30:40.933Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T22:30:40.933Z] Evaluating 2oce2R3xMVJg6W7ZNptyJmtJmiK3rqC2Qx6HtTgFpump
+[2026-08-16T22:30:41.681Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T22:31:54.487Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T22:31:54.488Z] Evaluating C1YEGJqY3CzNL4B1p2WXsCZmRvguxWbWqhto9wm8pump
+[2026-08-16T22:31:55.178Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T22:34:05.520Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T22:34:05.520Z] Evaluating EiSGJDWWQKoEKgjRSY8wjnjcHQW6GBz7kuzENCvopump
+[2026-08-16T22:34:07.762Z]   Holders: top1 92.0%
+[2026-08-16T22:43:35.495Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T22:43:35.495Z] Evaluating BzJYt3zAj4WSW4jzHdUW3izW8FQEAqzBD6gmZggxpump
+[2026-08-16T22:43:36.277Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T22:49:38.937Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T22:49:38.937Z] Evaluating 2FYFNNu1iQh8VBeh57YTmp7B987aVHAZj6J5yTarpump
+[2026-08-16T22:49:39.627Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T22:49:39.838Z] Evaluating 3imTUGdpxm1aCFkNjAHSzXxoaETX8EUtsVmgs8DDLbUh
+[2026-08-16T22:49:40.237Z]   DexScreener: vol/liq 0.12 (dead)
+[2026-08-16T22:50:58.685Z] DexScreener discovery: 3 mint(s) queued
+[2026-08-16T22:50:58.686Z] Evaluating F3sb8sKNHaXujJn1jjtW9coTqCuFCBbtHSF3BRcoFEAR
+[2026-08-16T22:50:59.434Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T22:50:59.639Z] Evaluating 337Em8VZK6J9wu2pScawh5aBeKrVD4GkB3iV6Sgipump
+[2026-08-16T22:51:00.052Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T22:51:00.263Z] Evaluating GRmSwCq1huSmHzbMJj3W4jVNL1m49CBeawzq9pq4pump
+[2026-08-16T22:51:00.809Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T22:55:44.861Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T22:55:44.861Z] Evaluating 2DS8jQLn5z3BwwFxx9aeyTUPwV7R4DVUSjKeP5wVpump
+[2026-08-16T22:55:45.633Z]   DexScreener: age 253.7h > 72h
+[2026-08-16T22:56:36.902Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T22:56:36.902Z] Evaluating AM84wetbNE63kbeZE4HYKqKcgesoquFz4khYv5Bqpump
+[2026-08-16T22:56:37.692Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T22:56:37.903Z] Evaluating 9jthvyajDPyrYYW4WBNjgubLzNJsRgHVhJsxmaVLpump
+[2026-08-16T22:56:38.236Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T22:58:43.962Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T22:58:43.965Z] Evaluating 2ptidXQiwUmfqbiNXT9RHv6uNS8uAVi82a9dE51Cpump
+[2026-08-16T22:58:45.702Z]   Holders: top1 57.3%
+[2026-08-16T23:03:56.211Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T23:03:56.212Z] Evaluating 7B3csGVG4JNxqupAoAXYzdThMm7UovHMXyQJqtZ17pSD
+[2026-08-16T23:03:57.867Z]   Holders: top1 31.2%
+[2026-08-16T23:03:58.076Z] Evaluating HKVezdfVBq6SHu8fsUWuLDpPUWA6n3X4ErRDAEdCMDFY
+[2026-08-16T23:03:58.411Z]   DexScreener: vol/liq 41.91 (wash)
+[2026-08-16T23:08:37.992Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T23:08:37.993Z] Evaluating FZoyxR8ao7b63VJC4YAKZDbj8nRgbzt1VpjjojWJpump
+[2026-08-16T23:08:38.731Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T23:11:37.858Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T23:11:37.858Z] Evaluating 2gnXoYrrJn7ZBrsomPTJueJ2xfhaLAVG1onj6BJbpump
+[2026-08-16T23:11:38.620Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T23:11:38.833Z] Evaluating FSNeNWpA2VPvYCmCgamRBVqi1CqPFy9CFPACfFYzpump
+[2026-08-16T23:11:39.174Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T23:13:49.330Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T23:13:49.330Z] Evaluating 4tF99sxoYQrFRjezqwSyyENU4jXuQzXf8gfvbsYTpump
+[2026-08-16T23:13:50.044Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T23:14:42.057Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T23:14:42.057Z] Evaluating F9zzyYHmCiFAotghR91SyerhCwPRuqXQ5DvqkWVZpump
+[2026-08-16T23:14:42.732Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T23:15:58.242Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T23:15:58.242Z] Evaluating GnwoFdLNPZw9etvTAxPstSvQNHA5msqiQLNU9U78pump
+[2026-08-16T23:15:58.992Z]   DexScreener: vol/liq 33.94 (wash)
+[2026-08-16T23:15:59.202Z] Evaluating ce1eMPquePTWn4V5bNwRupJ8UjnxLavRokXU1wxJjjT
+[2026-08-16T23:15:59.591Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T23:17:43.936Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T23:17:43.936Z] Evaluating AaXPtM4ox3d9YeHHGFXGKvVwgdKHK6RR3DqpVG5pump
+[2026-08-16T23:17:44.651Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T23:19:49.880Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T23:19:49.881Z] Evaluating HjwWv1AvtUHXpWXFCo4DTQjRniwCfXD93uknpsGMTRiX
+[2026-08-16T23:19:50.634Z]   DexScreener: vol/liq 0.07 (dead)
+[2026-08-16T23:21:57.796Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T23:21:57.796Z] Evaluating UemnTg4prZ5QUteJP2ekKMAYYHssyRZz3Ef3uiapump
+[2026-08-16T23:21:59.474Z] ★ CANDIDATE [score=90] UemnTg4prZ5QUteJP2ekKMAYYHssyRZz3Ef3uiapump | LP $32438 | age 0.3h | https://dexscreener.com/solana/bybvmuzpseynabp8exteyvg6gfchf5dexvbufkqym357
+[2026-08-16T23:22:48.177Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T23:22:48.177Z] Evaluating GBSBX9ySY36AXBcKppTVQUsiRko1jQmdejKT2futpump
+[2026-08-16T23:22:48.873Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T23:24:54.473Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T23:24:54.474Z] Evaluating 6rzqNCocp3nVErdQPzBhBB1nttP9pHDEBrWiS3Gfpump
+[2026-08-16T23:24:55.216Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T23:25:46.367Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T23:25:46.367Z] Evaluating 57mYAAWNY4TtLCZcmGgzLcdZQWzDbN3wehqUU75PtucL
+[2026-08-16T23:25:47.192Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T23:26:38.622Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T23:26:38.622Z] Evaluating 6zz4T7Vb7Q6M2UFpCtJu9wADXoobp9Sf5Svy2Sf6yoV1
+[2026-08-16T23:26:39.321Z]   DexScreener: age 99999.0h > 72h
+[2026-08-16T23:36:54.376Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-16T23:36:54.376Z] Evaluating 32ZkvfDNnLaGdZwnwcmFUXkbKxaGxsRndC4gTTvKpump
+[2026-08-16T23:36:55.077Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T23:36:55.281Z] Evaluating EE7mNPKCUDGi7SAMFHkdyV3LoiFyNxKN3gLGtkePpump
+[2026-08-16T23:36:55.599Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T23:48:58.574Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T23:48:58.574Z] Evaluating 3vfG2pUKdTJkHFEyt5Az4xKQXWLrBLzVZcHvTns3pump
+[2026-08-16T23:49:00.157Z]   Holders: top1 33.0%
+[2026-08-16T23:49:49.503Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T23:49:49.503Z] Evaluating Eztcckaju2kuHCNjsZnxjr2SC3mFzVVUsx6oKurWpump
+[2026-08-16T23:49:50.989Z] ★ CANDIDATE [score=70] Eztcckaju2kuHCNjsZnxjr2SC3mFzVVUsx6oKurWpump | LP $16031 | age 2.4h | https://dexscreener.com/solana/7mwlckt4qjzat7l5kma9ciw19vurqdxfenghjkfb6b1o
+[2026-08-16T23:52:47.841Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T23:52:47.841Z] Evaluating BzbCmcbffVDurJDujAKMCMVQedpx6SgmqTDbn1XZTmFR
+[2026-08-16T23:52:48.656Z]   DexScreener: age 99999.0h > 72h
+[2026-08-16T23:54:56.474Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T23:54:56.474Z] Evaluating AFDeprcxavZvCST9jhUkWayi7jP4aBwsFEPQXC9Qpump
+[2026-08-16T23:54:57.176Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T23:56:41.406Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T23:56:41.406Z] Evaluating GgQHmB5x1fEzcWz3zwSN2pFoyyQef5vrpLC84bcupump
+[2026-08-16T23:56:42.158Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-16T23:58:49.352Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-16T23:58:49.352Z] Evaluating 3rfFWv475Nw2BujzA1SHJdfnpz6cDktYNxVAfZWKFood
+[2026-08-16T23:58:50.058Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T00:20:54.321Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-17T00:20:54.324Z] Evaluating JCNDvA95WAhaSftXwz8x3XSPGi6vWKa1zUH7rKZzpump
+[2026-08-17T00:20:55.996Z]   Holders: top1 28.7%
+[2026-08-17T00:20:56.199Z] Evaluating F1q6mZYXGUCJGbDmr4mN8pnuVd8uX5x1E3JhS8wEpump
+[2026-08-17T00:20:56.580Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T00:25:41.801Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-17T00:25:41.801Z] Evaluating XU9RcDpR6cUYy4CX2EA2DbZm4dZjYLVcFwBp94ppump
+[2026-08-17T00:25:42.658Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T00:25:42.863Z] Evaluating 3nFLWtMGZSgLv1THeNxFSd3WJbpXrxVyWoPTmCyXpump
+[2026-08-17T00:25:43.218Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T00:30:48.850Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T00:30:48.850Z] Evaluating EhS4vNrVp4rp81wfbdZ8uh6TgiLMnB1kG8ysfNVcpump
+[2026-08-17T00:30:49.658Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T00:31:42.167Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T00:31:42.167Z] Evaluating 5nNkExWHe1GvthERCjZT4Kt5KECssBzDXbYNwKNaJ3dP
+[2026-08-17T00:31:42.866Z]   DexScreener: age 99999.0h > 72h
+[2026-08-17T00:32:57.788Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T00:32:57.788Z] Evaluating 8njZKjphmRSnyjSyPihHu5tCPWfTbwvZw5GEXV6Upump
+[2026-08-17T00:32:59.375Z] ★ CANDIDATE [score=65] 8njZKjphmRSnyjSyPihHu5tCPWfTbwvZw5GEXV6Upump | LP $32772 | age 0.8h | https://dexscreener.com/solana/dh1bk6hn2pgqj6yfh2fwdrscwqazwngwj6nt5qdlvemr
+[2026-08-17T00:35:58.180Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T00:35:58.180Z] Evaluating e5VW5tHvcq9VbG2JFDiA8GuLJM81gNp4ftrKhAvpump
+[2026-08-17T00:35:59.628Z]   Holders: top1 27.7%
+[2026-08-17T00:46:44.414Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-17T00:46:44.414Z] Evaluating 8hbHUy1JhEKE6SK595ZNKAnNkoJ45gwkR2qskooupump
+[2026-08-17T00:46:46.011Z]   Holders: top10 82.7%
+[2026-08-17T00:46:46.214Z] Evaluating FEMExV9UtmwykuaoFTa4ynnVzQbSo9UUpdx3bLjUpump
+[2026-08-17T00:46:47.273Z] ★ CANDIDATE [score=65] FEMExV9UtmwykuaoFTa4ynnVzQbSo9UUpdx3bLjUpump | LP $29371 | age 0.1h | https://dexscreener.com/solana/hybx7afemjcru8sdcjbtcqxg17sgsnfcafrp6rkwmwcb
+[2026-08-17T00:50:38.280Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T00:50:38.280Z] Evaluating A1UCu2quFYMF5P7Q6uGsEeWmrrmfsNtwRo1HmdLy1EYt
+[2026-08-17T00:50:47.683Z]   DexScreener: age 99999.0h > 72h
+[2026-08-17T00:55:46.208Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T00:55:46.209Z] Evaluating 51yvaeXgMFDuswkjTTYkxm5B3H2zEZV3DytoSv9Fpump
+[2026-08-17T00:55:46.884Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T01:01:40.347Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T01:01:40.347Z] Evaluating GCfNSzhLMCDUJugU7bB4hfrFZAroTAsjnD5Je4oVpump
+[2026-08-17T01:01:41.069Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T01:03:45.033Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T01:03:45.033Z] Evaluating 4KHZXgt2ULVSn1vZ11hJJh1CFXZnLW4BjRA6s8Bzpump
+[2026-08-17T01:03:46.041Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T01:09:47.075Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T01:09:47.075Z] Evaluating FefUTaE7ghQuiUoA3GWXApQXet44Es21zhhF1JZNpump
+[2026-08-17T01:09:47.810Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T01:14:59.542Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T01:14:59.543Z] Evaluating FrvMGNZhHknuPNysbYqU2ASm1GLABFJKA7iqMKszpump
+[2026-08-17T01:15:00.127Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T01:21:54.123Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T01:21:54.124Z] Evaluating 4etoZaNKFjM8v2DrByfskDkcrd6NFu6xHSdRDNFJpump
+[2026-08-17T01:21:55.699Z]   Holders: top1 30.5%
+[2026-08-17T01:22:44.741Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T01:22:44.741Z] Evaluating 4zATr5cpTCZMrojRrBGfmtBMdHsiR8YXEgRm9ZLJec3U
+[2026-08-17T01:22:45.460Z]   DexScreener: age 99999.0h > 72h
+[2026-08-17T01:23:59.757Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T01:23:59.757Z] Evaluating 2NAthPZabshTJVEpmaA8otiDeqh3n8RFtWhsvREb5jaM
+[2026-08-17T01:24:00.516Z]   DexScreener: age 4428.8h > 72h
+[2026-08-17T01:33:58.758Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T01:33:58.758Z] Evaluating fpKcazZbb9e31XLjYH6AfBApejLm18U7hZPzJAnpump
+[2026-08-17T01:34:00.403Z] ★ CANDIDATE [score=65] fpKcazZbb9e31XLjYH6AfBApejLm18U7hZPzJAnpump | LP $39591 | age 0.5h | https://dexscreener.com/solana/611xwufu7876pjprxkmfgjyo6xt5rvvrepa7zyn7mq1b
+[2026-08-17T01:47:51.753Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T01:47:51.753Z] Evaluating GqqEFhQf9Yqj3mR1h5XTcum1USpkfUUUeFWCagFepump
+[2026-08-17T01:47:53.079Z] ★ CANDIDATE [score=45] GqqEFhQf9Yqj3mR1h5XTcum1USpkfUUUeFWCagFepump | LP $22095 | age 0.3h | https://dexscreener.com/solana/frevffn7ueqnupgngjd1uimkuuk7a4jkzuvdvv2sjjs9
+[2026-08-17T01:51:44.235Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T01:51:44.235Z] Evaluating 4UwqaSJ9JjNW3DQnNqE9s6vjLUsb2hnqvBFHDDt5pump
+[2026-08-17T01:51:46.116Z] ★ CANDIDATE [score=70] 4UwqaSJ9JjNW3DQnNqE9s6vjLUsb2hnqvBFHDDt5pump | LP $17922 | age 0.2h | https://dexscreener.com/solana/dpjlqop4wufok4cpgperwmuzs4racxt3ghslka5qze4j
+[2026-08-17T01:53:54.747Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T01:53:54.747Z] Evaluating 9Q4CMBow6jKdUDn5uJfjtuc1oYuQTFkiniKbQrzipump
+[2026-08-17T01:53:56.458Z]   Holders: top1 40.8%
+[2026-08-17T01:57:46.770Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T01:57:46.770Z] Evaluating D414E831eNtWfKS7yuHkJBGKPp17BxHAGsvVb8m8pump
+[2026-08-17T01:57:48.556Z] ★ CANDIDATE [score=70] D414E831eNtWfKS7yuHkJBGKPp17BxHAGsvVb8m8pump | LP $14842 | age 0.1h | https://dexscreener.com/solana/dzaf9d8ghvphv3ycfdg38ryyryhszrvdawgvebtdjsmv
+[2026-08-17T02:07:41.931Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T02:07:41.931Z] Evaluating EHDxyy1dv2a8WBcCD724kzyM1kAuJgCwbv9DdKp3FLoW
+[2026-08-17T02:07:43.915Z]   Holders: top1 27.6%
+[2026-08-17T02:09:51.936Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T02:09:51.936Z] Evaluating chubPmgCKQaGXYjAbmPmmUUMcyAZZD3H2oYFDWjD5eP
+[2026-08-17T02:09:52.810Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T02:21:59.549Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T02:21:59.549Z] Evaluating 7bQPvAEKUxYaakCAff2QNtmm1hrnyf1rnaxbZcNxpump
+[2026-08-17T02:22:00.230Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T02:25:01.080Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T02:25:01.080Z] Evaluating Cr5U5mMBd5eHEM6XXngoq69TKwnyWX4C3GXdBjC4pump
+[2026-08-17T02:25:01.965Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T02:29:44.936Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T02:29:44.936Z] Evaluating HrDAWUu4F4nGHaouEwjtqs8rGqgEFCgrC9cAQUi3pump
+[2026-08-17T02:29:46.769Z] ★ CANDIDATE [score=70] HrDAWUu4F4nGHaouEwjtqs8rGqgEFCgrC9cAQUi3pump | LP $13484 | age 0.0h | https://dexscreener.com/solana/ax3bbr7qjtudq4axayvcse1uftz5khydqr9geughdn8r
+[2026-08-17T02:32:43.560Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T02:32:43.560Z] Evaluating BzBBj17uQnPh8YdntfZLN5iDrJjUsQomcAxjQQspump
+[2026-08-17T02:32:45.348Z] ★ CANDIDATE [score=60] BzBBj17uQnPh8YdntfZLN5iDrJjUsQomcAxjQQspump | LP $11017 | age 0.5h | https://dexscreener.com/solana/hkhd19mcd8f6vw79kiugwbyzozvntju6aynlkuxbcj57
+[2026-08-17T02:43:02.150Z] DexScreener discovery: 4 mint(s) queued
+[2026-08-17T02:43:02.150Z] Evaluating HbtgmL4pLsfqrqhBvF65EoAhkbtSESswqfFmFmEGpump
+[2026-08-17T02:43:03.176Z]   DexScreener: age 185.5h > 72h
+[2026-08-17T02:43:03.542Z] Evaluating 37oKrLCbMoRYfXc5cjqebsQSCLcWj3j6fqRCiFu8DVui
+[2026-08-17T02:43:04.057Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T02:43:04.259Z] Evaluating 7L3P6BCGFakmJC7KAiPb5pz2CtAWFnLB8uwdVX1xpump
+[2026-08-17T02:43:04.745Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T02:43:04.963Z] Evaluating 341ZXP8KJqWzGdRXpWUVF1eUsBzDdM7ZLMKiPeXL8Qjf
+[2026-08-17T02:43:06.266Z]   Holders: top1 31.2%
+[2026-08-17T03:03:05.212Z] DexScreener discovery: 4 mint(s) queued
+[2026-08-17T03:03:05.212Z] Evaluating AFc8ewrQ2FkZisYm5j7qAYQ3yyCVAZ8p1vGmyxgqpump
+[2026-08-17T03:03:07.399Z] ★ CANDIDATE [score=90] AFc8ewrQ2FkZisYm5j7qAYQ3yyCVAZ8p1vGmyxgqpump | LP $48813 | age 0.3h | https://dexscreener.com/solana/hionpkm1bejzqdzeq9mhddtsebjtcjuj3su1yvaxagxk
+[2026-08-17T03:03:07.600Z] Evaluating GDsogTEtXS1RD4PJcfDu3jYevDzRha6mUqiHAmcopump
+[2026-08-17T03:03:08.823Z] ★ CANDIDATE [score=60] GDsogTEtXS1RD4PJcfDu3jYevDzRha6mUqiHAmcopump | LP $12901 | age 0.1h | https://dexscreener.com/solana/3hdt72ckqrsb42mjcm9yc6arbgzvynhrwqnwlryrfysm
+[2026-08-17T03:03:09.058Z] Evaluating KY9Fs18ohqrBBGpuGUbKQFmUT6nTcMNVRQBhArBpump
+[2026-08-17T03:03:09.466Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T03:03:09.681Z] Evaluating QkHEXtm3pQZWD8xbYVvmLjAvzH4C1g9JTLY4xh9pump
+[2026-08-17T03:03:10.105Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T03:12:02.268Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T03:12:02.269Z] Evaluating FGabueSAiEqcqLn7bmnHMk44UyHMgANvTVzvVMqapump
+[2026-08-17T03:12:03.034Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T03:15:02.511Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T03:15:02.511Z] Evaluating 6mJerznGA3n5YXzHj4oRHu4kpWGihhFHFcTEXi3spump
+[2026-08-17T03:15:03.193Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T03:19:44.533Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T03:19:44.533Z] Evaluating AA9ec4yxF9FJ76d3xkvsLZmcU8jfMGgXh1LrkU7ppump
+[2026-08-17T03:19:45.168Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T03:26:07.306Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T03:26:07.306Z] Evaluating F6qENj1yjzmzs5avfRPaZmutRFLNh6ez4q4BCGBUpump
+[2026-08-17T03:26:07.989Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T03:35:04.448Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T03:35:04.448Z] Evaluating Zvcvqs2d3T6BZspW3LfjCxkBnx2PdSWbAyp5x63pump
+[2026-08-17T03:35:06.099Z]   Holders: top10 63.8%
+[2026-08-17T03:45:50.992Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T03:45:50.992Z] Evaluating 7sE8LvRAgmZqzvMAKPk21chXUFJjvQ9pdvkQbSsHpump
+[2026-08-17T03:45:51.810Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T03:48:52.946Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-17T03:48:52.946Z] Evaluating FTyYaLaMqZzS3EhfkPu8GE37rEYNedRLiwXG3CvVpump
+[2026-08-17T03:48:53.668Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T03:48:53.880Z] Evaluating FaiUnfK4Ascwr1ebaofVTgQKA2qJHXftsu7pjmBnpump
+[2026-08-17T03:48:54.320Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T03:54:02.481Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T03:54:02.481Z] Evaluating DUR1JiV7TTnQRj3J4j3GBd429d4fk82Bm55pJuXZpump
+[2026-08-17T03:54:03.200Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T03:59:05.728Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-17T03:59:05.728Z] Evaluating 5J5LdQzsFyQjHV3XVqog1K6SzCvDdFFpCzJLxukepump
+[2026-08-17T03:59:06.486Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T03:59:06.693Z] Evaluating BD81TKATxfYcCK1rw1uZBSWC9Yk3nJEFiRsnHpi6pump
+[2026-08-17T03:59:07.980Z] ★ CANDIDATE [score=70] BD81TKATxfYcCK1rw1uZBSWC9Yk3nJEFiRsnHpi6pump | LP $22986 | age 0.2h | https://dexscreener.com/solana/aaxxowg9rhcm3ir1ksp7aidep2ds2enf4ny9zbbbhyap
+[2026-08-17T03:59:56.345Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T03:59:56.346Z] Evaluating D5575GebJTPTUxRZKnD2ciaehoarkedbPPMBftygpump
+[2026-08-17T03:59:57.063Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T04:08:06.247Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T04:08:06.247Z] Evaluating 97i41rp3S1dFTwMav1LJEf8Rkvh4ycSvNCTFAuYUpump
+[2026-08-17T04:08:07.151Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T04:11:03.701Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T04:11:03.701Z] Evaluating q6LrmTs7Kknc9M7MdJffmTNxynqhce7pkwr6hLZpump
+[2026-08-17T04:11:05.346Z] ★ CANDIDATE [score=70] q6LrmTs7Kknc9M7MdJffmTNxynqhce7pkwr6hLZpump | LP $13627 | age 0.0h | https://dexscreener.com/solana/2uyddkmxgtwkyxhexbrmaxcd9b3znwvymu1va4gv1j7x
+[2026-08-17T04:16:44.309Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T04:16:44.309Z] Evaluating J5vsc17G5Uv5kCWTNUndGDoGurvwnE55cy6gxvjFpump
+[2026-08-17T04:16:45.142Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T04:21:01.526Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-17T04:21:01.527Z] Evaluating DTciwxGuxGvytDP1wWfk154BRePdsSeP1dU1PNNkpump
+[2026-08-17T04:21:03.167Z] ★ CANDIDATE [score=45] DTciwxGuxGvytDP1wWfk154BRePdsSeP1dU1PNNkpump | LP $22149 | age 0.4h | https://dexscreener.com/solana/7eedjnbjduor9ruoyyh41l2uj6crk9bfwjqx5bafg3v4
+[2026-08-17T04:21:03.376Z] Evaluating 9MofWLqPfD7HrRukUStU2Dero1eawZQp8c5G1JD8pump
+[2026-08-17T04:21:03.786Z]   DexScreener: age 74.0h > 72h
+[2026-08-17T04:29:09.477Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T04:29:09.477Z] Evaluating AZjXh5g3kbv7Cu9ANebJWG2D41edFsr1j9iLbPFsE7w6
+[2026-08-17T04:29:10.055Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T04:33:53.330Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-17T04:33:53.330Z] Evaluating 8quKU62mUE2efJ6bGKKjvgpEaMooajniPe8zMAgHpump
+[2026-08-17T04:33:54.113Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T04:33:54.316Z] Evaluating AHQgUmpYL2BD9veum4ChSfxETJCcBoovWuUp8pQJpump
+[2026-08-17T04:33:54.654Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T04:36:56.392Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T04:36:56.392Z] Evaluating 6VExhFJceQENY2GUgoGf9sXVST75mw4ovXYt8DaNpump
+[2026-08-17T04:36:57.992Z] ★ CANDIDATE [score=90] 6VExhFJceQENY2GUgoGf9sXVST75mw4ovXYt8DaNpump | LP $37902 | age 0.3h | https://dexscreener.com/solana/csdetrhavtan9puhvadxwvqjzbin4bv2pkiongpjj1lj
+[2026-08-17T04:42:54.408Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-17T04:42:54.408Z] Evaluating 3nygpzZgA56y613bReiXdRLujJqiY7AkMTCFR5eNpump
+[2026-08-17T04:42:55.109Z]   DexScreener: age 87.8h > 72h
+[2026-08-17T04:42:55.311Z] Evaluating Hn9Lng1ir5gZrjrmRyVWkddTUJVfH3ceATeM7ANrpump
+[2026-08-17T04:42:55.703Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T04:45:54.600Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T04:45:54.600Z] Evaluating DfnVbcj9fCakbNc8mprsQscCkCVx8xmjjzAHoopKpump
+[2026-08-17T04:45:55.299Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T04:49:46.218Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T04:49:46.218Z] Evaluating 5RLE4yuLtyEoECazVe877XyJfcYdNVv8meuDYRx4pump
+[2026-08-17T04:49:46.907Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T04:51:55.368Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T04:51:55.368Z] Evaluating 9JJAnX75nadfDep572z31huah1otpS1KHy4g7wFtpump
+[2026-08-17T04:51:56.773Z] ★ CANDIDATE [score=60] 9JJAnX75nadfDep572z31huah1otpS1KHy4g7wFtpump | LP $21924 | age 0.4h | https://dexscreener.com/solana/da6ksuln9haaknuuz4vu5fmttilueuwfokcwphvbie9i
+[2026-08-17T04:52:45.336Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T04:52:45.336Z] Evaluating 5rPXUGrfY2egqUiVqYZ93bsoYwtETModTCvb64JNpump
+[2026-08-17T04:52:46.007Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T05:00:56.748Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T05:00:56.748Z] Evaluating 549CD7fGQTEnHphZyQboNzaVb4LQ5CQBE3Cn8Xyepump
+[2026-08-17T05:00:57.486Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T05:03:56.857Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-17T05:03:56.858Z] Evaluating 8cLiJV9aenYSyh9NVy5XUt5z4yv2bGT3nMhgswhipump
+[2026-08-17T05:03:58.548Z] ★ CANDIDATE [score=70] 8cLiJV9aenYSyh9NVy5XUt5z4yv2bGT3nMhgswhipump | LP $23789 | age 0.2h | https://dexscreener.com/solana/arlwke5fzkbs36a95bnyvg3cbhnfv4lfhjv16fwfi4ba
+[2026-08-17T05:03:58.764Z] Evaluating AMKWrjvhZJsVKcXWLHMLPcSrd3wSspgAsqmWTp3Spump
+[2026-08-17T05:03:59.120Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T05:07:48.082Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T05:07:48.082Z] Evaluating chubQXbtH73Uo81gv8qZU2yUrjkUR5d7mieVtC35vMy
+[2026-08-17T05:07:48.840Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T05:13:48.840Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T05:13:48.840Z] Evaluating 2WDjdDj6W1PJpQ8ea4nXZ95VFKNko18DtGYzqUuipump
+[2026-08-17T05:13:50.754Z]   Holders: top1 65.7%
+[2026-08-17T05:16:50.425Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T05:16:50.425Z] Evaluating GKHkvy91JSnxyrxovoMbczVszJkJdvrdBBjXmsTDpump
+[2026-08-17T05:16:52.171Z] ★ CANDIDATE [score=70] GKHkvy91JSnxyrxovoMbczVszJkJdvrdBBjXmsTDpump | LP $24956 | age 0.8h | https://dexscreener.com/solana/h18llta3cugktd8hvbew1avjd5ry8cajneptcupsup27
+[2026-08-17T05:21:05.891Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T05:21:05.892Z] Evaluating 6T6APFk43FoZjNXSsBRhMYyVinsntzTGAUpZeP8hpump
+[2026-08-17T05:21:06.612Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T05:25:49.245Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T05:25:49.246Z] Evaluating 8cxP4VNnwN29mEBp1KG6kA6TmaHDnRP3QnKiQV8Kpump
+[2026-08-17T05:25:50.031Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T05:27:06.237Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T05:27:06.237Z] Evaluating 7N95tSnuHZsybcSi1F7r6XwsQC5XET1sHUnwNgVHpump
+[2026-08-17T05:27:06.920Z]   DexScreener: age 9669.1h > 72h
+[2026-08-17T05:30:54.423Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T05:30:54.423Z] Evaluating BxcJp66TNRohNK7i5qu1KsoZva35VWpXDfGWDe1Cpump
+[2026-08-17T05:30:55.183Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T05:33:04.476Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T05:33:04.476Z] Evaluating 4veBqJ8TFFyZBepbP8DmMeUgUosbRhCtd7PwewWmpump
+[2026-08-17T05:33:06.165Z] ★ CANDIDATE [score=90] 4veBqJ8TFFyZBepbP8DmMeUgUosbRhCtd7PwewWmpump | LP $26477 | age 1.6h | https://dexscreener.com/solana/825wzrlw3jt3zpbhbzwukhgzbetzigkgcbpzbekpzxah
+[2026-08-17T05:34:49.156Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T05:34:49.156Z] Evaluating 54QWBZpWodzdgkwcQoZacRiZFzCuiwNQMwhz94wApump
+[2026-08-17T05:34:49.911Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T05:39:05.001Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T05:39:05.002Z] Evaluating DiVyAUmabC8rhPn1QyEpxT62K5u1en3KMRhai4yEpump
+[2026-08-17T05:39:05.764Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T05:46:54.036Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T05:46:54.036Z] Evaluating 9HvMq8kM58Xwfo3DCoihSxvbZ8eM4vJMod58a6axpump
+[2026-08-17T05:46:55.885Z] ★ CANDIDATE [score=90] 9HvMq8kM58Xwfo3DCoihSxvbZ8eM4vJMod58a6axpump | LP $31966 | age 0.5h | https://dexscreener.com/solana/an7w1ncazchjazgy6yt68ms7gnb5wwfptux9spsxbk83
+[2026-08-17T05:53:49.995Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T05:53:49.995Z] Evaluating DV86hQNxZ73yfAavEAf5j2hwicuqqMWLzvYJArZipump
+[2026-08-17T05:53:50.941Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T05:55:08.400Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T05:55:08.401Z] Evaluating 7dbHfitcEMH4aeaBPpXPKdyvabsk6H6yXr4Dsv7Mpump
+[2026-08-17T05:55:09.337Z]   DexScreener: age 4636.9h > 72h
+[2026-08-17T05:59:47.513Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T05:59:47.513Z] Evaluating 8N9C1mzFyV6dkC6TXpxVLz5qKcZMuuBqRcjk7GRKpump
+[2026-08-17T05:59:48.231Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T06:08:52.472Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T06:08:52.472Z] Evaluating HHXnWpG33G9LGRviNTJH5KKsfHcf2a6AASVZLpKfpump
+[2026-08-17T06:08:53.308Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T06:17:08.286Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T06:17:08.286Z] Evaluating GhfH7n1oebMrPcyQWJGDJLnQUGVmVsfvYYecuj7dpump
+[2026-08-17T06:17:09.212Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T06:21:01.909Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-17T06:21:01.909Z] Evaluating 2XnafBNf7tyARPZgGXy5tZZkJRvvY2iBPLgNgCShpump
+[2026-08-17T06:21:02.685Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T06:21:02.895Z] Evaluating H891tY3Kk2iZRGEkpo3m7umg3R6uV8NFP1Gc3kAYpump
+[2026-08-17T06:21:04.136Z] ★ CANDIDATE [score=60] H891tY3Kk2iZRGEkpo3m7umg3R6uV8NFP1Gc3kAYpump | LP $12720 | age 0.1h | https://dexscreener.com/solana/4hwavcfe5vrsc2xhmybcxovx6qmhtzjuwztahqiafsbb
+[2026-08-17T06:35:12.793Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T06:35:12.794Z] Evaluating 6FV4ef9UWPDSFYFLT5RU3TxhkMomuJXzNWtrSCXtpump
+[2026-08-17T06:35:13.693Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T06:36:03.987Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T06:36:03.987Z] Evaluating 9F7nHt95yiAHgjyc3iNwfHaM83R9WcmNVX4tfsQfpump
+[2026-08-17T06:36:04.705Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T06:36:29.117Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T06:36:29.117Z] Evaluating 23heHsHYxfVkXWjgdSPxVDUWMFarPhuSFyeXrqFHpump
+[2026-08-17T06:36:29.987Z]   DexScreener: age 419.6h > 72h
+[2026-08-17T06:49:48.048Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T06:49:48.048Z] Evaluating FYqWB95ggm8bjCrPxnQ5GSNCgXxWKydyGzfasW17pump
+[2026-08-17T06:49:48.780Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T06:52:52.502Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T06:52:52.502Z] Evaluating 1EaGq2PtdsxhZicYsrMXcVMLXMdyqpbUNQJjfZBpump
+[2026-08-17T06:52:53.262Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T06:55:50.203Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T06:55:50.204Z] Evaluating 3k1KJRvWL74MhpL5izXBdsJy45PwNRJFdRPDjMJ2pump
+[2026-08-17T06:55:52.091Z] ★ CANDIDATE [score=70] 3k1KJRvWL74MhpL5izXBdsJy45PwNRJFdRPDjMJ2pump | LP $21435 | age 0.2h | https://dexscreener.com/solana/iisq6m6wzvqbswxb226futhfkw8rznrizs8z9tm6kcz
+[2026-08-17T07:01:02.847Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T07:01:02.847Z] Evaluating D72zrgwrjMuzXLHZWET4ibC4hDcnFheM9SzqDrJ3pump
+[2026-08-17T07:01:04.452Z] ★ CANDIDATE [score=65] D72zrgwrjMuzXLHZWET4ibC4hDcnFheM9SzqDrJ3pump | LP $35279 | age 0.6h | https://dexscreener.com/solana/9lykhyxs16nrrvjb6wxvvljkjxmva4v1ccwehdd4p5og
+[2026-08-17T07:10:50.819Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T07:10:50.819Z] Evaluating 25xuAXGmtrPg68tmYA2B219mzaatcbRwnVayD4Vzpump
+[2026-08-17T07:10:51.510Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T07:15:06.500Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T07:15:06.500Z] Evaluating Bs7GvsceuqHvqXww5rFsC5cwAKYy5ouQkh8g7dPDpump
+[2026-08-17T07:15:07.253Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T07:32:08.942Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T07:32:08.942Z] Evaluating 9jXsou9R8LxH64Tv5636sJDtFG1kGPBpvennW2g5pump
+[2026-08-17T07:32:10.864Z]   Holders: top1 29.3%
+[2026-08-17T07:33:01.484Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-17T07:33:01.485Z] Evaluating rifytRM4V8jPC46yBJK9wSR6kXLY3D5uNUWiR9opump
+[2026-08-17T07:33:03.011Z] ★ CANDIDATE [score=65] rifytRM4V8jPC46yBJK9wSR6kXLY3D5uNUWiR9opump | LP $52513 | age 0.9h | https://dexscreener.com/solana/ja3jrhlwb1p4ugmue49ssujdf2sy8nrtd5o1s1x3wc2c
+[2026-08-17T07:33:03.219Z] Evaluating Hfomz7hrBftK5iCMPps3mUy3femf3ncsb3YmY8Trpump
+[2026-08-17T07:33:03.458Z]   DexScreener: vol/liq 28.83 (wash)
+[2026-08-17T07:41:09.859Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T07:41:09.859Z] Evaluating FZW2bCcWdkFz8PrQgFFKKWB7S1ksbFTxVrjNyeSZpump
+[2026-08-17T07:41:11.484Z] ★ CANDIDATE [score=45] FZW2bCcWdkFz8PrQgFFKKWB7S1ksbFTxVrjNyeSZpump | LP $12962 | age 0.2h | https://dexscreener.com/solana/8w6g2sdjkmggfq1pmixx4uzzqhsurpj7dvwyxwk47mi
+[2026-08-17T07:44:14.619Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T07:44:14.619Z] Evaluating 26AGawgZRYQZ72xED5tBCAq7M9MeFRLkSYrsfEoPpump
+[2026-08-17T07:44:15.284Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T07:53:12.401Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T07:53:12.401Z] Evaluating 3YVtMtwqXFDd8GZWQGrXCtZHKM679YU2wTM1HGaDpump
+[2026-08-17T07:53:14.162Z] ★ CANDIDATE [score=65] 3YVtMtwqXFDd8GZWQGrXCtZHKM679YU2wTM1HGaDpump | LP $42322 | age 0.6h | https://dexscreener.com/solana/9yhsod3jvm2pwozaqvj6bgha6yuphdd1nbakzzua6ka
+[2026-08-17T07:59:09.997Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-17T07:59:09.997Z] Evaluating 3qtPNYXXYaKjUDitQQ85WMRjHSoxvHdJ1PERkuvppump
+[2026-08-17T07:59:10.646Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T07:59:10.860Z] Evaluating 8XebXXtASV7EesYpi4nAQoqFavcp8K1wCCpHpRNXs17T
+[2026-08-17T07:59:11.932Z]   Holders: top1 35.1%
+[2026-08-17T08:03:54.289Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T08:03:54.289Z] Evaluating F71UFpKG9LnEhMaZLAk11vMawL7sHZUCbGpRi8egMycd
+[2026-08-17T08:03:56.016Z] ★ CANDIDATE [score=70] F71UFpKG9LnEhMaZLAk11vMawL7sHZUCbGpRi8egMycd | LP $10471 | age 0.0h | https://dexscreener.com/solana/azpdx7xogryu7gcqfiz1zbg8hjx5dhbedah8pcptv164
+[2026-08-17T08:09:55.609Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T08:09:55.609Z] Evaluating URCMXaDNHNDEWpPMHK64aRcE25xQoo66GbT1kt8pump
+[2026-08-17T08:09:57.144Z] ★ CANDIDATE [score=45] URCMXaDNHNDEWpPMHK64aRcE25xQoo66GbT1kt8pump | LP $11492 | age 14.0h | https://dexscreener.com/solana/cabm9dzmtd8ygfspy6us1kq1ux51mr5mxpz8bggbznzo
+[2026-08-17T08:18:06.490Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T08:18:06.490Z] Evaluating ELA8BS4b5VcacV6ZFkigA3RfPAKqRimoLNaPaNixpump
+[2026-08-17T08:18:07.208Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T08:18:58.014Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T08:18:58.014Z] Evaluating DfvXmcXWo8VYzXKLV5CLfFKUWzC7RmUAMKBhFqxNpump
+[2026-08-17T08:18:59.539Z] ★ CANDIDATE [score=70] DfvXmcXWo8VYzXKLV5CLfFKUWzC7RmUAMKBhFqxNpump | LP $15174 | age 0.1h | https://dexscreener.com/solana/4duybfzx5n5tjheag1bzwzpvfvglgeke4mbywvcbkhcf
+[2026-08-17T08:22:53.530Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T08:22:53.530Z] Evaluating BCzthLYKHnzugZXu78WK5UiQCV8bbv86tfhr6KgZpump
+[2026-08-17T08:22:54.228Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T08:25:01.299Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T08:25:01.299Z] Evaluating AV99oek7yV4yURvRCCv4efMdUnLCo8WWJVjcwWNnpump
+[2026-08-17T08:25:01.907Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T08:28:03.392Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T08:28:03.393Z] Evaluating 7mYSGRZu3QoURA6GDcZYbuu3UaeXvNirzFenm1WLpump
+[2026-08-17T08:28:04.026Z]   DexScreener: vol/liq 0.20 (dead)
+[2026-08-17T08:30:09.465Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T08:30:09.465Z] Evaluating 2zNna2mai5FMb2twA1p6zqUgKn3QmwNzYGjsDtnLpump
+[2026-08-17T08:30:10.338Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T08:34:03.731Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T08:34:03.732Z] Evaluating J2qwFJhWfAjR1yXC8ZaNh9HmcK5P8NXVoP2WjAAtpump
+[2026-08-17T08:34:04.626Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T08:34:56.457Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T08:34:56.457Z] Evaluating 777aJqLnuaoWc2z4dvsEEvHJrUdmbpT7Wb7ZZgz9swU8
+[2026-08-17T08:34:57.210Z]   DexScreener: vol/liq 36.44 (wash)
+[2026-08-17T08:36:14.003Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-17T08:36:14.003Z] Evaluating 6PCWjmiD13BzweRHkJyCWyWLLJ6w8it2fbfikd2Hpump
+[2026-08-17T08:36:15.456Z] ★ CANDIDATE [score=35] 6PCWjmiD13BzweRHkJyCWyWLLJ6w8it2fbfikd2Hpump | LP $12480 | age 0.0h | https://dexscreener.com/solana/4tpaujdlreus7eaooh6abyzerp5j6kktg6kkjpnph61w
+[2026-08-17T08:36:15.674Z] Evaluating 4VNYa1tVN6gZjNDVHjaDKuLZAWYiyn4ohtoaU8i5pump
+[2026-08-17T08:36:16.056Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T08:51:09.584Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T08:51:09.585Z] Evaluating 2e1RHfYkxo4HbHQgNHWt8gsFuEvpnb7L6VYSgeHopump
+[2026-08-17T08:51:10.312Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T08:54:59.855Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T08:54:59.855Z] Evaluating yK2X7cXdttZJYGkQgU1V8z1pZvZk5SfkJcCcwibneBx
+[2026-08-17T08:55:00.597Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T08:57:10.818Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-17T08:57:10.818Z] Evaluating FtmLD95j5J5z8dcv15GSPgn37rUrjxKtYzFm4YTXpump
+[2026-08-17T08:57:11.593Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T08:57:11.805Z] Evaluating 6CwmQUiSKtPC2xLX8MHs56tnVMFtV7Bi6jbYEnYwpump
+[2026-08-17T08:57:12.054Z]   DexScreener: vol/liq 0.43 (dead)
+[2026-08-17T09:06:12.370Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-17T09:06:12.371Z] Evaluating 7P5dgt66VHbZYtvowqj4jJrC9d7PZ592fjXKyK99pump
+[2026-08-17T09:06:13.078Z]   DexScreener: age 395.5h > 72h
+[2026-08-17T09:06:13.294Z] Evaluating 7xnCSSnPSBQd7cQkjY84LxGw3LZbYtQNQjMbCmKCpump
+[2026-08-17T09:06:13.659Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T09:10:58.191Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T09:10:58.191Z] Evaluating 79BsFnNsBZh8xz2HYT147tcbP8m6wdpRNX9qGaRRMGJQ
+[2026-08-17T09:10:59.886Z] ★ CANDIDATE [score=60] 79BsFnNsBZh8xz2HYT147tcbP8m6wdpRNX9qGaRRMGJQ | LP $11653 | age 0.1h | https://dexscreener.com/solana/csovjdunnoveyqinkjeefqqf8lwbavkxytw1kxf5fude
+[2026-08-17T09:13:56.733Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T09:13:56.733Z] Evaluating DjPyA2brjL9RZoEewzkc1w2x4Emd2HFLvcWUfPLtpump
+[2026-08-17T09:13:57.576Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T09:16:05.668Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T09:16:05.668Z] Evaluating 429J6dsHn3BnaHn1DxHbvaqC4Z9CuR55Zw2T12GDpump
+[2026-08-17T09:16:06.365Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T09:25:09.163Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T09:25:09.163Z] Evaluating HdcWHVAAr98w5ppoS4AdjHuJmDuYyMeVW5H9G4aQpump
+[2026-08-17T09:25:09.889Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T09:27:17.660Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T09:27:17.660Z] Evaluating HxNNTGqNmTMNP38VseuDAQMEjdFydd8xxUf2um2spump
+[2026-08-17T09:27:18.380Z]   DexScreener: age 1458.5h > 72h
+[2026-08-17T09:28:09.861Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T09:28:09.861Z] Evaluating 2qxpFzCodeq9gcAEM7Q3eMAqBDC4bFJGoxrEsZewpump
+[2026-08-17T09:28:10.576Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T09:30:16.298Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T09:30:16.298Z] Evaluating 9yeBLVw83Ewk4dcrDBLstcmy51SCTVWTRhbeH6cmpump
+[2026-08-17T09:30:17.767Z]   Holders: top1 66.1%
+[2026-08-17T09:34:12.230Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T09:34:12.231Z] Evaluating 9cRujSWK3eRhnFFatb5hxZTzzPPXeNfs6sqbXem7pump
+[2026-08-17T09:34:13.319Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T09:38:55.649Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-17T09:38:55.649Z] Evaluating 74PZh7mGUKpXRp3X44qLun6PHJcg6BQEno1PTVsppump
+[2026-08-17T09:38:56.371Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T09:38:56.582Z] Evaluating m1RV3M8Ze5BgcNeN6M3RK1onaWMuZyeXerrg5e4pump
+[2026-08-17T09:38:57.880Z]   Holders: top1 27.6%
+[2026-08-17T09:49:15.698Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T09:49:15.698Z] Evaluating 7SecUUhKVK8qGGFC1vfGytNkxeMhaTPz1eQ8mJMxpump
+[2026-08-17T09:49:16.620Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T10:03:57.188Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T10:03:57.189Z] Evaluating Bhn6ihWs2JKwsZ7ahErSdwSNcKq3uog8BKoVBrexpump
+[2026-08-17T10:03:57.983Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T10:05:14.689Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T10:05:14.689Z] Evaluating 8EcetXyZyWRahN1Q4pCuwZjBce9zNGcDd5ZPsncxpump
+[2026-08-17T10:05:15.458Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T10:09:08.224Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-17T10:09:08.224Z] Evaluating D69PwUPU1BrpFpFGUW2SPS9eWazTYXhyKMqPAYJBpump
+[2026-08-17T10:09:08.955Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T10:09:09.170Z] Evaluating G71tWLN8xkYzjubbibcN9xksa72Pzx5NBonrqbC4pump
+[2026-08-17T10:09:09.572Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T10:11:15.706Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T10:11:15.706Z] Evaluating 44w72kJxD69qUVUqXjwtajUi5tCoCzUkRgSrizhjpump
+[2026-08-17T10:11:17.483Z] ★ CANDIDATE [score=45] 44w72kJxD69qUVUqXjwtajUi5tCoCzUkRgSrizhjpump | LP $18394 | age 47.2h | https://dexscreener.com/solana/83dfun6lakshlba7mztysfmqsjzz4bsf7y48qklxvjxr
+[2026-08-17T10:28:02.558Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T10:28:02.558Z] Evaluating gFuGhsNM4CcJDR9YoLi7fJ7DuGE9XSLxPNDCGBgpump
+[2026-08-17T10:28:05.261Z] ★ CANDIDATE [score=60] gFuGhsNM4CcJDR9YoLi7fJ7DuGE9XSLxPNDCGBgpump | LP $10318 | age 0.1h | https://dexscreener.com/solana/3xhmqb8haznqdyg9uqcsupvvendzuuyohtgplyme7yuc
+[2026-08-17T10:33:15.109Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T10:33:15.109Z] Evaluating 2bSK6LQTtUgWbRFKdZp1x9AoYjFKqYzF6aE2XfUvpump
+[2026-08-17T10:33:16.144Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T10:34:58.463Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T10:34:58.464Z] Evaluating EQVsLL3ixyaeB1pB7UNAebaHw6TyVAahJXMa7vY23bnz
+[2026-08-17T10:34:59.287Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T10:41:18.775Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T10:41:18.776Z] Evaluating 2qms14EPCFsqSUrca11qrD2nGpFyCNoXznA9fpwzpump
+[2026-08-17T10:41:19.791Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T10:42:11.132Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T10:42:11.132Z] Evaluating 6ZAc1fx5wDvhi1694ZYNwv6v89sJN82fLhrkHTpmpump
+[2026-08-17T10:42:12.172Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T10:46:08.025Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T10:46:08.025Z] Evaluating GKukgK2TbFjiRNrHxtoYyLQyuKi7yz747gUEkHmtpump
+[2026-08-17T10:46:09.990Z] ★ CANDIDATE [score=70] GKukgK2TbFjiRNrHxtoYyLQyuKi7yz747gUEkHmtpump | LP $14255 | age 0.4h | https://dexscreener.com/solana/8paqcarxz4szc3kgmtg56d1ks3yno4o8gm4nqnvkpgfv
+[2026-08-17T10:49:07.615Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T10:49:07.615Z] Evaluating GEGGX5zHx85YR4qAEw5AfS95PFqJ3fq4dQxTXVjNpump
+[2026-08-17T10:49:08.737Z]   DexScreener: age 10583.1h > 72h
+[2026-08-17T10:51:14.852Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T10:51:14.853Z] Evaluating 5hyq1w4ATErYGNFUomWjWDRVUBmaQVG2rvDdx5hUpump
+[2026-08-17T10:51:16.294Z] ★ CANDIDATE [score=45] 5hyq1w4ATErYGNFUomWjWDRVUBmaQVG2rvDdx5hUpump | LP $19869 | age 0.1h | https://dexscreener.com/solana/6bkthhccq1dwa1zbslnwocaqxi9ajefdmazstdafqiw8
+[2026-08-17T10:55:58.311Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T10:55:58.311Z] Evaluating 3jXN45of7VognPyc6AFsJDrxtvVXRXg1aagZ64awpump
+[2026-08-17T10:55:58.977Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T11:02:57.695Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T11:02:57.695Z] Evaluating H71v11cDZhr7CvtGtk3EE5v1iyeE8vCKGFH26buhpump
+[2026-08-17T11:02:58.413Z]   DexScreener: vol/liq 44.50 (wash)
+[2026-08-17T11:05:06.261Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-17T11:05:06.262Z] Evaluating 9Nx7NM2aauMefJXfRLiDnSVmWfVEQhGs7UjubH8epump
+[2026-08-17T11:05:06.964Z]   DexScreener: vol/liq 0.04 (dead)
+[2026-08-17T11:05:07.169Z] Evaluating 2U1Uq9ymbyekLXC4PknReGJso2uaeoBpCPCjow9Npump
+[2026-08-17T11:05:08.515Z] ★ CANDIDATE [score=60] 2U1Uq9ymbyekLXC4PknReGJso2uaeoBpCPCjow9Npump | LP $13477 | age 0.4h | https://dexscreener.com/solana/3hnxcuk9qj94srk1qaweufsqcuzanmnj5qdfjzwgez3c
+[2026-08-17T11:10:14.736Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T11:10:14.736Z] Evaluating 88K381FiQMP7Au5y2CYZyQc4aPpGCu4wwkcAzQ4pump
+[2026-08-17T11:10:17.080Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T11:11:55.022Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T11:11:55.022Z] Evaluating HqqcMs574vWEQajX7F1SmXQBmjDnhqQLBYw6wkmEpump
+[2026-08-17T11:11:56.566Z] ★ CANDIDATE [score=35] HqqcMs574vWEQajX7F1SmXQBmjDnhqQLBYw6wkmEpump | LP $11964 | age 0.6h | https://dexscreener.com/solana/8tznnzvfnv8wwwdvbzqw2tts4si2eixyyvbz5znnnhsv
+[2026-08-17T11:13:10.548Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T11:13:10.548Z] Evaluating F9wnoZ8uPSZoonm1SuGFpaLoz6YCM56yzyU2cP2Ypump
+[2026-08-17T11:13:11.438Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T11:16:07.908Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T11:16:07.908Z] Evaluating 8xCifCWrZRm8B4PrksdDACbYsD3sBXBe8JpyvjXhpump
+[2026-08-17T11:16:09.013Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T11:18:17.150Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T11:18:17.152Z] Evaluating 6kbScQfUJzuffh1dfUSbkUSTwpFetvy2Pgvx6p9ipump
+[2026-08-17T11:18:18.163Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T11:20:00.766Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T11:20:00.767Z] Evaluating 5JGeMtCXHncMYB3eakBAQhbvc5npkobJ7GGT3Xiapump
+[2026-08-17T11:20:01.567Z]   DexScreener: age 285.3h > 72h
+[2026-08-17T11:21:17.146Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T11:21:17.146Z] Evaluating EAMhaWNfDzQqS4VgkhopEq8K3afipDVHUFx4HDZWpump
+[2026-08-17T11:21:18.023Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T11:23:47.985Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T11:23:47.985Z] Evaluating 8M6XV3C51SNwgQ79squEEqNwXsD8pS2xJN8djYy6xMfJ
+[2026-08-17T11:23:50.470Z] ★ CANDIDATE [score=70] 8M6XV3C51SNwgQ79squEEqNwXsD8pS2xJN8djYy6xMfJ | LP $20883 | age 0.2h | https://dexscreener.com/solana/hmn9yukdvd7lvssfsmvxq3p17642vukktbkagdqpiibk
+[2026-08-17T11:28:59.137Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T11:28:59.137Z] Evaluating 5nTdKXtGFcGbBHwUB7EsnEyBZ1ThGMGVofZAVpkjpump
+[2026-08-17T11:29:00.944Z]   Holders: top10 75.8%
+[2026-08-17T11:30:18.750Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T11:30:18.750Z] Evaluating DCBUQ8TkXgRWMvEZ8gwbPfnucH41rxRoVVXWcDUfpump
+[2026-08-17T11:30:19.747Z]   DexScreener: vol/liq 0.07 (dead)
+[2026-08-17T11:36:18.758Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T11:36:18.758Z] Evaluating 7cqJtW69eKUnzb7VetAfbbmmuUTZiruZXcx1wpQepump
+[2026-08-17T11:36:19.613Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T11:49:12.288Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-17T11:49:12.288Z] Evaluating 6CKhUprVhcQV4gKoMgSvtuCsQq6fWQGbYgB5FqTvpump
+[2026-08-17T11:49:13.282Z]   DexScreener: vol/liq 0.47 (dead)
+[2026-08-17T11:49:13.491Z] Evaluating LFEJTxJ9yi6ojGDFpjbGfABLbH55Fc3oEK8syJJpump
+[2026-08-17T11:49:13.951Z]   DexScreener: age 117.0h > 72h
+[2026-08-17T11:50:55.547Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T11:50:55.548Z] Evaluating 5wpvCAWGoe8mVQ82Ace7KQ2gQe8nm5QLthNRghBepump
+[2026-08-17T11:50:57.362Z]   Holders: top1 74.1%

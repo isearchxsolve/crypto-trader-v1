@@ -13,6 +13,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import { evaluateAbsoluteDailyLoss } from '../server/production-safety';
 
 describe('Smoke: main file import boundary', () => {
   it('routes.ts imports cleanly and exposes all core exports', async () => {
@@ -76,5 +77,15 @@ describe('Smoke: main file import boundary', () => {
     } catch (err: any) {
       expect.fail(`runtime-hooks module failed to import: ${err.message}`);
     }
+  });
+
+  // Fifty fast boundary checks keep the CI smoke job representative of the
+  // money-protection layer without contacting any network provider.
+  it.each(Array.from({ length: 50 }, (_, index) => ({
+    limit: 10 ** (-6 + index / 20),
+    multiplier: index % 5 === 0 ? -1 : index % 2 === 0 ? -0.999999 : -1.000001,
+  })))('smoke breaker threshold %#', ({ limit, multiplier }) => {
+    const result = evaluateAbsoluteDailyLoss({ netDailyPnlSol: limit * multiplier, maxDailyLossSol: limit });
+    expect(result.halt).toBe(multiplier <= -1);
   });
 });

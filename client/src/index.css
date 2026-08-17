@@ -38,6 +38,16 @@
   
   --font-mono: 'JetBrains Mono', monospace;
   --font-display: 'Rajdhani', sans-serif;
+
+  /* Beast-mode tier tokens */
+  --tier-cold: 215 25% 47%;
+  --tier-warm: 38 92% 50%;
+  --tier-hot: 0 84% 60%;
+  --tier-rocket: 258 90% 66%;
+  --tier-moonshot: 142 70% 50%;
+  --mode-sniper: 271 91% 65%;
+  --mode-edge: 217 91% 60%;
+  --mode-explosive: 25 95% 53%;
 }
 
 @layer base {
@@ -78,10 +88,49 @@
   .border-glow {
     box-shadow: 0 0 10px rgba(38, 217, 98, 0.2), inset 0 0 5px rgba(38, 217, 98, 0.1);
   }
+
   .glass-panel {
     @apply bg-card/50 backdrop-blur-md border border-white/5;
   }
   .neon-border {
     @apply border border-primary/50 shadow-[0_0_15px_-3px_rgba(38,217,98,0.3)];
+  }
+
+  /* Beast-mode tier utilities */
+  .tier-cold { color: hsl(var(--tier-cold)); }
+  .tier-warm { color: hsl(var(--tier-warm)); }
+  .tier-hot { color: hsl(var(--tier-hot)); }
+  .tier-rocket { color: hsl(var(--tier-rocket)); }
+  .tier-moonshot { color: hsl(var(--tier-moonshot)); }
+  .mode-sniper { color: hsl(var(--mode-sniper)); }
+  .mode-edge { color: hsl(var(--mode-edge)); }
+  .mode-explosive { color: hsl(var(--mode-explosive)); }
+
+  .tier-glow-cold { text-shadow: 0 0 8px hsl(var(--tier-cold) / 0.5); }
+  .tier-glow-warm { text-shadow: 0 0 8px hsl(var(--tier-warm) / 0.5); }
+  .tier-glow-hot { text-shadow: 0 0 8px hsl(var(--tier-hot) / 0.5); }
+  .tier-glow-rocket { text-shadow: 0 0 10px hsl(var(--tier-rocket) / 0.6); }
+  .tier-glow-moonshot { text-shadow: 0 0 12px hsl(var(--tier-moonshot) / 0.7); }
+
+  .breaker-tripped {
+    animation: breaker-pulse 1s ease-in-out infinite;
+  }
+
+  @keyframes breaker-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 hsl(var(--destructive) / 0.4); }
+    50% { box-shadow: 0 0 20px 4px hsl(var(--destructive) / 0.2); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse, .animate-ping, .breaker-tripped {
+    animation: none !important;
+  }
+  .text-glow, .tier-glow-cold, .tier-glow-warm, .tier-glow-hot,
+  .tier-glow-rocket, .tier-glow-moonshot {
+    text-shadow: none !important;
+  }
+  .neon-border {
+    box-shadow: none !important;
   }
 }

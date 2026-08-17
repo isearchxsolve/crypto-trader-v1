@@ -22,11 +22,17 @@ let lastError: string | null = null;
 
 /** True when the failsafe has halted trading. Check at the top of every buy. */
 export function isHalted(): boolean { return fs.existsSync(HALT_FILE); }
+/** Persist a fail-closed halt that every entry path can observe. */
+export function haltTrading(reason: string): void {
+  fs.writeFileSync(HALT_FILE, reason.slice(0, 500), { encoding: "utf8", mode: 0o600 });
+}
 export function setUnhealthy(reason: string): void { healthy = false; lastError = reason; }
 export function setHealthy(): void { healthy = true; lastError = null; }
 /** Snapshot for a health endpoint to return. "halted" stays 200 (intentional state). */
 export function healthState() {
-  return { status: healthy ? "ok" : "error", halted: isHalted(), lastError, ts: Date.now() };
+  // Do not expose raw exception text from a public endpoint: provider URLs can
+  // contain credentials. The detail remains available only to redacted logging.
+  return { status: healthy ? "ok" : "error", halted: isHalted(), hasError: lastError !== null, lastError, ts: Date.now() };
 }
 
 /** Heartbeat ONLY -- use when your app already serves /api/health. */

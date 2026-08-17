@@ -2,6 +2,8 @@ import pino from 'pino';
 import pretty from 'pino-pretty';
 import fs from 'fs';
 import path from 'path';
+import { randomUUID } from 'crypto';
+import { redactLogMeta, redactText } from './production-safety';
 
 const logDir = path.resolve(process.cwd(), 'logs');
 if (!fs.existsSync(logDir)) {
@@ -26,10 +28,11 @@ try {
 const fileStream = pino.destination({ dest: logFile, sync: !isProd });
 
 let logger: pino.Logger;
+const runId = process.env.RUN_ID || randomUUID();
 
 if (isProd) {
   // Production: file-only to avoid EPIPE when process is backgrounded
-  logger = pino({ level: process.env.LOG_LEVEL || 'info' }, fileStream);
+  logger = pino({ level: process.env.LOG_LEVEL || 'info', base: { service: 'solana-paper-engine', runId } }, fileStream);
 } else {
   // Development: JSON to file + pretty to console.
   // IMPORTANT: use the in-process pretty() stream (NOT pino.transport), which
@@ -42,15 +45,25 @@ if (isProd) {
     translateTime: 'HH:MM:ss',
     ignore: 'pid,hostname',
   });
-  logger = pino({ level: process.env.LOG_LEVEL || 'info' }, pino.multistream([
+  logger = pino({ level: process.env.LOG_LEVEL || 'info', base: { service: 'solana-paper-engine', runId } }, pino.multistream([
     { stream: fileStream },
     { stream: prettyStream },
   ]));
 }
 
 export const log = {
-  info: (msg: string, meta?: object) => logger.info(meta, msg),
-  warn: (msg: string, meta?: object) => logger.warn(meta, msg),
-  error: (msg: string, meta?: object) => logger.error(meta, msg),
-  debug: (msg: string, meta?: object) => logger.debug(meta, msg),
+  info: (msg: string, meta?: object) => logger.info(redactLogMeta(meta), redactText(msg)),
+  warn: (msg: string, meta?: object) => logger.warn(redactLogMeta(meta), redactText(msg)),
+  error: (msg: string, meta?: object) => logger.error(redactLogMeta(meta), redactText(msg)),
+  debug: (msg: string, meta?: object) => logger.debug(redactLogMeta(meta), redactText(msg)),
 };
+
+/** Apply the same redaction to legacy direct-console diagnostics at process boot. */
+export function installConsoleRedaction(): void {
+  for (const level of ["log", "info", "warn", "error", "debug"] as const) {
+    const original = console[level].bind(console);
+    console[level] = (...args: unknown[]) => original(...args.map(value =>
+      typeof value === 'string' ? redactText(value) : redactLogMeta(value),
+    ));
+  }
+}

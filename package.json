@@ -18,8 +18,9 @@
     "db:push": "drizzle-kit push",
     "test:smoke": "vitest run tests/smoke.test.ts",
     "test:integration": "vitest run server tests",
+    "test:safety": "node --test test/failsafe.test.cjs tests/restart-loop.test.cjs",
     "test:performance": "vitest run server/performance-monster.test.ts",
-    "gate": "npm run check && npm run test:smoke && npm run test:integration",
+    "gate": "npm run check && npm run test:smoke && npm run test:integration && npm run test:safety",
     "test": "npm run gate",
     "resume": "node -e 'require(\"fs\").unlinkSync(\".HALT\"); require(\"fs\").unlinkSync(\".PANIC\");'"
   },

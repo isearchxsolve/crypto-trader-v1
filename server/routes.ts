@@ -7,7 +7,8 @@ import { checkAdvancedFilters } from "./advanced_filters";
 import { JupiterService, createJupiterService, SOL_MINT, MIN_FEE_BUFFER_SOL,getLatencyLog, clearLatencyLog  } from "./jupiter";
 import { existsSync, readFileSync, writeFileSync, promises as fsPromises } from "fs";
 import { join as pathJoin } from "path";
-import { startHeartbeat, isHalted, healthState } from "./runtime-hooks";
+import { startHeartbeat, isHalted, healthState, haltTrading, setHealthy, setUnhealthy } from "./runtime-hooks";
+import { evaluateAbsoluteDailyLoss, readPositiveNumber } from "./production-safety";
 import { setDefaultResultOrder as __setDnsResultOrder } from "node:dns";
 // =============================================================
 // GOLD STANDARD HUNTER
@@ -1418,6 +1419,17 @@ async function checkCircuitBreakers(): Promise<{ canTrade: boolean; reason: stri
   const unrealized  = await getOpenUnrealizedPnl();
   const netDailyPnl = dailyPnlSol + unrealized;
   const totalLoss   = netDailyPnl < 0 ? Math.abs(netDailyPnl) : 0;
+  const absoluteLoss = evaluateAbsoluteDailyLoss({
+    netDailyPnlSol: netDailyPnl,
+    maxDailyLossSol: readPositiveNumber(process.env, "MAX_DAILY_LOSS_SOL"),
+  });
+  if (absoluteLoss.halt) {
+    const reason = absoluteLoss.reason!;
+    circuitBreakerActive = true;
+    try { haltTrading(reason); } catch (error) { log.error("Could not persist daily-loss HALT", { error: String(error) }); }
+    triggerFlightToSafety();
+    return { canTrade: false, reason };
+  }
   const dailyLossPct = dailyStartBalance > 0 ? (totalLoss / dailyStartBalance) * 100 : 0;
   const effDailyLossLimitPct = dailyStartBalance < 0.10 ? engineSettings.microDailyLossLimitPct : engineSettings.dailyLossLimitPct; // FIX(daily-loss-micro): micro wallets use the wider, trade-meaningful cap; per-trade cost gate + liquidity floor + loss cooldown remain the primary protections.
   if (dailyLossPct >= effDailyLossLimitPct) {
@@ -5982,27 +5994,36 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   await initStorageWrapper();
   await storage.seedInitialData();
   startHeartbeat();            // FAILSAFE: write .heartbeat every 5s so the watchdog sees liveness
-  await startTradingEngine();
+
+  // Register liveness before the network-heavy engine boot. Previously the
+  // HTTP listener waited for price/RPC/ML initialization, so a slow provider
+  // made the watchdog observe `fetch failed` instead of a bounded ready state.
+  let engineReady = false;
+  app.get("/api/health", async (_req, res) => {
+    const status = await storage.getBotStatus().catch(() => ({ tradingMode: "paper", isRunning: false, walletBalance: "0" }));
+    const openTrades = await storage.getOpenTrades().catch(() => []);
+    const snapshot = healthState();
+    res.status(snapshot.status === "ok" ? 200 : 503).json({
+      status: snapshot.status,
+      readiness: engineReady ? "ready" : "starting",
+      halted: snapshot.halted,
+      mode: status.tradingMode || "paper",
+      isRunning: status.isRunning ?? false,
+      openPositions: openTrades.length,
+      uptimeSeconds: Math.floor((Date.now() - engineStartTime) / 1000),
+      timestamp: new Date().toISOString(),
+    });
+  });
+  void startTradingEngine().then(() => {
+    engineReady = true;
+    setHealthy();
+    log.info("Trading engine initialization complete");
+  }).catch((error: unknown) => {
+    setUnhealthy("engine initialization failure");
+    log.error("Trading engine initialization failed", { error: String(error) });
+  });
 
   app.get(api.status.get.path, async (req, res) => { res.json(await storage.getBotStatus()); });
-  app.get("/api/health", async (_req, res) => {
-    try {
-      const status = await storage.getBotStatus().catch(() => ({ tradingMode: "paper", isRunning: false, walletBalance: "0" }));
-      const openTrades = await storage.getOpenTrades().catch(() => []);
-      res.json({
-        status: healthState().status,
-        halted: isHalted(),
-        mode: status.tradingMode || "paper",
-        isRunning: status.isRunning ?? false,
-        walletBalance: status.walletBalance || "0",
-        openPositions: openTrades.length,
-        uptimeSeconds: Math.floor((Date.now() - engineStartTime) / 1000),
-        timestamp: new Date().toISOString(),
-      });
-    } catch (e) {
-      res.status(503).json({ status: "unhealthy", error: String(e) });
-    }
-  });
   app.get(api.trades.list.path, async (req, res) => { res.json(await storage.getTrades()); });
   app.get(api.candidates.list.path, async (req, res) => { res.json(await storage.getCandidates()); });
   app.get("/api/candidates/live", async (_req, res) => { res.json(liveCandidatesCache); });

@@ -17,6 +17,7 @@ import { fileURLToPath } from "url";
 import { dirname, resolve } from "path";
 import { existsSync, appendFileSync, mkdirSync, writeFileSync, readFileSync } from "fs";
 import http from "http";
+import restartLoop from "./restart-loop.cjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -37,6 +38,8 @@ const MAX_RESTART_DELAY_MS = 30_000;
 const INITIAL_RESTART_DELAY_MS = 1_000;
 const MAX_CRASHES_BEFORE_GIVEUP = 5;
 const CRASH_WINDOW_MS = 5 * 60_000;
+const MAX_RESTART_LOOP = Number.parseInt(process.env.MAX_RESTART_LOOP || "8", 10);
+const HALT_FILE = resolve(__dirname, ".HALT");
 const FAILOVER_TO_PAPER_AFTER_CRASHES = 3;
 const BALANCE_DROP_ALERT_PCT = 50;
 const BALANCE_SYNC_INTERVAL_MS = 60_000;
@@ -347,6 +350,22 @@ function startServer() {
 
   const now = Date.now();
   const recentCrashes = crashCount > 0 && now - lastCrashTime < CRASH_WINDOW_MS;
+  const restartDecision = restartLoop.evaluateRestartLoop({
+    crashCount,
+    lastCrashTime,
+    now,
+    maxRestarts: MAX_RESTART_LOOP,
+    windowMs: CRASH_WINDOW_MS,
+  });
+
+  if (restartDecision.halt) {
+    const msg = `MAX_RESTART_LOOP reached (${restartDecision.crashCount}/${restartDecision.maxRestarts} crashes in <${CRASH_WINDOW_MS / 60000}min). Writing HALT and stopping.`;
+    try { writeFileSync(HALT_FILE, "MAX_RESTART_LOOP"); } catch {}
+    log(`[SUPERVISOR] ${msg}`);
+    sendAlert(msg, "CRITICAL");
+    emergencySellAll("max_restart_loop").then(() => shutdown("MAX_RESTART_LOOP"));
+    return;
+  }
 
   if (recentCrashes && crashCount >= MAX_CRASHES_BEFORE_GIVEUP) {
     const msg = `Crash threshold exceeded (${crashCount} crashes in <${CRASH_WINDOW_MS / 60000}min). Stopping auto-restart.`;
