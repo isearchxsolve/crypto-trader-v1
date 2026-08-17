@@ -7,7 +7,7 @@ import { checkAdvancedFilters } from "./advanced_filters";
 import { JupiterService, createJupiterService, SOL_MINT, MIN_FEE_BUFFER_SOL,getLatencyLog, clearLatencyLog  } from "./jupiter";
 import { existsSync, readFileSync, writeFileSync, promises as fsPromises } from "fs";
 import { join as pathJoin } from "path";
-import { isHalted, haltTrading, setHealthy, setUnhealthy, setReady } from "./runtime-hooks";
+import { isHalted, healthState, haltTrading, setHealthy, setUnhealthy, setReady } from "./runtime-hooks";
 import { evaluateAbsoluteDailyLoss, readPositiveNumber } from "./production-safety";
 import { setDefaultResultOrder as __setDnsResultOrder } from "node:dns";
 // =============================================================
@@ -2029,7 +2029,7 @@ const HELIUS_TAPE_TIMEOUT_MS = Number(process.env.HELIUS_TAPE_TIMEOUT_MS) || 8_0
 const HELIUS_TAPE_LIMIT = Number(process.env.HELIUS_TAPE_LIMIT) || 100;
 const heliusTapeCache = new Map<string, { data: SmartMoneySignal; ts: number }>();
 let _heliusTapeKeys: string[] | null = null;
-let _heliusTapeIdx = 0; let _heliusDiagTs = 0; function _heliusDiag(m: string){ const n = Date.now(); if (n - _heliusDiagTs > 15000) { _heliusDiagTs = n; console.warn("[HELIUS-TAPE-DIAG] " + m); } } const _heliusKeyCooldown = new Map<string, number>(); const _heliusKey429Streak = new Map<string, number>(); function _markHeliusKey429(k: string, body?: string){ const base = Number(process.env.HELIUS_KEY_COOLDOWN_MS) || 60000; const cap = Number(process.env.HELIUS_KEY_COOLDOWN_MAX_MS) || 1800000; const exhausted = !!body && /max usage|quota|credit|monthly|daily limit/i.test(body); let ms: number; if (exhausted) { ms = Number(process.env.HELIUS_KEY_EXHAUSTED_MS) || 21600000; _heliusKey429Streak.set(k, 0); } else { const streak = (_heliusKey429Streak.get(k) || 0) + 1; _heliusKey429Streak.set(k, streak); ms = Math.min(base * Math.pow(2, streak - 1), cap); } _heliusKeyCooldown.set(k, Date.now() + ms); _heliusDiag("key cooled " + Math.round(ms/1000) + "s after 429 (" + (exhausted ? "QUOTA-EXHAUSTED" : "rate-limit") + ", key ..." + k.slice(-4) + ")"); } function _markHeliusKeyOk(k: string){ if (_heliusKey429Streak.get(k)) _heliusKey429Streak.set(k, 0); } // ── GLOBAL HELIUS RATE LIMITER (shared across all consumers: tape, new-mint, RPC pool) ──
+let _heliusTapeIdx = 0; let _heliusDiagTs = 0; function _heliusDiag(m: string){ const n = Date.now(); if (n - _heliusDiagTs > 15000) { _heliusDiagTs = n; console.warn("[HELIUS-TAPE-DIAG] " + m); } } const _heliusKeyCooldown = new Map<string, number>(); const _heliusKey429Streak = new Map<string, number>(); function _markHeliusKey429(k: string, body?: string){ const base = Number(process.env.HELIUS_KEY_COOLDOWN_MS) || 60000; const cap = Number(process.env.HELIUS_KEY_COOLDOWN_MAX_MS) || 1800000; const exhausted = !!body && /max usage|quota|credit|monthly|daily limit/i.test(body); let ms: number; if (exhausted) { ms = Number(process.env.HELIUS_KEY_EXHAUSTED_MS) || 21600000; _heliusKey429Streak.set(k, 0); } else { const streak = (_heliusKey429Streak.get(k) || 0) + 1; _heliusKey429Streak.set(k, streak); ms = Math.min(base * Math.pow(2, streak - 1), cap); } _heliusKeyCooldown.set(k, Date.now() + ms); _heliusDiag("provider credential cooled " + Math.round(ms/1000) + "s after 429 (" + (exhausted ? "QUOTA-EXHAUSTED" : "rate-limit") + ")"); } function _markHeliusKeyOk(k: string){ if (_heliusKey429Streak.get(k)) _heliusKey429Streak.set(k, 0); } // ── GLOBAL HELIUS RATE LIMITER (shared across all consumers: tape, new-mint, RPC pool) ──
 const _heliusGlobalCallLog: number[] = [];
 const HELIUS_GLOBAL_RPM = Number(process.env.HELIUS_GLOBAL_RPM) || 100;
 function _heliusRateGate(): boolean {
@@ -3426,7 +3426,7 @@ async function runScanCycle() {
     // remaining hours are net positive. Skip new entries during the negative session; open
     // positions keep being managed by the exit cascade. Disable with PROFIT_SESSION_FILTER=false.
     if (!inProfitSession(new Date(), process.env)) {
-      console.log(`[PROFIT-SESSION] Skipping new entries — current UTC hour is in the data-negative session (block: ${process.env.PROFIT_SESSION_BLOCK_HOURS ?? "0-5,20,21"}). Set PROFIT_SESSION_FILTER=false to disable.`);
+      console.log("[PROFIT-SESSION] Skipping new entries because the configured UTC session is blocked. Set PROFIT_SESSION_FILTER=false to disable.");
       return;
     }
 
@@ -5914,10 +5914,12 @@ async function startTradingEngine() {
   const _micro = getEdgeParams(true), _normal = getEdgeParams(false);
   console.log(`[CONFIG] EDGE micro: minEdge=${_micro.minEdgePct}% buffer=${_micro.buffer}% | normal: minEdge=${_normal.minEdgePct}% buffer=${_normal.buffer}%`);
   console.log("[CONFIG] Starting trading engine...");
-  jupiterService = createJupiterService();
+  // Paper mode must never even construct a signing service: a locally present
+  // wallet variable is not permission to query, log, or transact with a wallet.
+  jupiterService = _bootMode === "live" ? createJupiterService() : null;
   if (jupiterService) {
-    const walletBal = await jupiterService.getWalletBalance().catch(() => 0);
-    console.log(`[ENGINE] Live trading ENABLED | wallet: ${jupiterService.walletAddress} | balance: ${walletBal.toFixed(4)} SOL`);
+    await jupiterService.getWalletBalance().catch(() => 0);
+    console.log("[ENGINE] Live transaction service connected; wallet identity and balance are redacted.");
     await syncLiveTokenBalances();
 
     // --> ADD THIS LINE RIGHT HERE <--
@@ -5995,6 +5997,28 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   await storage.seedInitialData();
   // The listener and heartbeat are installed by index.ts before this database
   // setup starts, so an unavailable DB cannot make the watchdog see fetch failed.
+  // Keep a route-local version for direct route integration tests and alternate
+  // hosts that call registerRoutes without the production bootstrap. In the
+  // normal engine the earlier index.ts route owns this path.
+  app.get("/api/health", async (_req, res) => {
+    const [status, openTrades] = await Promise.all([
+      storage.getBotStatus().catch(() => ({ tradingMode: "paper", isRunning: false })),
+      storage.getOpenTrades().catch(() => []),
+    ]);
+    const snapshot = healthState();
+    // This route is the direct-registerRoutes fallback used by test hosts; the
+    // production bootstrap owns the canonical status code before boot begins.
+    res.status(200).json({
+      status: snapshot.status,
+      readiness: snapshot.ready ? "ready" : "starting",
+      halted: snapshot.halted,
+      mode: status.tradingMode === "live" ? "live" : "paper",
+      isRunning: status.isRunning ?? false,
+      openPositions: openTrades.length,
+      uptimeSeconds: Math.floor((Date.now() - engineStartTime) / 1000),
+      timestamp: new Date().toISOString(),
+    });
+  });
   void startTradingEngine().then(() => {
     setReady();
     setHealthy();

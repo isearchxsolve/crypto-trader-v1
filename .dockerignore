@@ -1,0 +1,13 @@
+.git
+node_modules
+dist
+logs
+incidents
+.env
+.env.*
+!.env.example
+*.log
+*.pid
+.HALT
+.PANIC
+.heartbeat
