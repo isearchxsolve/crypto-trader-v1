@@ -14,9 +14,13 @@ import { setDefaultResultOrder as __setDnsResultOrder } from "node:dns";
 // =============================================================
 import { runHunter, checkMint, pollSignalFeed, pollTrending, pollTrenches, pollSmartMoneyFeed, pollDexScreenerFeeds } from './gold_standard_hunter';
 import { evaluateNewMintGate, GateInput } from './lib/newMintGate';
+import { inProfitSession, getObjectiveEvMargin, evaluateEvAdmission, peakMomentumMultiplier } from './lib/profit-session';
 import { evaluateBeastDiscovery, BeastDiscoveryInput } from './beast-scanner';
 import { evaluateBeastSafety, combineBeastWithSoft, BEAST_MIN_LP_LOCK_PCT } from './beast-safety';
 import { evaluateBeastExit, BEAST_TP_LADDER, tierForMultiplier, BeastBagTier } from './beast-exit';
+import { logDecision, getEvents, observability } from './observability';
+import type { DecisionKind } from './observability';
+import { providerRegistry } from './provider-circuit-breaker';
 
 // AI-FIX(2026-06-24): Force IPv4-first DNS resolution. Node 17+ defaults to "verbatim"
 // (AAAA/IPv6 returned first); on hosts without working IPv6, undici fetch() to
@@ -276,6 +280,15 @@ export async function executeEnhancedEdgeFilter(
       ? hardBlockReasons.join(';')
       : `EDGE_SCORE_TOE_LOW(${ctx.edgeScore.toFixed(1)}<${minimumViableScore})`;
 
+    logDecision({
+      kind: 'DISCOVERY_VETO',
+      correlationId: observability.getCorrelationId(),
+      tokenAddress: signal.mint,
+      reason: detailedReason,
+      payload: { edgeScore: ctx.edgeScore, checks: ctx.checks, isMicroWallet },
+      source: 'executeEnhancedEdgeFilter',
+    });
+
     return {
       allowed: false,
       reason: detailedReason,
@@ -292,6 +305,15 @@ export async function executeEnhancedEdgeFilter(
     `checks:${passSignals.join(',')} | ` +
     `finalEdge:${finalEdgeScore.toFixed(1)}${boostFactor !== 1.0 ? ` +${(boostFactor - 1) * 100}% boost` : ''}`
   );
+
+  logDecision({
+    kind: 'DISCOVERY_ADMIT',
+    correlationId: observability.getCorrelationId(),
+    tokenAddress: signal.mint,
+    reason: `ENHANCED_EDGE_PASS(edge=${edgePct.toFixed(2)}%,score_${finalEdgeScore.toFixed(1)})`,
+    payload: { edgeScore: finalEdgeScore, rawEdge: edgePct, boostFactor, checks: passSignals, isMicroWallet },
+    source: 'executeEnhancedEdgeFilter',
+  });
 
   return {
     allowed: true,
@@ -453,7 +475,7 @@ let engineSettings = {
   // -- SNIPER Mode Calibration --
   // OPTIMIZED-2026-07-17: Lowered to 80 (real tokens max at 82). Aligns with EDGE_POCKET's
   // score>=80 gate. Tokens 80-84 now enter SNIPER mode instead of being rejected.
-  sniperMinScore: 80, 
+  sniperMinScore: 80,
   // OPTIMIZED-2026-07-17: sniperMinBuyPressure=0.60 ensures genuine buyer dominance.
   // Higher buy pressure = higher probability of continued upward momentum = higher win rate.
   sniperMinBuyPressure: 0.60,
@@ -2156,7 +2178,7 @@ function whaleScore(sig: SmartMoneySignal | null): number {
   return sc;
 }
 
-function scoreToken(
+export function scoreToken(
   pair: DexScreenerPair,
   mlPrediction?: { pumpProb: number; dumpRisk: number; version: string } | null,
   isMicroWallet: boolean = false,
@@ -2195,10 +2217,18 @@ function scoreToken(
     combinedScore = Math.max(0, Math.min(100, Math.round(score * engineSettings.scoreWeight + mlAdjusted * engineSettings.mlWeight)));
   }
   const smScore = smartMoney ? smartMoneyScore(smartMoney) : 0;
-  if (smScore > 0) combinedScore = Math.min(100, combinedScore + smScore);
   // LAYER-3b WHALE-FOLLOWING: whale accumulation bonus / distribution penalty (can be negative).
   const whScore = smartMoney ? whaleScore(smartMoney) : 0;
-  combinedScore = Math.max(0, Math.min(100, combinedScore + whScore));
+  // SCORE-INVERSION-FIX (2026-08-16): shadow data (n=208) showed score>=80 was the WORST band
+  // (-8.14%/trade) while score 50 was positive (+4.06%). Root cause: sm (+30) and whale (+25)
+  // bonuses were additive and uncapped, so a mediocre raw-59 token with a hot tape hit 92 and
+  // cleared every gate (live: $BILLI raw=59 sm=30 wh=12 -> 92 -> entered -> -12.09%). Tape hype
+  // is CONFIRMATION, not admission: cap the combined positive bonus (env SM_WHALE_BONUS_CAP).
+  // Negative whale-distribution penalties still pass through uncapped.
+  const _smWhaleCap = Number(process.env.SM_WHALE_BONUS_CAP ?? 15);
+  const _smWhaleBonus = Math.min(_smWhaleCap, Math.max(0, smScore) + Math.max(0, whScore));
+  const _smWhalePenalty = Math.min(0, whScore);
+  combinedScore = Math.max(0, Math.min(100, combinedScore + _smWhaleBonus + _smWhalePenalty));
   // LAYER-2 (literature): organic-quality band — penalize out-of-band market cap and over-aged structure.
   const __mc = pair.marketCap || pair.fdv || 0;
   const __ageSec = pair.pairCreatedAt ? (Date.now() - pair.pairCreatedAt) / 1000 : 0;
@@ -2208,7 +2238,11 @@ function scoreToken(
   // parabolic earn the identical 15 points. Discount the *already-extended* move so the engine stops
   // buying tops — root cause of the $?/$nibbly score-65 losses (px5m 54%/72%). Healthy breakouts
   // (<=25%) are untouched; >25% soft -6; >40% hard -12 (clearly parabolic / chasing).
-  const __pxPen = priceChange5m > 120 ? -18 : priceChange5m > 80 ? -10 : (priceChange5m >= 10 && priceChange5m <= 15) ? 4 : (priceChange5m > 15 && priceChange5m <= 40) ? 0 : 0;  // CONVERGENCE-FIX: +10-15 = early momentum (reward). +15-40 = already extended (no bonus, not a penalty either). Old +10-40 rewarded 40% pumps = blowoff top entry.
+  // SCORE-INVERSION-FIX (2026-08-16): shadow data showed score>=80 was the worst band (-8.14%/trade).
+  // The old guard left (15%, 40%] completely unpunished — a +30% 5m move (a local top) scored the
+  // same as a fresh breakout. Now monotonic: >25% -6, >40% -12, >80% -18, >120% -24. The +10..15%
+  // early-momentum bonus is preserved.
+  const __pxPen = priceChange5m > 120 ? -24 : priceChange5m > 80 ? -18 : priceChange5m > 40 ? -12 : priceChange5m > 25 ? -6 : (priceChange5m >= 10 && priceChange5m <= 15) ? 4 : 0;
   combinedScore = Math.max(0, Math.min(100, combinedScore + __pxPen));
   // READ-ONLY DIAGNOSTIC: per-component score anatomy so we can tell an *early* 65 (age/momentum-driven)
   // from a *late* 65 (price-spike-driven). Toggle with SCORE_BREAKDOWN_LOG=false.
@@ -2329,9 +2363,16 @@ function estimateRealisticPeakPct(liqUsd: number): number {
   if (liqUsd < 100000) return 10;
   return 12;
 }
-function objectiveNetEvPct(liqUsd: number, sizeSol: number, solPriceUsd = cachedSolPriceUsd, score = 0): { peakPct: number; grossCapturePct: number; rtCostPct: number; netEvPct: number } {
+function objectiveNetEvPct(liqUsd: number, sizeSol: number, solPriceUsd = cachedSolPriceUsd, score = 0, px5m = 0, volMom = 0): { peakPct: number; grossCapturePct: number; rtCostPct: number; netEvPct: number } {
   const costs = calcTransactionCosts(liqUsd, sizeSol, solPriceUsd);
-  const peakPct = estimateRealisticPeakPct(liqUsd);
+  // PEAK-MOMENTUM (2026-08-17): the liquidity-only peak was a FANTASY peak — it handed
+  // 10-12% forward peaks to flat/falling pools that never ran, admitting $XERIS (px5m +0.5%,
+  // real peak +0.07%, exit -3.49%) and $DEGS (px5m -5.1%, real peak 0.00%, exit -10.81%).
+  // A forward peak is only achievable if the token is moving NOW, so the peak is discounted
+  // by live momentum (1.0 at the proven edge bar px5m>=10 & volMom>=2.0, -> 0 when flat/falling).
+  // Fail-closed: callers that omit momentum get multiplier 0 -> negative net EV -> reject.
+  const momentumMult = peakMomentumMultiplier(px5m, volMom);
+  const peakPct = estimateRealisticPeakPct(liqUsd) * momentumMult;
   // Conviction scales expected capture. Calibrated so the ONLY empirically-
   // positive pocket (SNIPER/score>=80 at ~$25k liq = +3.06%/trade realized,
   // n=63) clears the gate, while the documented-negative 70-79 band does not.
@@ -3367,7 +3408,16 @@ async function runScanCycle() {
     const boughtThisCycle = new Set<string>();
     let currentOpenCount = openTrades.length, tradesThisCycle = 0;
     let totalExposureSol = openTrades.reduce((sum, t) => sum + parseFloat(t.amount || "0"), 0);
-    
+
+    // PROFIT-SESSION FILTER (2026-08-16): shadow ledger (n=208) showed UTC hours 0-5 and
+    // 20-21 produced ~82% of the net loss (win rate 0-33%, avg -3 to -18%/trade) while the
+    // remaining hours are net positive. Skip new entries during the negative session; open
+    // positions keep being managed by the exit cascade. Disable with PROFIT_SESSION_FILTER=false.
+    if (!inProfitSession(new Date(), process.env)) {
+      console.log(`[PROFIT-SESSION] Skipping new entries — current UTC hour is in the data-negative session (block: ${process.env.PROFIT_SESSION_BLOCK_HOURS ?? "0-5,20,21"}). Set PROFIT_SESSION_FILTER=false to disable.`);
+      return;
+    }
+
     for (const candidate of candidates) {
       const addr = candidate.tokenAddress;
       if (boughtThisCycle.has(addr)) continue;
@@ -3606,12 +3656,45 @@ async function runScanCycle() {
       }
 
       const effectiveMinScore = getEffectiveMinScore(isMicroWallet);
-      
-      if (!scoring.qualifiedMode || scoring.combinedScore < effectiveMinScore || scoring.sizeSol < cycleMinSize) {
+
+      // EV-ADMISSION ARBITER (2026-08-17): the descriptive score bars were calibrated on the
+      // old hype-inflated scores. After the score-inversion fix capped the sm/whale bonus, honest
+      // scores dropped ~20-30 pts and the bars became unreachable — the engine recorded ZERO
+      // trades. Meanwhile the deep-liquidity tokens the EV model says ARE profitable (low
+      // round-trip cost, sustainable forward capture) score modestly and never reached the
+      // objective-EV gate downstream. Let forward net expectancy admit deep-liquidity,
+      // mode-qualified tokens past the descriptive bars. Thin pools stay rejected here AND by the
+      // objective gate, so cost-traps cannot sneak in. Disable with EV_ADMISSION=false.
+      const _evAdmLiq = pair.liquidity?.usd || 0;
+      const _evAdmPx5m = Number((scoring.metrics as any)?.priceChange5m ?? candidate.priceChange5m ?? 0);
+      const _evAdmVolMom = Number((scoring.metrics as any)?.volMomentum ?? 0);
+      const _evAdm = evaluateEvAdmission({
+        netEvPct: objectiveNetEvPct(_evAdmLiq, scoring.sizeSol, cachedSolPriceUsd, scoring.combinedScore, _evAdmPx5m, _evAdmVolMom).netEvPct,
+        liqUsd: _evAdmLiq,
+        px5m: _evAdmPx5m,
+        volMom: _evAdmVolMom,
+        qualifiedMode: scoring.qualifiedMode,
+        isMicroWallet,
+      }, process.env);
+
+      const _passesScoreGate = !!scoring.qualifiedMode && scoring.combinedScore >= effectiveMinScore && scoring.sizeSol >= cycleMinSize;
+      if (!_passesScoreGate && !_evAdm.admit) {
         console.log(`[SCORE_GATE] SKIP $${candidate.tokenSymbol} — Score: ${scoring.combinedScore} (Min: ${effectiveMinScore}) | Mode: ${scoring.qualifiedMode ?? "none (Reason: " + (scoring.rejectionReason || "failed strict gates") + ")"} | Size: ${scoring.sizeSol.toFixed(4)} (Min: ${cycleMinSize})`);
         continue;
-
       }
+      if (!_passesScoreGate && _evAdm.admit) {
+        console.log(`[EV-ADMISSION] $${candidate.tokenSymbol} admitted via forward-EV arbiter — ${_evAdm.reason} (descriptive score ${scoring.combinedScore} below bar ${effectiveMinScore}, mode ${scoring.qualifiedMode ?? "none"})`);
+        // MOMENTUM-POCKET ADMISSION (2026-08-17): the arbiter now admits on the data-proven
+        // momentum pocket (px5m>=10 & volMom>=2.0) + positive forward EV, so a mode-less
+        // mover is legitimate. Stamp it MG (momentum-growth — the mode matching the pocket)
+        // so the downstream flow and exit engine work, same pattern as the paper-explore lane.
+        if (!scoring.qualifiedMode) {
+          scoring = { ...scoring, qualifiedMode: "MG", rejectionReason: `ev_admission_momentum_pocket` };
+        }
+      }
+      // Both admission paths now guarantee a qualified mode (score gate checks it; EV arbiter
+      // stamps MG on mode-less movers). Guard restores non-null narrowing for the rest of the loop.
+      if (!scoring.qualifiedMode) continue;
       if (status.mode !== "AUTO" && scoring.qualifiedMode !== status.mode) {
           console.log(`[GATE] SKIP $${candidate.tokenSymbol} — Mode mismatch (${scoring.qualifiedMode} != ${status.mode})`);
           continue;
@@ -3658,7 +3741,7 @@ async function runScanCycle() {
       const _isSniperEdge = _EDGE_MODES.includes(scoring.qualifiedMode) && (_edgePassesHigh || _edgePassesMom);
       const _isSniperEdgeLatched = _latchedMode ? (_EDGE_MODES.includes(_latchedMode) && (_edgePassesHigh || (_inMomBand && _hasMomentum))) : false;
       const _isHighConfidence = _EDGE_MODES.includes(scoring.qualifiedMode) && scoring.combinedScore >= (Number(process.env.EDGE_HIGH_CONF_SCORE) || 80);  // CONVERGENCE-FIX: was missing mode check. HWR (-1.71% EV) was entering via score>=80 bypass. Now requires mode in EDGE_MODES. // AI-FIX(2026-07-01): 90 -> 80. The 90 bar was never reached by any real token (max scan 82, max gate 73). Score >= 80 is high conviction in this regime. The old 90 was calibrated against a different market with higher-scoring tokens. Tunable via EDGE_HIGH_CONF_SCORE; set to 90 to restore.
-      const _eqScore = Number(process.env.EDGE_EXPLOSIVE_SCORE) || 70; const _eqMl = Number(process.env.EDGE_EXPLOSIVE_ML) || 70; const _eqPx5m = Number(process.env.EDGE_EXPLOSIVE_PX5M) || 8; const _eqVolMom = Number(process.env.EDGE_EXPLOSIVE_VOLMOM) || 1.5; const _isExplosiveQuality = _EDGE_MODES.includes(scoring.qualifiedMode) && (scoring.combinedScore >= _eqScore) && (Number(scoring.mlScore ?? 0) >= _eqMl) && (Number((scoring.metrics as any)?.priceChange5m ?? 0) >= _eqPx5m) && (Number((scoring.metrics as any)?.volMomentum ?? 0) >= _eqVolMom); /* AI-FIX(2026-07-01): lowered EDGE_EXPLOSIVE_SCORE 85->70 and ML 80->70 to match the new EDGE_MIN_SCORE. RE-SCAN-LOPHOLE-3: added _EDGE_MODES.includes(scoring.qualifiedMode) mode check. Score 70-79 band had -3.90%/trade EV (worst). Without mode check, HWR tokens (-1.71% EV) entered via this bypass. Now requires mode in EDGE_MODES (SNIPER/MG) like all other edge gates. */ if (_edgePocketOnly && !_isSniperEdge && !_isSniperEdgeLatched && !_isHighConfidence && !_isExplosiveQuality) {
+      const _eqScore = Number(process.env.EDGE_EXPLOSIVE_SCORE) || 70; const _eqMl = Number(process.env.EDGE_EXPLOSIVE_ML) || 70; const _eqPx5m = Number(process.env.EDGE_EXPLOSIVE_PX5M) || 8; const _eqVolMom = Number(process.env.EDGE_EXPLOSIVE_VOLMOM) || 1.5; const _isExplosiveQuality = _EDGE_MODES.includes(scoring.qualifiedMode) && (scoring.combinedScore >= _eqScore) && (Number(scoring.mlScore ?? 0) >= _eqMl) && (Number((scoring.metrics as any)?.priceChange5m ?? 0) >= _eqPx5m) && (Number((scoring.metrics as any)?.volMomentum ?? 0) >= _eqVolMom); /* AI-FIX(2026-07-01): lowered EDGE_EXPLOSIVE_SCORE 85->70 and ML 80->70 to match the new EDGE_MIN_SCORE. RE-SCAN-LOPHOLE-3: added _EDGE_MODES.includes(scoring.qualifiedMode) mode check. Score 70-79 band had -3.90%/trade EV (worst). Without mode check, HWR tokens (-1.71% EV) entered via this bypass. Now requires mode in EDGE_MODES (SNIPER/MG) like all other edge gates. */ if (_edgePocketOnly && !_isSniperEdge && !_isSniperEdgeLatched && !_isHighConfidence && !_isExplosiveQuality && !_evAdm.admit) {
           console.log(`[EDGE-POCKET] SKIP $${candidate.tokenSymbol} — outside positive-expectancy pocket (mode=${scoring.qualifiedMode}${_latchedMode ? "/latched:" + _latchedMode : ""} score=${scoring.combinedScore}; need (${_EDGE_MODES.join("/")}+score>=${_EDGE_MIN_SCORE} OR ${_EDGE_MODES.join("/")}+score>=80(confidence) OR ${_EDGE_MODES.join("/")}+score>=${_eqScore}&ml>=${_eqMl}&px5m>=${_eqPx5m}%&volMom>=${_eqVolMom}(explosive)). Set EDGE_POCKET_ONLY=false to disable.`);  // RE-SCAN-LOPHOLE-4: stale log said "OR score>=90" but no score>=90 bypass exists anymore. _isHighConfidence is now score>=80 WITH mode check, not score>=90 without. Updated log to reflect actual gates.
           continue;
       }
@@ -3700,13 +3783,16 @@ async function runScanCycle() {
       // "already moved" (px5m/bp5m/volMom) cannot be admitted at negative EV.
       const OBJECTIVE_GATE = String(process.env.OBJECTIVE_GATE ?? "true").toLowerCase() !== "false";
       if (OBJECTIVE_GATE) {
-        const _evMargin = Number(process.env.OBJECTIVE_EV_MARGIN) || 1.0;
-        const _ev = objectiveNetEvPct(liq, scoring.sizeSol, SOL_PRICE_USD, scoring.combinedScore);
+        // PROFIT-MONSTER (2026-08-16): micro wallets get a tighter (higher) EV margin —
+        // the 0.005 SOL micro lane was the entire historical loss (75 trades, 12% win,
+        // avg -10.4%), so a micro entry must clear more forward edge to be admitted.
+        const _evMargin = getObjectiveEvMargin(isMicroWallet, process.env);
+        const _ev = objectiveNetEvPct(liq, scoring.sizeSol, SOL_PRICE_USD, scoring.combinedScore, _evAdmPx5m, _evAdmVolMom);
         if (_ev.netEvPct < _evMargin) {
-          console.log(`[OBJECTIVE-GATE] SKIP $${candidate.tokenSymbol} — modeled forward net EV ${_ev.netEvPct.toFixed(2)}% < margin ${_evMargin}% (peak~${_ev.peakPct}%, capture~${_ev.grossCapturePct.toFixed(1)}%, RT-cost ${_ev.rtCostPct.toFixed(2)}%, liq $${Math.round(liq)}, score ${scoring.combinedScore}). Not provably positive-EV -> reject. Set OBJECTIVE_GATE=false to disable.`);
+          console.log(`[OBJECTIVE-GATE] SKIP $${candidate.tokenSymbol} — modeled forward net EV ${_ev.netEvPct.toFixed(2)}% < margin ${_evMargin}% (peak~${_ev.peakPct.toFixed(1)}%, capture~${_ev.grossCapturePct.toFixed(1)}%, RT-cost ${_ev.rtCostPct.toFixed(2)}%, liq $${Math.round(liq)}, score ${scoring.combinedScore}, px5m ${_evAdmPx5m.toFixed(1)}%, volMom ${_evAdmVolMom.toFixed(2)}). Not provably positive-EV -> reject. Set OBJECTIVE_GATE=false to disable.`);
           continue;
         }
-        console.log(`[OBJECTIVE-GATE] PASS $${candidate.tokenSymbol} — net EV +${_ev.netEvPct.toFixed(2)}% (peak~${_ev.peakPct}%, capture~${_ev.grossCapturePct.toFixed(1)}%, RT ${_ev.rtCostPct.toFixed(2)}%, liq $${Math.round(liq)}, score ${scoring.combinedScore}).`);
+        console.log(`[OBJECTIVE-GATE] PASS $${candidate.tokenSymbol} — net EV +${_ev.netEvPct.toFixed(2)}% (peak~${_ev.peakPct.toFixed(1)}%, capture~${_ev.grossCapturePct.toFixed(1)}%, RT ${_ev.rtCostPct.toFixed(2)}%, liq $${Math.round(liq)}, score ${scoring.combinedScore}, px5m ${_evAdmPx5m.toFixed(1)}%, volMom ${_evAdmVolMom.toFixed(2)}).`);
       }
       const effSniperLiq   = engineSettings.sniperMinLiquidity /* FIX(liq-floor): removed micro-wallet $1k discount that let the bot buy un-tradeable thin tokens (BioCraft $21k -> ~35% real round-trip loss). Restored $50k floor. */;
       const effHwrLiq      = engineSettings.hwrMinLiquidity /* FIX(liq-floor): removed micro-wallet $2k discount. Restored $50k floor. */;
@@ -4157,7 +4243,12 @@ async function runScanCycle() {
           engineSettings.txFeePercent * edge.feeMultiplier +
           edge.buffer;
         const paperEdge = scoreBasedExpectedMove - paperRoundTripCost;
-        if (paperEdge < edge.minEdgePct) {
+        // EV-ADMISSION (2026-08-17): tokens admitted via the forward-EV arbiter already cleared
+        // the objective-EV gate (net expectancy > margin). The legacy paperEdge heuristic is
+        // score-based ((score-50)*coeff), and honest post-fix scores are too low for it to ever
+        // pass — it would veto exactly the profitable deep-liquidity tokens the arbiter admitted.
+        // Defer to the forward-EV verdict for EV-admitted tokens.
+        if (!_evAdm.admit && paperEdge < edge.minEdgePct) {
             console.log(`[PAPER EDGE SKIP] $${candidate.tokenSymbol} — edge ${paperEdge.toFixed(2)}% < ${edge.minEdgePct}% (micro=${isMicroWallet}).`);
             continue;
         }
@@ -6090,7 +6181,31 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     clearLatencyLog();
     res.json({ cleared: true });
   });
-  // ────────────────────────────────────────────────────────────────���────────
+
+  // ── OBSERVABILITY LAYER (ARCHITECTURE.mdx) — decision audit trail ──
+  // Every veto/admit decision in the pipeline is recorded by observability.ts;
+  // this endpoint exposes the ring buffer for the UI Observability Feed and ops.
+  app.get("/api/observability/events", (req, res) => {
+    const kind = typeof req.query.kind === "string" && req.query.kind.length > 0
+      ? (req.query.kind as DecisionKind)
+      : undefined;
+    const token = typeof req.query.token === "string" && req.query.token.length > 0
+      ? req.query.token
+      : undefined;
+    const since = req.query.since ? Number(req.query.since) : undefined;
+    const limit = Math.min(Math.max(Number(req.query.limit) || 200, 1), 1000);
+    const events = getEvents({ kind, tokenAddress: token, since }).slice(-limit);
+    res.json({ correlationId: observability.getCorrelationId(), count: events.length, events });
+  });
+
+  // ── RESILIENCE LAYER (ARCHITECTURE.mdx) — provider circuit-breaker health ──
+  app.get("/api/providers/health", (_req, res) => {
+    res.json({
+      degradedMode: providerRegistry.evaluateDegradedMode(),
+      providers: providerRegistry.getAllHealth(),
+    });
+  });
+  // ─────────────────────────────────────────────────────────────────────────
   app.post("/api/settings", async (req, res) => {
     if (!requireAdmin(req, res)) return;
     try {

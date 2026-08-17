@@ -172,9 +172,11 @@ const writeFileSyncSpy = vi.spyOn(fs, 'writeFileSync').mockImplementation(() => 
 
 describe('routes.ts exported functions — real code paths against mocked deps', () => {
   // REAL timers — no registerRoutes() boot, so no engine setTimeout to flush.
-  beforeAll(() => {
-    // no-op; real timers
-  });
+  // Preload routes.ts here: module evaluation alone takes ~4.6s, which would
+  // otherwise eat the entire 5s budget of the first test that imports it.
+  beforeAll(async () => {
+    await import('./routes');
+  }, 30_000);
 
   afterAll(() => {
     writeFileSyncSpy.mockRestore();

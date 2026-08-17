@@ -1,5 +1,19 @@
 import dotenv from "dotenv";
+// SAFETY (2026-08-16): explicit operator intent must win over .env. If WALLET_PRIVATE_KEY
+// is present in the shell environment — even set to EMPTY to mean "disarm live trading" —
+// dotenv's override:true must NOT silently re-arm it from .env. That override is exactly how
+// a paper-mode run quietly became a live-armed run (the root cause of the "I cannot trust it"
+// report). Capture the explicit shell state BEFORE dotenv runs, then restore it after, so an
+// explicit disarm (or an explicit key) can never be clobbered by the .env file.
+const _walletKeyExplicitlySet = Object.prototype.hasOwnProperty.call(process.env, "WALLET_PRIVATE_KEY");
+const _walletKeyExplicitValue = process.env.WALLET_PRIVATE_KEY;
 dotenv.config({ override: true });
+if (_walletKeyExplicitlySet) {
+  process.env.WALLET_PRIVATE_KEY = _walletKeyExplicitValue;
+  if (!(_walletKeyExplicitValue || "").trim()) {
+    console.log("[SAFETY] WALLET_PRIVATE_KEY explicitly emptied in environment — live trading stays DISABLED (.env value ignored).");
+  }
+}
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
