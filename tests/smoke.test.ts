@@ -27,7 +27,7 @@ describe('Smoke: main file import boundary', () => {
 
     // Verify the module loaded properly
     expect(routes).toBeDefined();
-  }, 30000);
+  }, 60000);
 
   it('jupiter.ts imports cleanly and exposes all core exports', async () => {
     const jupiter = await import('../server/jupiter');

@@ -871,3 +871,17 @@
 [2026-08-17T11:50:55.547Z] DexScreener discovery: 1 mint(s) queued
 [2026-08-17T11:50:55.548Z] Evaluating 5wpvCAWGoe8mVQ82Ace7KQ2gQe8nm5QLthNRghBepump
 [2026-08-17T11:50:57.362Z]   Holders: top1 74.1%
+[2026-08-17T11:53:58.583Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T11:53:58.583Z] Evaluating 7kzUJkwn6GYURMAr6QKV79DkE21NtS6yBT242S3FGUoo
+[2026-08-17T11:53:59.481Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T11:55:16.669Z] DexScreener discovery: 2 mint(s) queued
+[2026-08-17T11:55:16.669Z] Evaluating 8ekXWPQ1teBMatpPZPyq6k9yvNmPgwZzc79MU6ZVpump
+[2026-08-17T11:55:17.477Z]   DexScreener: vol/liq 0.00 (dead)
+[2026-08-17T11:55:17.680Z] Evaluating 512B2eBDSDg3xY88Jw3Qprqf6kGSvXLRH7L1kRaSpump
+[2026-08-17T11:55:18.838Z] ★ CANDIDATE [score=70] 512B2eBDSDg3xY88Jw3Qprqf6kGSvXLRH7L1kRaSpump | LP $21721 | age 0.1h | https://dexscreener.com/solana/aozy6oxlmvxgb5xxm2jvjt3apz8w98hdvzigtpqrvpnk
+[2026-08-17T11:56:08.791Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T11:56:08.792Z] Evaluating APQfuCeuoCqywQJaVNj5CvZuUZ3EE3abGmti9tKjpump
+[2026-08-17T11:56:10.321Z] ★ CANDIDATE [score=65] APQfuCeuoCqywQJaVNj5CvZuUZ3EE3abGmti9tKjpump | LP $27873 | age 0.4h | https://dexscreener.com/solana/a2wby8et5zlyg5avvtuza7fnb4yowvr4yunmdxfmqpt8
+[2026-08-17T11:59:11.927Z] DexScreener discovery: 1 mint(s) queued
+[2026-08-17T11:59:11.927Z] Evaluating 2GeLRyHhF7pWHQZVMrrB8RQJ6skNbkNxToh1ipzKpump
+[2026-08-17T11:59:12.742Z]   DexScreener: vol/liq 0.00 (dead)

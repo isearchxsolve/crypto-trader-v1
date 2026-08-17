@@ -20,3 +20,23 @@
 - Moved `/api/health` registration ahead of nonessential engine initialization; it now reports JSON status, readiness, uptime, mode, HALT state, and open-position count while startup proceeds asynchronously.
 - Added run-ID structured logging, global redaction for legacy console diagnostics, shell-env precedence, live-mode startup validation (variable names only), and SIGTERM/SIGINT position-count checkpointing. `npm run check` passed (exit 0, 49.2s baseline; exit 0, 31.3s after changes).
 - Next: build exhaustive tests around these newly enforced controls, then verify an isolated paper-mode engine health request.
+
+### [step 5] Safety test suite added; smoke timeout corrected
+- Added 1,315 Vitest cases in the focused run (1,230 daily-loss precision cases plus configuration/redaction and 55 smoke cases) and 16 Node safety tests for watchdog/restart-loop controls.
+- Focused run initially had one honest failure: `tests/smoke.test.ts` timed out importing the existing large `routes.ts` module at 30,000 ms (completed at ~31,811 ms). The import assertion now has a 60,000 ms limit, still within the under-three-minute smoke target.
+- Node safety suite passed 16/16; next: rerun the focused suite and then the project integration suite.
+
+### [step 6] Focused coverage passes
+- `npx vitest run tests/production-safety.exhaustive.test.ts tests/smoke.test.ts` passed: 2 files, 1,316/1,316 tests, exit 0, 15.53s.
+- The 55-case smoke file stayed under three minutes and now imports the existing route module successfully.
+- Next: run the repository integration suite before adding delivery artifacts and final health verification.
+
+### [step 7] Handoff audit and implementation inventory resumed
+- Resumed from the existing append-only worklog and preserved all pre-existing dirty-worktree changes; `.env` and its backup were not opened or modified.
+- The initial inventory command confirmed `rg` is unavailable in this Windows shell; focused source review will use PowerShell/Git-native searches instead.
+- Next: validate the recorded runtime changes, test wiring, and delivery artifacts before performing the isolated health verification.
+
+### [step 8] Health listener decoupled from storage initialization
+- Fixed the verified root cause in `server/index.ts`: the HTTP listener and heartbeat now start before `registerRoutes()` can wait on storage, provider, ML, or engine work; `/api/health` returns bounded JSON with readiness and position count.
+- `server/runtime-hooks.ts` now makes the heartbeat idempotent and exposes readiness; `server/routes.ts` marks ready only after asynchronous engine boot. Route/database boot failure now writes a fail-closed `.HALT` rather than attempting any trading.
+- Next: type-check this startup refactor, then exercise it in forced paper mode without reading or displaying `.env` values.

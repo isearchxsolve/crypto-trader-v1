@@ -20,6 +20,7 @@ import { serveStatic } from "./static";
 import { createServer } from "http";
 import { installConsoleRedaction, log } from "./logger";
 import { assertStartupEnvironment, redactLogMeta, redactText } from "./production-safety";
+import { haltTrading, healthState, setUnhealthy, startHeartbeat } from "./runtime-hooks";
 import { storage } from "./storage";
 
 installConsoleRedaction();
@@ -27,6 +28,8 @@ const startupConfig = assertStartupEnvironment(process.env);
 
 const app = express();
 const httpServer = createServer(app);
+const processStartedAt = Date.now();
+let routesInitialized = false;
 
 process.on("exit", (code) => {
   console.log(`[DEBUG] Process is exiting with code: ${code}`);
@@ -47,6 +50,37 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: false }));
+
+// This endpoint is deliberately registered and listening before any database,
+// provider, ML, or trading-engine initialization. It distinguishes process
+// liveness (200 + readiness=starting) from full trading readiness without
+// exposing provider errors or credentials.
+app.get("/api/health", async (_req, res) => {
+  const snapshot = healthState();
+  let openPositions = 0;
+  let mode = startupConfig.mode;
+  let isRunning = false;
+  if (routesInitialized) {
+    try {
+      const [status, openTrades] = await Promise.all([storage.getBotStatus(), storage.getOpenTrades()]);
+      openPositions = openTrades.length;
+      mode = status.tradingMode === "live" ? "live" : "paper";
+      isRunning = status.isRunning ?? false;
+    } catch {
+      setUnhealthy("storage health query failure");
+    }
+  }
+  res.status(snapshot.status === "ok" ? 200 : 503).json({
+    status: snapshot.status,
+    readiness: snapshot.ready ? "ready" : "starting",
+    halted: snapshot.halted,
+    mode,
+    isRunning,
+    openPositions,
+    uptimeSeconds: Math.floor((Date.now() - processStartedAt) / 1000),
+    timestamp: new Date().toISOString(),
+  });
+});
 
 export function logHttp(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -113,8 +147,37 @@ process.on("uncaughtException", (err) => {
 });
 
 (async () => {
+  const port = startupConfig.port;
+  startHeartbeat();
+  httpServer.on("error", (err: NodeJS.ErrnoException) => {
+    if (err.code === "EADDRINUSE") {
+      console.error(`[FATAL] Port ${port} already in use. Kill the existing process and try again.`);
+      log.error(`Port ${port} already in use`, { error: redactText(err.message) });
+    } else {
+      console.error(`[FATAL] HTTP Server Error: ${redactText(err.message)}`);
+      log.error("HTTP Server Error", { error: redactText(err.message), code: err.code });
+    }
+    setTimeout(() => process.exit(1), 500);
+  });
+  httpServer.listen({ port, host: "0.0.0.0" }, () => logHttp(`serving on port ${port}`));
+
+  let shuttingDown = false;
+  const shutdown = (signal: string) => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    log.warn("Graceful shutdown requested", { signal });
+    Promise.resolve(routesInitialized ? storage.getOpenTrades() : [])
+      .then(openTrades => storage.updateBotStats({ openPositions: openTrades.length, lastSignal: `shutdown:${signal}` }))
+      .catch(error => log.error("Unable to checkpoint open positions during shutdown", { error: redactText(error) }))
+      .finally(() => httpServer.close(() => process.exit(0)));
+    setTimeout(() => process.exit(1), 15_000).unref();
+  };
+  process.once("SIGTERM", () => shutdown("SIGTERM"));
+  process.once("SIGINT", () => shutdown("SIGINT"));
+
   try {
     await registerRoutes(httpServer, app);
+    routesInitialized = true;
 
     app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
       const status = err.status || err.statusCode || 500;
@@ -140,52 +203,11 @@ process.on("uncaughtException", (err) => {
       await setupVite(httpServer, app);
     }
 
-    // ALWAYS serve the app on the port specified in the environment variable PORT
-    // Other ports are firewalled. Default to 5000 if not specified.
-    // this serves both the API and the client.
-    // It is the only port that is not firewalled.
-    const port = startupConfig.port;
-    
-    httpServer.on("error", (err: NodeJS.ErrnoException) => {
-      if (err.code === "EADDRINUSE") {
-        console.error(`[FATAL] Port ${port} already in use. Kill the existing process and try again.`);
-        log.error(`Port ${port} already in use`, { error: redactText(err.message) });
-      } else {
-        console.error(`[FATAL] HTTP Server Error: ${redactText(err.message)}`);
-        log.error("HTTP Server Error", { error: redactText(err.message), code: err.code });
-      }
-      setTimeout(() => process.exit(1), 500);
-    });
-
-    // reusePort removed: a single trading engine must own port 5000 exclusively.
-    // Without it, a second launch hits the EADDRINUSE guard above and exits loudly
-    // instead of silently double-running (which would mean double trades).
-    httpServer.listen(
-      {
-        port,
-        host: "0.0.0.0",
-      },
-      () => {
-        logHttp(`serving on port ${port}`);
-      },
-    );
-
-    let shuttingDown = false;
-    const shutdown = (signal: string) => {
-      if (shuttingDown) return;
-      shuttingDown = true;
-      log.warn("Graceful shutdown requested", { signal });
-      Promise.resolve(storage.getOpenTrades())
-        .then(openTrades => storage.updateBotStats({ openPositions: openTrades.length, lastSignal: `shutdown:${signal}` }))
-        .catch(error => log.error("Unable to checkpoint open positions during shutdown", { error: redactText(error) }))
-        .finally(() => httpServer.close(() => process.exit(0)));
-      setTimeout(() => process.exit(1), 15_000).unref();
-    };
-    process.once("SIGTERM", () => shutdown("SIGTERM"));
-    process.once("SIGINT", () => shutdown("SIGINT"));
   } catch (err) {
+    const reason = "route initialization failure";
+    setUnhealthy(reason);
+    try { haltTrading(reason); } catch { /* fail-closed state is best effort only if disk is unavailable */ }
     console.error("[FATAL] Startup failed:", redactText(err));
-    log.error("Startup failed", { error: redactText(err) });
-    setTimeout(() => process.exit(1), 500);
+    log.error("Startup failed; trading halted", { error: redactText(err) });
   }
 })();

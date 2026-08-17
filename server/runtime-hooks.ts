@@ -19,6 +19,9 @@ const HALT_FILE      = path.join(ROOT, ".HALT");
 
 let healthy = true;
 let lastError: string | null = null;
+let ready = false;
+let heartbeat: NodeJS.Timeout | undefined;
+let errorHooksInstalled = false;
 
 /** True when the failsafe has halted trading. Check at the top of every buy. */
 export function isHalted(): boolean { return fs.existsSync(HALT_FILE); }
@@ -28,28 +31,34 @@ export function haltTrading(reason: string): void {
 }
 export function setUnhealthy(reason: string): void { healthy = false; lastError = reason; }
 export function setHealthy(): void { healthy = true; lastError = null; }
+/** Mark the full trading pipeline ready only after its asynchronous boot succeeds. */
+export function setReady(): void { ready = true; }
 /** Snapshot for a health endpoint to return. "halted" stays 200 (intentional state). */
 export function healthState() {
   // Do not expose raw exception text from a public endpoint: provider URLs can
   // contain credentials. The detail remains available only to redacted logging.
-  return { status: healthy ? "ok" : "error", halted: isHalted(), hasError: lastError !== null, lastError, ts: Date.now() };
+  return { status: healthy ? "ok" : "error", ready, halted: isHalted(), hasError: lastError !== null, lastError, ts: Date.now() };
 }
 
 /** Heartbeat ONLY -- use when your app already serves /api/health. */
 export function startHeartbeat(beat = 5000) {
+  if (heartbeat) return heartbeat;
   const writeBeat = () => { try { fs.writeFileSync(HEARTBEAT_FILE, String(Date.now())); } catch {} };
   writeBeat();
-  const hb = setInterval(writeBeat, beat);
-  if (typeof hb.unref === "function") hb.unref();
-  process.on("uncaughtException",  (e: any) => setUnhealthy(`uncaught: ${e?.message ?? e}`));
-  process.on("unhandledRejection", (e: any) => setUnhealthy(`unhandled: ${e?.message ?? e}`));
-  return hb;
+  heartbeat = setInterval(writeBeat, beat);
+  if (typeof heartbeat.unref === "function") heartbeat.unref();
+  if (!errorHooksInstalled) {
+    errorHooksInstalled = true;
+    process.on("uncaughtException",  (e: any) => setUnhealthy(`uncaught: ${e?.message ?? e}`));
+    process.on("unhandledRejection", (e: any) => setUnhealthy(`unhandled: ${e?.message ?? e}`));
+  }
+  return heartbeat;
 }
 
 /** Heartbeat + standalone health server -- use when you DON'T already serve /api/health. */
 export function installRuntimeHooks(opts: { port?: number; heartbeatMs?: number; healthServer?: boolean } = {}) {
   startHeartbeat(opts.heartbeatMs ?? 5000);
-  if (opts.healthServer === false) return { isHalted, setHealthy, setUnhealthy };
+  if (opts.healthServer === false) return { isHalted, setHealthy, setUnhealthy, setReady };
   const port = opts.port ?? Number(process.env.HEALTH_PORT ?? 3000);
   const server = http.createServer((req, res) => {
     if (req.url === "/api/health" || req.url === "/health") {
@@ -60,5 +69,5 @@ export function installRuntimeHooks(opts: { port?: number; heartbeatMs?: number;
   server.listen(port, "127.0.0.1", () =>
     console.log(`[HOOKS] health http://127.0.0.1:${port}/api/health | heartbeat ${opts.heartbeatMs ?? 5000}ms`));
   if (typeof server.unref === "function") server.unref();
-  return { isHalted, setHealthy, setUnhealthy };
+  return { isHalted, setHealthy, setUnhealthy, setReady };
 }

@@ -7,7 +7,7 @@ import { checkAdvancedFilters } from "./advanced_filters";
 import { JupiterService, createJupiterService, SOL_MINT, MIN_FEE_BUFFER_SOL,getLatencyLog, clearLatencyLog  } from "./jupiter";
 import { existsSync, readFileSync, writeFileSync, promises as fsPromises } from "fs";
 import { join as pathJoin } from "path";
-import { startHeartbeat, isHalted, healthState, haltTrading, setHealthy, setUnhealthy } from "./runtime-hooks";
+import { isHalted, haltTrading, setHealthy, setUnhealthy, setReady } from "./runtime-hooks";
 import { evaluateAbsoluteDailyLoss, readPositiveNumber } from "./production-safety";
 import { setDefaultResultOrder as __setDnsResultOrder } from "node:dns";
 // =============================================================
@@ -5993,29 +5993,10 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   // CRITICAL: Initialize storage wrapper before any storage access
   await initStorageWrapper();
   await storage.seedInitialData();
-  startHeartbeat();            // FAILSAFE: write .heartbeat every 5s so the watchdog sees liveness
-
-  // Register liveness before the network-heavy engine boot. Previously the
-  // HTTP listener waited for price/RPC/ML initialization, so a slow provider
-  // made the watchdog observe `fetch failed` instead of a bounded ready state.
-  let engineReady = false;
-  app.get("/api/health", async (_req, res) => {
-    const status = await storage.getBotStatus().catch(() => ({ tradingMode: "paper", isRunning: false, walletBalance: "0" }));
-    const openTrades = await storage.getOpenTrades().catch(() => []);
-    const snapshot = healthState();
-    res.status(snapshot.status === "ok" ? 200 : 503).json({
-      status: snapshot.status,
-      readiness: engineReady ? "ready" : "starting",
-      halted: snapshot.halted,
-      mode: status.tradingMode || "paper",
-      isRunning: status.isRunning ?? false,
-      openPositions: openTrades.length,
-      uptimeSeconds: Math.floor((Date.now() - engineStartTime) / 1000),
-      timestamp: new Date().toISOString(),
-    });
-  });
+  // The listener and heartbeat are installed by index.ts before this database
+  // setup starts, so an unavailable DB cannot make the watchdog see fetch failed.
   void startTradingEngine().then(() => {
-    engineReady = true;
+    setReady();
     setHealthy();
     log.info("Trading engine initialization complete");
   }).catch((error: unknown) => {
