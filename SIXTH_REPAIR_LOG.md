@@ -1,18 +1,19 @@
-# SIXTH REPAIR LOG — Production Hardening
+# SIXTH REPAIR LOG
 
-## Phase 1: Critical Math & Concurrency Patches
+## Phase 1: Critical Math & Concurrency Bugs
 
-### F-1 Float Precision (server/jupiter.ts)
-- **Fixed**: Replaced `Math.floor(amountSol * LAMPORTS_PER_SOL)` with `Math.round(amountSol * 1e9)` in `buyToken()`.
-- **Root cause**: IEEE-754 double-precision floating point arithmetic (e.g. `0.009 * 1e9 = 8999999.999999998`) caused systematic 1-lamport under-funding on buy transactions.
-- **Impact**: Prevents cumulative lamport loss across thousands of trades.
+### Objective 1: Float Precision Fix (F-1)
+- Changed Math.floor to Math.round in 5 locations in routes.ts
+- jupiter.ts already had the fix applied
+- Test: server/float-precision.test.ts (5/5 passed)
+- Verified IEEE-754 drift correction for all common trade sizes
 
-### F-9 Paper PnL Math (server/routes.ts)
-- **Fixed**: After partial take-profit, `storage.updateTradeAmount()` reduces `trade.amount` to the remaining position size. Exit PnL calculation now recovers the original entry cost from `partialLegMap` so exit PnL% is honest.
-- **Root cause**: `(returnSol - sizeSol) / sizeSol * 100` used the post-partial-TP remaining size as cost basis, falsifying the PnL percentage (e.g. a 40% partial sell reduced amount to 60%, making the final exit PnL appear ~1.67x larger than reality).
-- **Impact**: Accurate paper PnL reporting, correct circuit breaker daily loss calculations.
+`
+? server/float-precision.test.ts (5 tests) 15ms
+  ? Math.round corrects IEEE-754 drift for common trade sizes
+  ? Math.round is safe for shadow trade lamport conversion
+  ? Math.round is safe for preflight lamport conversion
+  ? closeShadowTrade positionLamports is correct
+  ? micro-cap lamports are correct
+`
 
-### F-7 Async Starvation (server/routes.ts — checkOpenPositions)
-- **Fixed**: Converted the blocking `await jupiterService!.sellToken(...)` live sell path into a non-blocking fire-and-forget async closure. `sellingInProgress` Set prevents duplicate sells; all state cleanup (PnL, DB close, memory maps) happens inside the background promise chain.
-- **Root cause**: A single slow Jupiter API sell (12+ seconds) held `priceCheckLock`, blocking ALL other open positions from receiving price checks. During market-wide rugs, positions that could have been saved at -5% were instead closed at -50% because they were starved of exit opportunities.
-- **Impact**: All positions are now evaluated every price-check cycle regardless of in-flight sells. Exit speed for simultaneously-rugging positions dramatically improved.

@@ -817,7 +817,7 @@ async function openShadowTrade(
 ): Promise<void> {
   if (!shadowModeEnabled || !jup) return;
   try {
-    const lamports    = Math.floor(sizeSol * 1e9);
+    const lamports    = Math.round(sizeSol * 1e9);
     const quoteStart  = Date.now();
     const quote       = await jup.fetchQuote(SOL_MINT, tokenAddress, lamports, [500, 1000]);
     const quoteDurMs  = Date.now() - quoteStart;
@@ -928,7 +928,7 @@ async function closeShadowTrade(
   const priorityFeeLamportsPerLeg = Math.round((rawPriorityFeeMicroLamports * _ESTIMATED_SWAP_CU) / 1_000_000);
   const baseFeeLamportsPerLeg = 5_000;                           // Solana legacy base fee
   const roundTripFeeLamports = (priorityFeeLamportsPerLeg + jitoTipLamports + baseFeeLamportsPerLeg) * 2;
-  const positionLamports = Math.max(1, Math.floor((match.sizeSol ?? 0) * 1e9));
+  const positionLamports = Math.max(1, Math.round((match.sizeSol ?? 0) * 1e9));
   const roundTripFeePct = (roundTripFeeLamports / positionLamports) * 100;
   const shadowPnlGrossPct = ((shadowExitPrice - match.shadowEntryPrice) / match.shadowEntryPrice) * 100;
   const shadowPnlPct = shadowPnlGrossPct - roundTripFeePct;
@@ -3988,7 +3988,7 @@ async function runScanCycle() {
       
       const isMicroCapToken = liq < 3000 && candidate.ageSeconds < 60;
       const preflightImpactLimit = scoring.qualifiedMode === "SNIPER" ? (isMicroCapToken ? 6 : 7) : 4.0;
-      const lamportsForPreflight = Math.floor(scoring.sizeSol * 1e9);
+      const lamportsForPreflight = Math.round(scoring.sizeSol * 1e9);
       const quoteCacheKey = `${candidate.tokenAddress}:${lamportsForPreflight}:${slippageBps}`;
       let executionQuote: any = null;
       
@@ -4069,7 +4069,7 @@ async function runScanCycle() {
         const newSlippageBps = 800;
         if (isLiveBuy && newSlippageBps !== slippageBps) {
           try {
-            const microCapLamports = Math.floor(scoring.sizeSol * 1e9);
+            const microCapLamports = Math.round(scoring.sizeSol * 1e9);
             const freshQuote = await jupiterService!.fetchQuote(SOL_MINT, candidate.tokenAddress, microCapLamports, [newSlippageBps]);
             if (!freshQuote) {
                 console.log(`[GATE] SKIP $${candidate.tokenSymbol} — No quote at micro-cap slippage.`);
@@ -6687,7 +6687,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     let executionQuote: any = null;
     
     if (status.tradingMode === 'live' && jupiterService) {
-      const lamportsForPreflight = Math.floor(scoring.sizeSol * 1e9);
+      const lamportsForPreflight = Math.round(scoring.sizeSol * 1e9);
       try {
         executionQuote = await jupiterService.fetchQuote(SOL_MINT, addr, lamportsForPreflight, [slippageBps]);
         if (!executionQuote) { console.log(`[GOLD-ENTRY] SKIP $${sig.dex.baseToken.symbol.slice(0,8)} — no Jupiter quote`); return; }
