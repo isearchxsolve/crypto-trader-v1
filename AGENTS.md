@@ -59,3 +59,8 @@ npx vitest run
   without an explicit instruction; flag such changes clearly.
 - No `.tmp`, `.bak`, or `* - Copy*` files. Delete scratch files; don't commit them.
 - Keep commit messages action-oriented (`Fix jupiter slippage calc`).
+
+## Strict Agent Protocols (Zero Data Loss & Testing)
+- **Incremental Persistence:** Any action log (e.g. `SIXTH_WORKLOG.md` or `MASTER_WORKLOG.md`) must be written to disk incrementally *after every step*. Do not batch logs. If the agent crashes, the log must reflect exactly what was completed up to the crash.
+- **Test-Driven Execution:** Agents must not commit blind code. Every structural fix or feature must include a corresponding test case, and the agent must explicitly execute the test suite (e.g. `npm run test` or `npm run gate`) and output passing results before committing.
+- **Micro-Commits:** Commit chunks of work as soon as tests pass. Do not wait for a massive end-of-task commit.

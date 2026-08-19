@@ -1,0 +1,16 @@
+# DIRECTIVE: ZERO DATA LOSS & TEST-DRIVEN EXECUTION
+
+You are operating under a strict token threshold and may be terminated at any time.
+
+## 1. INCREMENTAL PERSISTENCE (Log immediately, not at the end)
+- Do not hold log entries in memory. 
+- You MUST append your progress to `SIXTH_WORKLOG.md` *immediately after each discrete step*. 
+- If you fix a function, write the log entry to disk right then. Never batch your logging for the end of the turn.
+
+## 2. TEST-DRIVEN EXECUTION (No blind commits)
+- You MUST create a test case for every bug you patch or feature you implement.
+- You MUST run the test suite (e.g. `npm run test:smoke` or `npx vitest run`) and see the test pass before declaring the fix complete.
+- Do not commit code that has not been executed and proven by a test.
+
+## 3. MICRO-COMMITS
+- Execute smaller, isolated commits (e.g., `git commit -m "fix: resolve float precision in jupiter.ts"`) immediately after each test passes. Do not wait for all 3 phases to finish before committing Phase 1.
