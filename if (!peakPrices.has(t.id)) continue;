@@ -1,0 +1,28 @@
+This turns the trade into an unmonitored "ghost trade" stuck in `OPEN` status forever.
+
+### Patch Instructions
+1. Open `server/routes.ts`.
+2. Locate the buy execution block in `runScanCycle()` (around line ~1450).
+3. Refactor trade addition into an atomic step:
+   ```ts
+   const trade = await storage.addTrade(...);
+   // Synchronously populate all required in-memory tracking maps immediately
+   peakPrices.set(trade.id, effectiveEntryPrice);
+   tradeStopPrices.set(trade.id, calcCostAwareStopPrice(effectiveEntryPrice, ...));
+   prevPnlMap.set(trade.id, 0);
+   ```
+4. In `checkOpenPositions()`, add auto-recovery for missing memory state:
+   ```ts
+   for (const trade of openTrades) {
+     if (!peakPrices.has(trade.id)) {
+       const ep = parseFloat(trade.price || "0");
+       if (ep > 0) {
+         peakPrices.set(trade.id, ep);
+         tradeStopPrices.set(trade.id, calcCostAwareStopPrice(ep, trade.mode, ...));
+         console.warn(`[RECOVERY] Restored missing in-memory state for OPEN trade #${trade.id}`);
+       }
+     }
+     ...
+   }
+   ```
+5. Ensure `initBalanceFromDB()` populates all open trade memory maps on boot.
