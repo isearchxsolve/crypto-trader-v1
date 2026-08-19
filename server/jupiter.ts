@@ -731,7 +731,10 @@ export class JupiterService {
       log.warn(`[FAILSAFE] Buy blocked -- .HALT flag is set (${tokenMint})`);
       return { success: false, txSignature: null, actualSolSpent: 0, tokenAmountRaw: 0n, priceImpactPct: 0, feesSol: 0, error: "HALTED" };
     }
-    const lamports = Math.floor(amountSol * LAMPORTS_PER_SOL);
+    // FIX F-1: Math.floor on IEEE-754 floats causes systematic 1-lamport under-funding.
+    // e.g. 0.009 * 1e9 = 8999999.999999998 → Math.floor gives 8999999 (1 short).
+    // Math.round corrects the float drift: 8999999.998 → 9000000.
+    const lamports = Math.round(amountSol * 1e9);
     try {
       const latestSolBal = await this.getWalletBalance();
       if (latestSolBal < amountSol + MIN_FEE_BUFFER_SOL) {

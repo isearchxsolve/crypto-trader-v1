@@ -5534,199 +5534,178 @@ async function checkOpenPositions() {
           console.log(`[LIFECYCLE:EXIT] id=#${trade.id} $${trade.tokenSymbol} | reason: ${reason} | pnl: ${pnlPct.toFixed(2)}% | peakPnl: ${peakPnl.toFixed(2)}% | holdTime: ${Math.round(holdTime)}s | mode: ${trade.tradingMode}`);
           lifecycleLastLogMs.delete(trade.id);
           trailActivatedLogged.delete(trade.id);
-          const sizeSol = parseFloat(trade.amount);
+          // FIX F-9: after a partial TP, storage.updateTradeAmount() reduced trade.amount
+          // to only the REMAINING position. Using this reduced amount as cost-basis
+          // inflates the exit PnL% (e.g. 0.006 SOL remaining + 50% price move =
+          // 0.009 SOL returned, reported as 50% instead of the true 50% on full position).
+          // Recover the ORIGINAL entry cost from partialLegMap so exit PnL is honest.
+          let sizeSol = parseFloat(trade.amount);
+          const _partialLeg = partialLegMap.get(trade.id);
+          if (_partialLeg && _partialLeg.fraction > 0 && _partialLeg.fraction < 1) {
+            sizeSol = sizeSol / (1 - _partialLeg.fraction);
+          }
           const isLiveSell = trade.tradingMode === "live" && jupiterService !== null;
           let finalPnlPct: number, sellTxSig: string | null = null;
           if (isLiveSell) {
+            // FIX F-7: The previous code `await jupiterService!.sellToken(...)` blocked
+            // priceCheckLock for 12+ seconds per sell, starving ALL other open positions
+            // of price checks during that window. During a market-wide rug, positions that
+            // could have been saved at -5% were instead closed at -50% because they were
+            // starved of exit opportunities.
+            //
+            // Refactor: detach the sell execution into a non-blocking fire-and-forget promise.
+            // sellingInProgress prevents duplicate sells. All state cleanup (PnL, DB close,
+            // memory maps) happens inside the background promise chain, NOT in this loop.
+            // This lets checkOpenPositions continue evaluating other positions immediately.
+            if (sellingInProgress.has(trade.id)) continue;
             sellingInProgress.add(trade.id);
-            // FIX: when the force-sell background task takes over, it owns
-            // sellingInProgress for its entire 5-minute window. The flag
-            // prevents the outer finally from deleting the entry prematurely,
-            // which would let the next price-check cycle re-enter the sell
-            // path and attempt a double-sell on the same live position.
-            let handedOffToForceSell = false;
-            try {
-              let tokenAmountRaw = liveTokenBalances.get(trade.id) ?? BigInt(0);
-              if (tokenAmountRaw === BigInt(0)) { tokenAmountRaw = await jupiterService!.getTokenBalance(trade.tokenAddress); if (tokenAmountRaw > BigInt(0)) liveTokenBalances.set(trade.id, tokenAmountRaw); }
-              if (tokenAmountRaw === BigInt(0)) {
-                const desyncPnlPct = sizeSol > 0 && entryPrice > 0 && currentPrice > 0 ? (((currentPrice - entryPrice) / entryPrice) * 100).toFixed(2) : "0";
-                const desyncPnlSol = sizeSol * (parseFloat(desyncPnlPct) / 100);
-                dailyPnlSol += desyncPnlSol;
-                console.warn(`[LIVE] DESYNC: No tokens on-chain for $${trade.tokenSymbol} (trade #${trade.id}). Auto-closing in DB (PNL: ${desyncPnlPct}%).`);
-                await storage.closeTrade(trade.id, currentPrice.toString(), desyncPnlPct, "DESYNC_NO_BALANCE");
-                liveTokenBalances.delete(trade.id); peakPrices.delete(trade.id); partialTpTaken.delete(trade.id);
-                tradeStopPrices.delete(trade.id); prevPnlMap.delete(trade.id); pnlStableMap.delete(trade.id);
-                tradedAddresses.set(trade.tokenAddress, Date.now());
-                continue;
-              }
-              const exitLiqUsd = pair?.liquidity?.usd ?? 1000;
-              const exitCostsModel = calcTransactionCosts(exitLiqUsd, sizeSol);
-              const baseExitSlippageBps = Math.min(2000, Math.max(100, Math.round(exitCostsModel.exitSlippagePct * 1.5 * 100)));
-              // If this trade has previous sell failures, use escalated slippage from
-              // the ladder — don't start back at base slippage on every retry.
-              const priorStrikes = sellFailureStrikes.get(trade.id) ?? 0;
-              const exitSlippageBps = priorStrikes === 0 ? baseExitSlippageBps
-                : priorStrikes === 1 ? Math.min(baseExitSlippageBps * 2, 500)
-                : priorStrikes === 2 ? 500
-                : priorStrikes === 3 ? 1500
-                : 3000;
-              // FIX E: Auto-escalate exit slippage when liquidity has shrunk since entry.
-              // If liq at entry was > $1k but current liq < 40% of entry, the pool is
-              // draining — use a minimum of 500bps to avoid failed fills and wasted fees.
-              const entryLiqForSell = trade.liquidity ? parseFloat(trade.liquidity) : 0;
-              const currentLiqForSell = pair?.liquidity?.usd ?? 0;
-              const liqDrainedSignificantly = entryLiqForSell > 1000 && currentLiqForSell > 0 && currentLiqForSell < entryLiqForSell * 0.40;
-              const autoEscalatedExitBps = liqDrainedSignificantly ? Math.max(exitSlippageBps, 500) : exitSlippageBps;
-              if (liqDrainedSignificantly && autoEscalatedExitBps > exitSlippageBps) {
-                console.warn(`[SELL] Liq drained ${entryLiqForSell.toFixed(0)}→${currentLiqForSell.toFixed(0)} — auto-escalating exit slippage ${exitSlippageBps}→${autoEscalatedExitBps}bps`);
-              }
-              // Sell impact guard: pre-check
-              // ─�� ANTI-RUG ROUTING GUARD (DEAD POOL DETECTION) ──
-              let sellQuote: any = null;
-              try {
-                sellQuote = await jupiterService!.fetchQuote(trade.tokenAddress, SOL_MINT, tokenAmountRaw.toString(), [autoEscalatedExitBps]);
-              } catch (quoteErr: any) {
-                if (quoteErr.message?.includes("NO_ROUTES_FOUND") || quoteErr.message?.includes("No routes")) {
-                  console.error(`[DEAD POOL] 🚨 NO ROUTES FOUND for $${trade.tokenSymbol}. Liquidity is completely gone. Force-closing ghost record.`);
-                  
-                  // Close the DB record immediately so it stops looping
-                  const deadPnl = "-99.00";
-                  dailyPnlSol -= sizeSol * 0.99; // Register the loss against daily limits
-                  await storage.closeTrade(trade.id, "0.00000001", deadPnl, "RUGGED_NO_ROUTES");
-                  
-                  // Wipe it from memory
-                  liveTokenBalances.delete(trade.id); peakPrices.delete(trade.id); partialTpTaken.delete(trade.id);
-                  tradeStopPrices.delete(trade.id); prevPnlMap.delete(trade.id); pnlStableMap.delete(trade.id);
-                  sellFailureStrikes.delete(trade.id); zeroBalanceStrikes.delete(trade.id); liqCoWarnedTrades.delete(trade.id);
-                  tradedAddresses.set(trade.tokenAddress, Date.now());
-                  
-                  // Apply loss streak penalties
-                  consecutiveLosses++; consecutiveWins = 0;
-                  if (consecutiveLosses === 2) lastMiniCooldownEnd = Date.now() + MINI_LOSS_COOLDOWN_MS;
-                  if (consecutiveLosses >= 3) { lastLossCooldownEnd = Date.now() + engineSettings.lossCooldownMs; consecutiveLosses = 0; }
-                  
-                  continue; // Skip the rest of the loop — trade is officially dead
-                }
-                console.warn(`[SELL PRE-CHECK] Quote failed for $${trade.tokenSymbol}: ${quoteErr.message}`);
-              }
+            console.log(`[LIVE:SELL_ASYNC] Detaching sell for $${trade.tokenSymbol} #${trade.id} | reason: ${reason} | pnl: ${pnlPct.toFixed(2)}%`);
 
-              const sellImpactPct = parseFloat(sellQuote?.priceImpactPct ?? "0");
-              if (sellImpactPct > 50) console.warn(`[SELL] Extreme impact ${sellImpactPct.toFixed(1)}% for ${trade.tokenSymbol} — forcing sell anyway (rugpull escape)`);
-              // ────────────��──────────────────────────────────────
-              // FIX LOCK: use a shorter per-cycle timeout (12 s) rather than EXECUTION_TIMEOUT_MS (30 s).
-              // priceCheckLock is held for the full duration of this await — a 30 s block means other
-              // open positions get zero price checks for 30 s during any slow/failed sell.
-              // 12 s is still long enough for a successful Jupiter confirmation (~2-5 s average);
-              // a timeout here increments sellFailureStrikes and the escalating-slippage ladder
-              // retries next cycle automatically, so no position is ever abandoned.
-              const POSITION_SELL_TIMEOUT_MS = 12_000;
-              // PATCH #7: For death-signal exits (LIQ_COLLAPSE / PRICE_RUG / SLOW_BLEED /
-              // MID_HOLD_RISK), the pool is already known to be dead. Skip the slow
-              // escalating-slippage ladder (4 strikes, ~50s) and jump straight to max
-              // slippage (3000 bps = 30%) on the first attempt. $Taz wasted 50 seconds
-              // going through strikes 1->4 on a dead pool, finally selling for 0 SOL.
-              // For non-death-signal exits (PROFIT_DECLINE, TRAIL_STOP, etc.), keep the
-              // original escalating ladder to maximize fill quality on healthy pools.
-              const _patchIsDeathExit = reason.startsWith("LIQ_COLLAPSE") || reason.startsWith("PRICE_RUG") || reason.startsWith("SLOW_BLEED") || reason.startsWith("MID_HOLD_RISK");
-              const _patchFirstAttemptBps = _patchIsDeathExit ? 3000 : autoEscalatedExitBps;
-              const sellResult = await jupiterService!.sellToken(trade.tokenAddress, tokenAmountRaw, _patchFirstAttemptBps);
-              if (!sellResult.success) {
-                const strikes = (sellFailureStrikes.get(trade.id) ?? 0) + 1;
-                sellFailureStrikes.set(trade.id, strikes);
-                // PATCH #7: for death exits, jump straight to the force-sell background
-                // loop after just 1 failed attempt (instead of 4). The pool is dead,
-                // retrying 3 more times with the same max slippage is pure waste.
-                const _patchMaxStrikes = _patchIsDeathExit ? 1 : 4;
-                // AUTO-ESCALATING SLIPPAGE LADDER: each failed sell retries with wider
-                // slippage rather than giving up. Giving up = tokens stuck on-chain with
-                // no automatic recovery — in live mode that is a guaranteed full loss.
-                // Strike 1 → 2x slippage (wider but still reasonable)
-                // Strike 2 → 500 bps (5% — covers most pool conditions)
-                // Strike 3 → 1500 bps (15% — emergency exit, accept bad fill over stuck)
-                // Strike 4+ → 3000 bps (30% — last resort, any fill beats zero)
-                if (strikes <= _patchMaxStrikes) {
-                  const escalatedBps = _patchIsDeathExit ? 3000
-                    : strikes === 1 ? Math.min(exitSlippageBps * 2, 500)
-                    : strikes === 2 ? 500
-                    : strikes === 3 ? 1500
-                    : 3000;
-                  console.warn(`[LIVE] SELL FAILED $${trade.tokenSymbol} (attempt ${strikes}${_patchIsDeathExit ? " [DEATH_EXIT]" : ""}): ${sellResult.error} — escalating slippage to ${escalatedBps}bps next cycle`);
-                  // Store escalated slippage for next cycle by bumping the strike count
-                  // ���� the escalated bps will be derived from it on the next price check.
-                } else {
-                  // FIX 6: Instead of logging CRITICAL and giving up (which leaves real tokens
-                  // stranded in the wallet forever), launch the persistent force-sell loop in
-                  // the background. It retries every 15s at 30% slippage for up to 5 minutes.
-                  // sellingInProgress keeps the normal sell path from double-triggering.
-                  // We do NOT await — this must not block the price-checking loop.
-                  console.error(`[SELL] CRITICAL: $${trade.tokenSymbol} #${trade.id} failed ${strikes} times — launching persistent force-sell loop (30% slippage, 5-min window)`);
-                  const capturedTrade  = { ...trade };
-                  const capturedPrice  = currentPrice;
-                  // Hand ownership of sellingInProgress to the background task.
-                  // The entry is already present (added before the try block above).
-                  // The background .then()/.catch() finally blocks are responsible
-                  // for the eventual delete — do NOT let the outer finally remove it.
-                  handedOffToForceSell = true;
-                  forceSellPosition(capturedTrade, capturedPrice).then(async ({ success, solReceived }) => {
-                    try {
-                      const { price: exitPrice } = await fetchTokenPrice(capturedTrade.tokenAddress).catch(() => ({ price: capturedPrice, pair: null }));
-                      const safeExitPrice = exitPrice > 0 ? exitPrice : capturedPrice;
-                      const entryPriceFp  = parseFloat(capturedTrade.price || "0");
-                      const capSizeSol    = parseFloat(capturedTrade.amount || "0");
-                      const finalPnlPct   = success && solReceived > 0
-                        ? (capSizeSol > 0 ? ((solReceived - capSizeSol) / capSizeSol) * 100 : 0)
-                        : (entryPriceFp > 0 && safeExitPrice > 0 ? ((safeExitPrice - entryPriceFp) / entryPriceFp) * 100 : 0);
-                      const closeReason   = success ? "FORCE_SELL" : "FORCE_SELL_FAILED_MANUAL_REQUIRED";
-                      // Reclaim ~0.002 SOL rent fee even in background force-sell success
-                      if (success) jupiterService!.closeTokenAccount(capturedTrade.tokenAddress).catch(() => {});
-                      await storage.closeTrade(capturedTrade.id, safeExitPrice.toString(), finalPnlPct.toFixed(2), closeReason);
-                      sellFailureStrikes.delete(capturedTrade.id);
-                      peakPrices.delete(capturedTrade.id);
-                      partialTpTaken.delete(capturedTrade.id);
-                      tradeStopPrices.delete(capturedTrade.id);
-                      prevPnlMap.delete(capturedTrade.id);
-                      pnlStableMap.delete(capturedTrade.id);
-                      zeroBalanceStrikes.delete(capturedTrade.id);
-                      tradedAddresses.set(capturedTrade.tokenAddress, Date.now());
-                      console.log(`[FORCE_SELL] DB closed #${capturedTrade.id} $${capturedTrade.tokenSymbol} | PNL: ${finalPnlPct.toFixed(2)}% | success: ${success}`);
-                    } catch (dbErr: any) {
-                      console.error(`[FORCE_SELL] DB close failed #${capturedTrade.id}: ${dbErr.message}`);
-                    } finally {
-                      sellingInProgress.delete(capturedTrade.id);
-                    }
-                  }).catch((e: any) => {
-                    console.error(`[FORCE_SELL] Unhandled error #${capturedTrade.id}: ${e.message}`);
-                    sellingInProgress.delete(capturedTrade.id);
-                  });
+            // Capture all needed state into local copies for the async closure
+            const _capturedTrade = { ...trade };
+            const _capturedSizeSol = sizeSol;
+            const _capturedEntryPrice = entryPrice;
+            const _capturedCurrentPrice = currentPrice;
+            const _capturedPair = pair;
+            const _capturedReason = reason;
+            const _capturedPnlPct = pnlPct;
+
+            // Fire the entire sell pipeline in the background — does NOT block priceCheckLock
+            (async () => {
+              try {
+                let tokenAmountRaw = liveTokenBalances.get(_capturedTrade.id) ?? BigInt(0);
+                if (tokenAmountRaw === BigInt(0)) { tokenAmountRaw = await jupiterService!.getTokenBalance(_capturedTrade.tokenAddress); if (tokenAmountRaw > BigInt(0)) liveTokenBalances.set(_capturedTrade.id, tokenAmountRaw); }
+                if (tokenAmountRaw === BigInt(0)) {
+                  const desyncPnlPct = _capturedSizeSol > 0 && _capturedEntryPrice > 0 && _capturedCurrentPrice > 0 ? (((_capturedCurrentPrice - _capturedEntryPrice) / _capturedEntryPrice) * 100).toFixed(2) : "0";
+                  const desyncPnlSol = _capturedSizeSol * (parseFloat(desyncPnlPct) / 100);
+                  dailyPnlSol += desyncPnlSol;
+                  console.warn(`[LIVE] DESYNC: No tokens on-chain for $${_capturedTrade.tokenSymbol} (trade #${_capturedTrade.id}). Auto-closing in DB (PNL: ${desyncPnlPct}%).`);
+                  await storage.closeTrade(_capturedTrade.id, _capturedCurrentPrice.toString(), desyncPnlPct, "DESYNC_NO_BALANCE");
+                  liveTokenBalances.delete(_capturedTrade.id); peakPrices.delete(_capturedTrade.id); partialTpTaken.delete(_capturedTrade.id);
+                  tradeStopPrices.delete(_capturedTrade.id); prevPnlMap.delete(_capturedTrade.id); pnlStableMap.delete(_capturedTrade.id);
+                  tradedAddresses.set(_capturedTrade.tokenAddress, Date.now());
+                  return;
                 }
-                continue;
+                const exitLiqUsd = _capturedPair?.liquidity?.usd ?? 1000;
+                const exitCostsModel = calcTransactionCosts(exitLiqUsd, _capturedSizeSol);
+                const baseExitSlippageBps = Math.min(2000, Math.max(100, Math.round(exitCostsModel.exitSlippagePct * 1.5 * 100)));
+                const priorStrikes = sellFailureStrikes.get(_capturedTrade.id) ?? 0;
+                const exitSlippageBps = priorStrikes === 0 ? baseExitSlippageBps
+                  : priorStrikes === 1 ? Math.min(baseExitSlippageBps * 2, 500)
+                  : priorStrikes === 2 ? 500
+                  : priorStrikes === 3 ? 1500
+                  : 3000;
+                const entryLiqForSell = _capturedTrade.liquidity ? parseFloat(_capturedTrade.liquidity) : 0;
+                const currentLiqForSell = _capturedPair?.liquidity?.usd ?? 0;
+                const liqDrainedSignificantly = entryLiqForSell > 1000 && currentLiqForSell > 0 && currentLiqForSell < entryLiqForSell * 0.40;
+                const autoEscalatedExitBps = liqDrainedSignificantly ? Math.max(exitSlippageBps, 500) : exitSlippageBps;
+                if (liqDrainedSignificantly && autoEscalatedExitBps > exitSlippageBps) {
+                  console.warn(`[SELL] Liq drained ${entryLiqForSell.toFixed(0)}→${currentLiqForSell.toFixed(0)} — auto-escalating exit slippage ${exitSlippageBps}→${autoEscalatedExitBps}bps`);
+                }
+                // ANTI-RUG ROUTING GUARD (DEAD POOL DETECTION)
+                let sellQuote: any = null;
+                try {
+                  sellQuote = await jupiterService!.fetchQuote(_capturedTrade.tokenAddress, SOL_MINT, tokenAmountRaw.toString(), [autoEscalatedExitBps]);
+                } catch (quoteErr: any) {
+                  if (quoteErr.message?.includes("NO_ROUTES_FOUND") || quoteErr.message?.includes("No routes")) {
+                    console.error(`[DEAD POOL] 🚨 NO ROUTES FOUND for $${_capturedTrade.tokenSymbol}. Liquidity is completely gone. Force-closing ghost record.`);
+                    const deadPnl = "-99.00";
+                    dailyPnlSol -= _capturedSizeSol * 0.99;
+                    await storage.closeTrade(_capturedTrade.id, "0.00000001", deadPnl, "RUGGED_NO_ROUTES");
+                    liveTokenBalances.delete(_capturedTrade.id); peakPrices.delete(_capturedTrade.id); partialTpTaken.delete(_capturedTrade.id);
+                    tradeStopPrices.delete(_capturedTrade.id); prevPnlMap.delete(_capturedTrade.id); pnlStableMap.delete(_capturedTrade.id);
+                    sellFailureStrikes.delete(_capturedTrade.id); zeroBalanceStrikes.delete(_capturedTrade.id); liqCoWarnedTrades.delete(_capturedTrade.id);
+                    tradedAddresses.set(_capturedTrade.tokenAddress, Date.now());
+                    consecutiveLosses++; consecutiveWins = 0;
+                    if (consecutiveLosses === 2) lastMiniCooldownEnd = Date.now() + MINI_LOSS_COOLDOWN_MS;
+                    if (consecutiveLosses >= 3) { lastLossCooldownEnd = Date.now() + engineSettings.lossCooldownMs; consecutiveLosses = 0; }
+                    return;
+                  }
+                  console.warn(`[SELL PRE-CHECK] Quote failed for $${_capturedTrade.tokenSymbol}: ${quoteErr.message}`);
+                }
+                const sellImpactPct = parseFloat(sellQuote?.priceImpactPct ?? "0");
+                if (sellImpactPct > 50) console.warn(`[SELL] Extreme impact ${sellImpactPct.toFixed(1)}% for ${_capturedTrade.tokenSymbol} — forcing sell anyway (rugpull escape)`);
+                const _patchIsDeathExit = _capturedReason.startsWith("LIQ_COLLAPSE") || _capturedReason.startsWith("PRICE_RUG") || _capturedReason.startsWith("SLOW_BLEED") || _capturedReason.startsWith("MID_HOLD_RISK");
+                const _patchFirstAttemptBps = _patchIsDeathExit ? 3000 : autoEscalatedExitBps;
+                const sellResult = await jupiterService!.sellToken(_capturedTrade.tokenAddress, tokenAmountRaw, _patchFirstAttemptBps);
+                if (!sellResult.success) {
+                  const strikes = (sellFailureStrikes.get(_capturedTrade.id) ?? 0) + 1;
+                  sellFailureStrikes.set(_capturedTrade.id, strikes);
+                  const _patchMaxStrikes = _patchIsDeathExit ? 1 : 4;
+                  if (strikes <= _patchMaxStrikes) {
+                    const escalatedBps = _patchIsDeathExit ? 3000
+                      : strikes === 1 ? Math.min(exitSlippageBps * 2, 500)
+                      : strikes === 2 ? 500
+                      : strikes === 3 ? 1500
+                      : 3000;
+                    console.warn(`[LIVE] SELL FAILED $${_capturedTrade.tokenSymbol} (attempt ${strikes}${_patchIsDeathExit ? " [DEATH_EXIT]" : ""}): ${sellResult.error} — escalating slippage to ${escalatedBps}bps next cycle`);
+                  } else {
+                    console.error(`[SELL] CRITICAL: $${_capturedTrade.tokenSymbol} #${_capturedTrade.id} failed ${strikes} times — launching persistent force-sell loop (30% slippage, 5-min window)`);
+                    forceSellPosition(_capturedTrade, _capturedCurrentPrice).then(async ({ success, solReceived }) => {
+                      try {
+                        const { price: exitPrice } = await fetchTokenPrice(_capturedTrade.tokenAddress).catch(() => ({ price: _capturedCurrentPrice, pair: null }));
+                        const safeExitPrice = exitPrice > 0 ? exitPrice : _capturedCurrentPrice;
+                        const entryPriceFp  = parseFloat(_capturedTrade.price || "0");
+                        const capSizeSol    = parseFloat(_capturedTrade.amount || "0");
+                        const finalPnlPct   = success && solReceived > 0
+                          ? (capSizeSol > 0 ? ((solReceived - capSizeSol) / capSizeSol) * 100 : 0)
+                          : (entryPriceFp > 0 && safeExitPrice > 0 ? ((safeExitPrice - entryPriceFp) / entryPriceFp) * 100 : 0);
+                        const closeReason   = success ? "FORCE_SELL" : "FORCE_SELL_FAILED_MANUAL_REQUIRED";
+                        if (success) jupiterService!.closeTokenAccount(_capturedTrade.tokenAddress).catch(() => {});
+                        await storage.closeTrade(_capturedTrade.id, safeExitPrice.toString(), finalPnlPct.toFixed(2), closeReason);
+                        sellFailureStrikes.delete(_capturedTrade.id); peakPrices.delete(_capturedTrade.id); partialTpTaken.delete(_capturedTrade.id);
+                        tradeStopPrices.delete(_capturedTrade.id); prevPnlMap.delete(_capturedTrade.id); pnlStableMap.delete(_capturedTrade.id);
+                        zeroBalanceStrikes.delete(_capturedTrade.id); tradedAddresses.set(_capturedTrade.tokenAddress, Date.now());
+                        console.log(`[FORCE_SELL] DB closed #${_capturedTrade.id} $${_capturedTrade.tokenSymbol} | PNL: ${finalPnlPct.toFixed(2)}% | success: ${success}`);
+                      } catch (dbErr: any) {
+                        console.error(`[FORCE_SELL] DB close failed #${_capturedTrade.id}: ${dbErr.message}`);
+                      } finally {
+                        sellingInProgress.delete(_capturedTrade.id);
+                      }
+                    }).catch((e: any) => {
+                      console.error(`[FORCE_SELL] Unhandled error #${_capturedTrade.id}: ${e.message}`);
+                      sellingInProgress.delete(_capturedTrade.id);
+                    });
+                  }
+                  return;
+                }
+                sellFailureStrikes.delete(_capturedTrade.id);
+                const soldPnlPct = _capturedSizeSol > 0 ? ((sellResult.solReceived - _capturedSizeSol) / _capturedSizeSol) * 100 : 0;
+                dailyPnlSol += sellResult.solReceived - _capturedSizeSol;
+                liveTokenBalances.delete(_capturedTrade.id);
+                jupiterService!.getWalletBalance().then((liveBalAfterSell) => {
+                  if (liveBalAfterSell > peakBalance) {
+                    peakBalance = liveBalAfterSell;
+                    storage.updateBotStats({ peakBalance: peakBalance.toFixed(4) }).catch(() => {});
+                  }
+                }).catch(() => {});
+                const sellFeesSol = sellResult.feesSol ?? 0;
+                const trueNetSol = sellResult.solReceived - sellFeesSol;
+                const truePnlPct = _capturedSizeSol > 0 ? ((trueNetSol - _capturedSizeSol) / _capturedSizeSol) * 100 : 0;
+                console.log(
+                  `[LIVE_FEE] SELL $${_capturedTrade.tokenSymbol} | fees: ${sellFeesSol.toFixed(6)} SOL` +
+                  ` | grossReceived: ${sellResult.solReceived.toFixed(6)} SOL` +
+                  ` | netReceived: ${trueNetSol.toFixed(6)} SOL` +
+                  ` | reportedPnl: ${soldPnlPct >= 0 ? "+" : ""}${soldPnlPct.toFixed(2)}%` +
+                  ` | truePnl(after fees): ${truePnlPct >= 0 ? "+" : ""}${truePnlPct.toFixed(2)}%`
+                );
+                console.log(`[LIVE] ${soldPnlPct >= 0 ? "WIN" : "LOSS"} SELL $${_capturedTrade.tokenSymbol} | PNL: ${soldPnlPct >= 0 ? "+" : ""}${soldPnlPct.toFixed(2)}% | ${_capturedReason} | tx: ${sellResult.txSignature?.slice(0, 20)}...`);
+                // DB close + cleanup for successful sell
+                const { price: exitPrice } = await fetchTokenPrice(_capturedTrade.tokenAddress).catch(() => ({ price: _capturedCurrentPrice, pair: null }));
+                const safeExitPrice = exitPrice > 0 ? exitPrice : _capturedCurrentPrice;
+                await storage.closeTrade(_capturedTrade.id, safeExitPrice.toString(), soldPnlPct.toFixed(2), _capturedReason);
+                peakPrices.delete(_capturedTrade.id); partialTpTaken.delete(_capturedTrade.id); tradeStopPrices.delete(_capturedTrade.id);
+                prevPnlMap.delete(_capturedTrade.id); pnlStableMap.delete(_capturedTrade.id); zeroBalanceStrikes.delete(_capturedTrade.id);
+                tradedAddresses.set(_capturedTrade.tokenAddress, Date.now());
+              } catch (sellErr: any) {
+                console.error(`[LIVE:SELL_ASYNC] Unexpected error for $${_capturedTrade.tokenSymbol} #${_capturedTrade.id}: ${sellErr.message}`);
+              } finally {
+                sellingInProgress.delete(_capturedTrade.id);
               }
-              sellFailureStrikes.delete(trade.id); // clear on success
-              sellTxSig = sellResult.txSignature;
-              finalPnlPct = sizeSol > 0 ? ((sellResult.solReceived - sizeSol) / sizeSol) * 100 : 0;
-              dailyPnlSol += sellResult.solReceived - sizeSol;
-              liveTokenBalances.delete(trade.id);
-              // BUGFIX #19: was `await getWalletBalance()` — blocks price-check loop
-              // on RPC round-trip. Fire-and-forget; peakBalance updates async.
-              jupiterService!.getWalletBalance().then((liveBalAfterSell) => {
-                if (liveBalAfterSell > peakBalance) {
-                  peakBalance = liveBalAfterSell;
-                  storage.updateBotStats({ peakBalance: peakBalance.toFixed(4) }).catch(() => {});
-                }
-              }).catch(() => {});
-              // FEE TRACKING: log real sell fees so cumulative fee drag is visible.
-              const sellFeesSol = sellResult.feesSol ?? 0;
-              const trueNetSol = sellResult.solReceived - sellFeesSol;
-              const truePnlPct = sizeSol > 0 ? ((trueNetSol - sizeSol) / sizeSol) * 100 : 0;
-              console.log(
-                `[LIVE_FEE] SELL $${trade.tokenSymbol} | fees: ${sellFeesSol.toFixed(6)} SOL` +
-                ` | grossReceived: ${sellResult.solReceived.toFixed(6)} SOL` +
-                ` | netReceived: ${trueNetSol.toFixed(6)} SOL` +
-                ` | reportedPnl: ${finalPnlPct >= 0 ? "+" : ""}${finalPnlPct.toFixed(2)}%` +
-                ` | truePnl(after fees): ${truePnlPct >= 0 ? "+" : ""}${truePnlPct.toFixed(2)}%`
-              );
-              console.log(`[LIVE] ${finalPnlPct >= 0 ? "WIN" : "LOSS"} SELL $${trade.tokenSymbol} | PNL: ${finalPnlPct >= 0 ? "+" : ""}${finalPnlPct.toFixed(2)}% | ${reason} | tx: ${sellTxSig?.slice(0, 20)}...`);
-            } finally { if (!handedOffToForceSell) sellingInProgress.delete(trade.id); }
+            })();
+            // Do NOT block here — sellingInProgress protects against duplicates.
+            // The loop continues immediately to evaluate other positions.
+            continue;
           } else {
             let exitPnlPct = Math.min(500, Math.max(pnlPct, -99)); // cap: paper exit bounded [−99, 500] — mirrors the hold-loop 500% cap so a bad feed price cannot credit impossible SOL gains to paperBalance
             const exitLiq = pair?.liquidity?.usd ?? 1000;
