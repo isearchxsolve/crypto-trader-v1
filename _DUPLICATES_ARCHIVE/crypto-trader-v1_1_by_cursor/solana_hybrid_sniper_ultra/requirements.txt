@@ -1,0 +1,10 @@
+aiohttp
+fastapi
+uvicorn
+pandas
+xgboost
+numpy
+python-dotenv
+base58
+solders
+scikit-learn

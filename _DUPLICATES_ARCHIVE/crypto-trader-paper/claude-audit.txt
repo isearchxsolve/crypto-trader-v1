@@ -1,0 +1,30 @@
+You're making the single strongest pro-bot argument there is, and I want to give it real credit before I take it apart — because the *principle* is sound but the *application* here is exactly backwards.
+
+## What you got right
+
+The opportunity-cost / velocity-of-capital tradeoff is a genuine quant concept. You're correct that a 90% WR × 100 trades can crush a 99% WR × 2 trades. A bot that never trades has an expected return of zero, and over-strict filters are a real failure mode. None of that is wrong in the abstract.
+
+## But the argument has one fatal dependency: win rate is not edge
+
+"90% WR beats 99% WR" is **only** true if the *payoff distribution* is favorable. Win rate alone is a meaningless number without the size of wins vs. losses. And this is precisely where the bot's structure betrays the thesis:
+
+- It **caps and trims winners**: partial TP at +15%, trailing stop, returns clamped to 6×, paper exits capped at +500%.
+- It **eats full losers**: a rug or liquidity pull is −90% to −100%, and `HARD_LOSS_KILL` only fires at −10% (with slippage, realized losses are worse).
+
+So the real shape is: many small capped gains, punctuated by occasional catastrophic losses. In that distribution, a 90% win rate is **not** safe — a single −95% loser wipes out *thirty* +3% winners. The famous quant blowups (LTCM, Niederhoffer, countless option-sellers) all had win rates well above 90%. High win rate with a fat left tail is the most dangerous signature in trading, not the safest.
+
+## The two specific edits are red flags, not tuning
+
+**`MIN_EDGE` lowered from 7.0 → 2.0:** This is the killer. The bot's own `txFeePercent` is **1.5% each way ≈ 3% round-trip**, before slippage and priority fees. Demanding a 2% edge means **accepting trades whose expected gross profit is smaller than the cost to execute them.** That's not increasing velocity of capital — it's locking in *negative expected value per trade*. And here's the cruel math: when each trade is −EV, **velocity makes it worse.** 100 −EV trades a week bleed out far faster than 2. The dev didn't take the limiter off a Ferrari; they took the edge requirement below the toll booth fee.
+
+**`minScoreToTrade` lowered 85 → 75 "because historical WR 91.6% supports this":** This is textbook **circular overfitting.** The 91.6% win rate was *measured on the 85+ setups*. Using it to justify trading the 75–85 setups is a selection-bias error — those are the exact marginal setups the original filter was screening out, and you have no evidence they share the same win rate. "The bot sat there doing nothing all day" doesn't mean the filter was too strict; it often means **the market genuinely wasn't offering +EV opportunities that day.** Forcing trades doesn't manufacture edge, it manufactures activity.
+
+## And the 91.6% itself is the unverified premise
+
+Your entire engineer's defense rests on *"the dev ran the historical data and saw 91.6% WR."* But where did that number come from? It's a comment justifying a paper/backtest result — and **this bot literally contains shadow mode specifically to prove paper fills are inflated**, plus anomaly caps that reset balance when feeds report fake +28,578% gains. You can't cite the historical win rate to loosen the guardrails when the codebase's own instrumentation exists to demonstrate that win rate is partly an artifact.
+
+## The real tell
+
+A genuine quant *re-optimizes*: walk-forward validation, out-of-sample testing, cost-aware expectancy, parameter sweeps. What's in `routes.ts` is **symptom-patching** — each `FIX:` is a reaction to one specific painful trade ($RALLY, $48HOURS, etc.), not a systematic re-derivation. Tightening *and* loosening the same knobs across dozens of comments is the footprint of someone **chasing a drawdown**, not someone who found free alpha and removed an overcautious limiter.
+
+So I'd put it this way: the engineer's framing is the *right lens applied to the wrong evidence*. Velocity of capital only compounds wealth when per-trade expectancy is positive. These two edits specifically pushed expectancy toward (or below) zero while increasing frequency — which is the precise recipe for an account that dies fast while looking busy and "90% accurate" the whole way down.

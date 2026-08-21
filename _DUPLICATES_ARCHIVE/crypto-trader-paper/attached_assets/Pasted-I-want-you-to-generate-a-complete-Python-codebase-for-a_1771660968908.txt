@@ -1,0 +1,294 @@
+I want you to generate a complete Python codebase for an ULTRA ADVANCED Solana meme token trading bot combining:
+
+🔥 HWR (High Win Rate mode)
+🔥 MG (Mega Growth mode)
+🔥 SNIPER MODE (instant detection of new token launches)
+
+The system must dynamically switch across all three modes based on ML predictions, volatility, liquidity, token age, and microstructure signals.
+
+Project Name: solana_hybrid_sniper_ultra
+Language: Python
+Environment: Replit (free tier compatible)
+
+Dependencies:
+aiohttp, requests, pandas, numpy, scikit-learn, xgboost, python-dotenv, asyncio,
+base58, solders, construct, fastapi, uvicorn
+
+====================================================
+# 1. HYBRID STRATEGY ARCHITECTURE
+====================================================
+
+strategy.py must implement:
+
+## A) MODE SELECTION LOGIC
+1. **SNIPER MODE** (highest priority)
+   Trigger when:
+   - token age < 120 seconds
+   - liquidity < 150k (micro cap)
+   - volume spikes > 300% in 1-minute
+   - ML pump_probability > 0.55
+   - volatility spike but controlled
+
+2. **MG MODE** (trend expansion)
+   Use when:
+   - medium volatility
+   - liquidity medium
+   - strong momentum_1m and momentum_5m
+   - ML pump_probability > 0.60
+   - volume_5m > volume_20m
+   Supports multi-entry pyramiding.
+
+3. **HWR MODE** (safety mode)
+   Use when:
+   - low volatility
+   - high liquidity stability
+   - ML pump_probability > 0.80
+   - dump_risk < 0.30
+   High precision, low frequency.
+
+System MUST log which mode is currently active.
+
+====================================================
+# 2. SNIPER MODE LOGIC (ultra fast entry)
+====================================================
+
+In sniper_mode():
+
+Enter immediately when ALL are true:
+- token_age_seconds < 120
+- first_candles_volume rising
+- active_traders count rises
+- LP locked or verified
+- micro-pullback present (wick > body)
+- ML pump_probability > 0.55
+
+Sniper Entry Rules:
+- Only one entry (hyper-fast)
+- Slippage tolerance increased (MG safe limit)
+- Instant exit if:
+  - liquidity drops suddenly
+  - dump_risk jumps > 0.50
+  - candle closes below EMA3
+
+====================================================
+# 3. HWR MODE LOGIC
+====================================================
+
+Enter when ALL are true:
+- pump_probability > 0.80
+- dump_risk < 0.30
+- liquidity stable
+- EMA10 > EMA20
+- RSI 55–70
+- volatility low
+
+Exit when:
+- dump_risk rises above 0.40
+- price closes below EMA10
+- liquidity weakens
+
+====================================================
+# 4. MG MODE LOGIC
+====================================================
+
+Enter when ALL are true:
+- pump_probability > 0.60
+- momentum_1m > 0
+- volume_5m > volume_20m
+- price above EMA5 and EMA10
+- buy pressure > 0.55
+- micro-pullback detected
+
+MG supports:
+- Up to 3 entries
+- Pyramiding when trend_strength increases
+
+Exit when:
+- dump_risk > 0.55
+- volatility spike > threshold
+- price under EMA5
+
+====================================================
+# 5. SOLANA LIVE MODE (REAL TRADING)
+====================================================
+
+Implement real swap execution using:
+
+### Jupiter v6
+- best route fetching
+- slippage control
+- amount calculation
+
+### Solders library
+- build + sign transactions with PRIVATE_KEY
+- ensure valid serialization
+
+### Helius RPC
+- send signed transactions
+- retries + exponential backoff
+
+Files:
+utils/solana_client.py
+utils/swap_executor.py
+utils/helius.py
+
+====================================================
+# 6. PAPER TRADING MODE
+====================================================
+
+executor_paper.py must:
+- simulate sniper entries
+- simulate MG pyramiding
+- HWR conservative logic
+- slippage, fees, liquidity curve
+- save results to paper_trades.csv
+
+Switch with:
+MODE="paper" or MODE="live"
+
+====================================================
+# 7. DATA FETCHING (SNIPER SUPPORT)
+====================================================
+
+utils/data_fetcher.py:
+
+Fetch from:
+- DexScreener (trending + new tokens)
+- Birdeye (price, volume, liquidity, token_age)
+- Sniper signals:
+  - token age
+  - LP creation timestamp
+  - active trader count
+  - first 3 candles stats
+  - mint authority status (if available)
+
+Return all data normalized.
+
+====================================================
+# 8. FEATURE ENGINEERING (SNIPER FEATURES)
+====================================================
+
+features.py must compute:
+
+### Standard Features
+- EMA3 / EMA5 / EMA10 / EMA20
+- RSI
+- Momentum (1m, 5m)
+- Volume ratios
+- Volatility index
+- Liquidity score
+
+### Sniper Features
+- token_age_seconds
+- micro-pullback detection
+- launch volatility burst
+- liquidity shock detector
+- whale buy pressure
+- first-minute trend strength
+
+====================================================
+# 9. MACHINE LEARNING
+====================================================
+
+ml/train.py:
+Train XGBoost model for:
+- pump_probability
+- dump_risk
+
+ml/predict.py:
+Predict on every loop.
+
+Model saved as:
+ml/model.pkl
+
+====================================================
+# 10. BOT ENGINE
+====================================================
+
+bot.py must:
+
+1. Continuously fetch trending + new tokens  
+2. Build features  
+3. Predict pump/dump  
+4. Decide mode: SNIPER → MG → HWR  
+5. Execute appropriate strategy  
+6. Live or paper mode execution  
+7. Log:
+   - active mode
+   - tokens scanned
+   - predictions  
+   - trades executed
+
+Async execution:
+- nonblocking
+- failsafe exception handling
+
+====================================================
+# 11. FASTAPI DASHBOARD
+====================================================
+
+server.py:
+Expose:
+- current mode (HWR, MG, SNIPER)
+- predictions
+- open positions
+- trade history
+- PnL
+- sniper candidates
+
+Endpoint:  
+/signals → return raw ML predictions + mode decision
+
+====================================================
+# 12. FILE STRUCTURE (CREATE EXACTLY THIS)
+====================================================
+
+solana_hybrid_sniper_ultra/
+  ├── bot.py
+  ├── strategy.py
+  ├── features.py
+  ├── executor_paper.py
+  ├── utils/
+  │     ├── data_fetcher.py
+  │     ├── indicators.py
+  │     ├── helpers.py
+  │     ├── solana_client.py
+  │     ├── helius.py
+  │     ├── swap_executor.py
+  ├── ml/
+  │     ├── train.py
+  │     ├── predict.py
+  │     ├── model.pkl
+  ├── data/
+  ├── logs/
+  ├── server.py
+  ├── requirements.txt
+  ├── README.md
+  ├── .env.example
+
+====================================================
+# 13. CONFIG FILE
+====================================================
+
+.env.example:
+
+MODE="paper"  # or "live"
+RPC_URL="https://mainnet.helius-rpc.com/?api-key=YOUR_KEY"
+PRIVATE_KEY="YOUR_PRIVATE_KEY"
+JUPITER_BASE_URL="https://quote-api.jup.ag/v6"
+BIRDEYE_API_KEY=""
+HELIUS_API_KEY=""
+BASE_TOKEN="So11111111111111111111111111111111111111112"
+
+====================================================
+# 14. QUALITY REQUIREMENTS
+====================================================
+
+- All code must be production-grade.
+- Sniper, HWR, MG must all work independently & in hybrid flow.
+- Replit compatible (no GPU).
+- Fully working bot.py with no missing imports.
+- Clean project structure.
+
+====================================================
+Generate the entire codebase now.

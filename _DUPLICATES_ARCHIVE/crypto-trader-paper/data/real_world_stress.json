@@ -1,0 +1,984 @@
+{
+  "config": {
+    "rug_probability": 0.035,
+    "tx_fail_probability": 0.05,
+    "latency_miss_probability": 0.04,
+    "mev_probability": 0.03,
+    "slippage_exceed_probability": 0.06,
+    "rug_loss_pct": 85.0,
+    "mev_loss_pct": 6.0,
+    "max_position_pct_of_liquidity": 2.0,
+    "max_pct_of_account": 35.0,
+    "min_liquidity_usd": 5000,
+    "total_expected_fail_rate": 0.215
+  },
+  "runs": 50,
+  "n_trades": 100,
+  "initial_sol": 1.0,
+  "results": [
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 93,
+      "losses": 6,
+      "win_rate": 93.93939393939394,
+      "avg_win_pct": 26.935553183293365,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 87.4451,
+      "total_pnl_sol": 86.4451,
+      "total_failures": 56,
+      "failure_types": {
+        "tx_fail": 10,
+        "slippage": 1,
+        "rug": 6,
+        "mev": 4,
+        "market_impact": 34,
+        "latency": 1
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 96,
+      "losses": 4,
+      "win_rate": 96.0,
+      "avg_win_pct": 24.493924609391904,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 132.3182,
+      "total_pnl_sol": 131.3182,
+      "total_failures": 54,
+      "failure_types": {
+        "tx_fail": 5,
+        "mev": 2,
+        "rug": 4,
+        "market_impact": 43
+      }
+    },
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 93,
+      "losses": 6,
+      "win_rate": 93.93939393939394,
+      "avg_win_pct": 24.196614149694664,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 56.858,
+      "total_pnl_sol": 55.858,
+      "total_failures": 50,
+      "failure_types": {
+        "tx_fail": 6,
+        "latency": 1,
+        "slippage": 4,
+        "market_impact": 33,
+        "rug": 6
+      }
+    },
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 95,
+      "losses": 4,
+      "win_rate": 95.95959595959596,
+      "avg_win_pct": 26.569490514890344,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 109.3885,
+      "total_pnl_sol": 108.3885,
+      "total_failures": 35,
+      "failure_types": {
+        "rug": 4,
+        "tx_fail": 3,
+        "slippage": 2,
+        "market_impact": 26
+      }
+    },
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 95,
+      "losses": 4,
+      "win_rate": 95.95959595959596,
+      "avg_win_pct": 24.607626061046634,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 172.9203,
+      "total_pnl_sol": 171.9203,
+      "total_failures": 50,
+      "failure_types": {
+        "rug": 4,
+        "slippage": 2,
+        "mev": 2,
+        "market_impact": 41,
+        "tx_fail": 1
+      }
+    },
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 95,
+      "losses": 4,
+      "win_rate": 95.95959595959596,
+      "avg_win_pct": 24.397225693596223,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 111.894,
+      "total_pnl_sol": 110.894,
+      "total_failures": 43,
+      "failure_types": {
+        "tx_fail": 5,
+        "rug": 4,
+        "slippage": 2,
+        "market_impact": 31,
+        "mev": 1
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 97,
+      "losses": 3,
+      "win_rate": 97.0,
+      "avg_win_pct": 23.44993287641463,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 139.9585,
+      "total_pnl_sol": 138.9585,
+      "total_failures": 56,
+      "failure_types": {
+        "mev": 2,
+        "slippage": 1,
+        "latency": 1,
+        "tx_fail": 5,
+        "market_impact": 44,
+        "rug": 3
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 95,
+      "losses": 5,
+      "win_rate": 95.0,
+      "avg_win_pct": 23.195951015406756,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 73.147,
+      "total_pnl_sol": 72.147,
+      "total_failures": 34,
+      "failure_types": {
+        "rug": 5,
+        "tx_fail": 6,
+        "latency": 1,
+        "market_impact": 22
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 95,
+      "losses": 5,
+      "win_rate": 95.0,
+      "avg_win_pct": 25.571931538087778,
+      "avg_loss_pct": -69.38202538481822,
+      "balance_sol": 118.259,
+      "total_pnl_sol": 117.259,
+      "total_failures": 46,
+      "failure_types": {
+        "rug": 4,
+        "tx_fail": 3,
+        "mev": 1,
+        "latency": 1,
+        "slippage": 2,
+        "market_impact": 35
+      }
+    },
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 97,
+      "losses": 2,
+      "win_rate": 97.97979797979798,
+      "avg_win_pct": 24.554280855497623,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 184.5471,
+      "total_pnl_sol": 183.5471,
+      "total_failures": 59,
+      "failure_types": {
+        "rug": 2,
+        "tx_fail": 7,
+        "slippage": 2,
+        "market_impact": 47,
+        "latency": 1
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 94,
+      "losses": 6,
+      "win_rate": 94.0,
+      "avg_win_pct": 27.527618212120714,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 148.7029,
+      "total_pnl_sol": 147.7029,
+      "total_failures": 47,
+      "failure_types": {
+        "tx_fail": 7,
+        "rug": 6,
+        "market_impact": 32,
+        "latency": 1,
+        "mev": 1
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 95,
+      "losses": 5,
+      "win_rate": 95.0,
+      "avg_win_pct": 24.082878224977993,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 106.5701,
+      "total_pnl_sol": 105.5701,
+      "total_failures": 44,
+      "failure_types": {
+        "rug": 5,
+        "mev": 1,
+        "tx_fail": 7,
+        "latency": 1,
+        "market_impact": 30
+      }
+    },
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 95,
+      "losses": 4,
+      "win_rate": 95.95959595959596,
+      "avg_win_pct": 24.842770843088655,
+      "avg_loss_pct": -65.46988178049628,
+      "balance_sol": 93.5273,
+      "total_pnl_sol": 92.5273,
+      "total_failures": 42,
+      "failure_types": {
+        "rug": 3,
+        "latency": 1,
+        "slippage": 3,
+        "tx_fail": 5,
+        "market_impact": 29,
+        "mev": 1
+      }
+    },
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 89,
+      "losses": 10,
+      "win_rate": 89.8989898989899,
+      "avg_win_pct": 24.37265858568137,
+      "avg_loss_pct": -84.99999999999999,
+      "balance_sol": 12.6048,
+      "total_pnl_sol": 11.6048,
+      "total_failures": 17,
+      "failure_types": {
+        "rug": 10,
+        "slippage": 1,
+        "latency": 1,
+        "mev": 1,
+        "tx_fail": 4
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 96,
+      "losses": 4,
+      "win_rate": 96.0,
+      "avg_win_pct": 26.075166331505844,
+      "avg_loss_pct": -65.4319499905879,
+      "balance_sol": 166.0964,
+      "total_pnl_sol": 165.0964,
+      "total_failures": 50,
+      "failure_types": {
+        "tx_fail": 7,
+        "slippage": 2,
+        "rug": 3,
+        "latency": 3,
+        "mev": 3,
+        "market_impact": 32
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 99,
+      "losses": 1,
+      "win_rate": 99.0,
+      "avg_win_pct": 25.028670633579686,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 261.405,
+      "total_pnl_sol": 260.405,
+      "total_failures": 65,
+      "failure_types": {
+        "tx_fail": 4,
+        "latency": 1,
+        "market_impact": 56,
+        "mev": 1,
+        "rug": 1,
+        "slippage": 2
+      }
+    },
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 88,
+      "losses": 11,
+      "win_rate": 88.88888888888889,
+      "avg_win_pct": 25.229290738382893,
+      "avg_loss_pct": -84.99999999999997,
+      "balance_sol": 19.2295,
+      "total_pnl_sol": 18.2295,
+      "total_failures": 34,
+      "failure_types": {
+        "rug": 11,
+        "slippage": 2,
+        "tx_fail": 4,
+        "mev": 3,
+        "market_impact": 14
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 92,
+      "losses": 8,
+      "win_rate": 92.0,
+      "avg_win_pct": 25.019802813314417,
+      "avg_loss_pct": -84.99999999999999,
+      "balance_sol": 17.6762,
+      "total_pnl_sol": 16.6762,
+      "total_failures": 17,
+      "failure_types": {
+        "rug": 8,
+        "slippage": 1,
+        "tx_fail": 6,
+        "mev": 1,
+        "market_impact": 1
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 98,
+      "losses": 2,
+      "win_rate": 98.0,
+      "avg_win_pct": 24.92661846641158,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 213.1842,
+      "total_pnl_sol": 212.1842,
+      "total_failures": 57,
+      "failure_types": {
+        "slippage": 3,
+        "tx_fail": 2,
+        "market_impact": 50,
+        "rug": 2
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 96,
+      "losses": 4,
+      "win_rate": 96.0,
+      "avg_win_pct": 24.85840038289778,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 207.4032,
+      "total_pnl_sol": 206.4032,
+      "total_failures": 65,
+      "failure_types": {
+        "tx_fail": 5,
+        "market_impact": 52,
+        "latency": 2,
+        "rug": 4,
+        "mev": 1,
+        "slippage": 1
+      }
+    },
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 95,
+      "losses": 4,
+      "win_rate": 95.95959595959596,
+      "avg_win_pct": 23.16473350506448,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 109.9991,
+      "total_pnl_sol": 108.9991,
+      "total_failures": 39,
+      "failure_types": {
+        "rug": 4,
+        "market_impact": 28,
+        "mev": 2,
+        "latency": 1,
+        "tx_fail": 4
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 95,
+      "losses": 5,
+      "win_rate": 95.0,
+      "avg_win_pct": 24.227695769270024,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 101.5561,
+      "total_pnl_sol": 100.5561,
+      "total_failures": 47,
+      "failure_types": {
+        "tx_fail": 4,
+        "mev": 1,
+        "rug": 5,
+        "market_impact": 37
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 93,
+      "losses": 7,
+      "win_rate": 93.0,
+      "avg_win_pct": 24.206948258137015,
+      "avg_loss_pct": -84.99999999999999,
+      "balance_sol": 23.7043,
+      "total_pnl_sol": 22.7043,
+      "total_failures": 27,
+      "failure_types": {
+        "tx_fail": 8,
+        "mev": 1,
+        "rug": 7,
+        "latency": 2,
+        "market_impact": 9
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 93,
+      "losses": 7,
+      "win_rate": 93.0,
+      "avg_win_pct": 25.347594975121883,
+      "avg_loss_pct": -84.99999999999999,
+      "balance_sol": 52.9418,
+      "total_pnl_sol": 51.9418,
+      "total_failures": 33,
+      "failure_types": {
+        "rug": 7,
+        "mev": 3,
+        "slippage": 2,
+        "tx_fail": 2,
+        "market_impact": 18,
+        "latency": 1
+      }
+    },
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 92,
+      "losses": 7,
+      "win_rate": 92.92929292929293,
+      "avg_win_pct": 26.406420504854804,
+      "avg_loss_pct": -84.99999999999999,
+      "balance_sol": 94.855,
+      "total_pnl_sol": 93.855,
+      "total_failures": 36,
+      "failure_types": {
+        "tx_fail": 5,
+        "rug": 7,
+        "market_impact": 24
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 95,
+      "losses": 5,
+      "win_rate": 95.0,
+      "avg_win_pct": 25.21736648962905,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 113.435,
+      "total_pnl_sol": 112.435,
+      "total_failures": 40,
+      "failure_types": {
+        "tx_fail": 8,
+        "mev": 2,
+        "rug": 5,
+        "market_impact": 25
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 93,
+      "losses": 7,
+      "win_rate": 93.0,
+      "avg_win_pct": 24.523477292540157,
+      "avg_loss_pct": -84.99999999999999,
+      "balance_sol": 47.0159,
+      "total_pnl_sol": 46.0159,
+      "total_failures": 29,
+      "failure_types": {
+        "rug": 7,
+        "slippage": 3,
+        "tx_fail": 5,
+        "market_impact": 13,
+        "mev": 1
+      }
+    },
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 95,
+      "losses": 4,
+      "win_rate": 95.95959595959596,
+      "avg_win_pct": 24.284242431121804,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 107.485,
+      "total_pnl_sol": 106.485,
+      "total_failures": 43,
+      "failure_types": {
+        "mev": 3,
+        "slippage": 2,
+        "tx_fail": 8,
+        "rug": 4,
+        "market_impact": 26
+      }
+    },
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 96,
+      "losses": 3,
+      "win_rate": 96.96969696969697,
+      "avg_win_pct": 25.128492306372213,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 139.3293,
+      "total_pnl_sol": 138.3293,
+      "total_failures": 52,
+      "failure_types": {
+        "mev": 3,
+        "tx_fail": 12,
+        "slippage": 2,
+        "rug": 3,
+        "latency": 1,
+        "market_impact": 31
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 97,
+      "losses": 3,
+      "win_rate": 97.0,
+      "avg_win_pct": 25.11577600143142,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 203.7928,
+      "total_pnl_sol": 202.7928,
+      "total_failures": 59,
+      "failure_types": {
+        "slippage": 1,
+        "rug": 3,
+        "tx_fail": 8,
+        "market_impact": 47
+      }
+    },
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 95,
+      "losses": 4,
+      "win_rate": 95.95959595959596,
+      "avg_win_pct": 24.926419538672587,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 135.1238,
+      "total_pnl_sol": 134.1238,
+      "total_failures": 59,
+      "failure_types": {
+        "tx_fail": 6,
+        "latency": 2,
+        "slippage": 2,
+        "market_impact": 44,
+        "rug": 4,
+        "mev": 1
+      }
+    },
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 96,
+      "losses": 3,
+      "win_rate": 96.96969696969697,
+      "avg_win_pct": 25.90161858027042,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 165.804,
+      "total_pnl_sol": 164.804,
+      "total_failures": 57,
+      "failure_types": {
+        "tx_fail": 8,
+        "mev": 1,
+        "slippage": 2,
+        "rug": 3,
+        "market_impact": 43
+      }
+    },
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 95,
+      "losses": 4,
+      "win_rate": 95.95959595959596,
+      "avg_win_pct": 25.47919551373034,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 130.5254,
+      "total_pnl_sol": 129.5254,
+      "total_failures": 42,
+      "failure_types": {
+        "tx_fail": 6,
+        "rug": 4,
+        "slippage": 1,
+        "market_impact": 31
+      }
+    },
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 93,
+      "losses": 6,
+      "win_rate": 93.93939393939394,
+      "avg_win_pct": 23.97759935483452,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 62.006,
+      "total_pnl_sol": 61.006,
+      "total_failures": 31,
+      "failure_types": {
+        "rug": 6,
+        "tx_fail": 4,
+        "slippage": 2,
+        "mev": 1,
+        "market_impact": 18
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 96,
+      "losses": 4,
+      "win_rate": 96.0,
+      "avg_win_pct": 25.818504159473438,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 166.8786,
+      "total_pnl_sol": 165.8786,
+      "total_failures": 55,
+      "failure_types": {
+        "rug": 4,
+        "market_impact": 42,
+        "slippage": 1,
+        "tx_fail": 5,
+        "mev": 2,
+        "latency": 1
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 93,
+      "losses": 7,
+      "win_rate": 93.0,
+      "avg_win_pct": 26.707160597406208,
+      "avg_loss_pct": -84.99999999999999,
+      "balance_sol": 123.2591,
+      "total_pnl_sol": 122.2591,
+      "total_failures": 52,
+      "failure_types": {
+        "tx_fail": 3,
+        "rug": 7,
+        "mev": 3,
+        "slippage": 1,
+        "market_impact": 36,
+        "latency": 2
+      }
+    },
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 96,
+      "losses": 3,
+      "win_rate": 96.96969696969697,
+      "avg_win_pct": 25.180853025361277,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 201.0064,
+      "total_pnl_sol": 200.0064,
+      "total_failures": 55,
+      "failure_types": {
+        "market_impact": 45,
+        "tx_fail": 4,
+        "mev": 2,
+        "rug": 3,
+        "slippage": 1
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 97,
+      "losses": 3,
+      "win_rate": 97.0,
+      "avg_win_pct": 23.725557457383616,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 133.9231,
+      "total_pnl_sol": 132.9231,
+      "total_failures": 53,
+      "failure_types": {
+        "mev": 1,
+        "tx_fail": 4,
+        "slippage": 1,
+        "rug": 3,
+        "market_impact": 44
+      }
+    },
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 94,
+      "losses": 5,
+      "win_rate": 94.94949494949495,
+      "avg_win_pct": 26.457535492060135,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 132.7204,
+      "total_pnl_sol": 131.7204,
+      "total_failures": 61,
+      "failure_types": {
+        "tx_fail": 3,
+        "mev": 2,
+        "market_impact": 50,
+        "rug": 5,
+        "latency": 1
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 97,
+      "losses": 3,
+      "win_rate": 97.0,
+      "avg_win_pct": 24.16674123087242,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 121.9151,
+      "total_pnl_sol": 120.9151,
+      "total_failures": 49,
+      "failure_types": {
+        "tx_fail": 4,
+        "latency": 1,
+        "market_impact": 40,
+        "rug": 3,
+        "mev": 1
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 95,
+      "losses": 5,
+      "win_rate": 95.0,
+      "avg_win_pct": 24.839420007587705,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 113.8054,
+      "total_pnl_sol": 112.8054,
+      "total_failures": 45,
+      "failure_types": {
+        "mev": 1,
+        "rug": 5,
+        "tx_fail": 4,
+        "latency": 1,
+        "market_impact": 34
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 95,
+      "losses": 5,
+      "win_rate": 95.0,
+      "avg_win_pct": 26.385346968833872,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 166.0502,
+      "total_pnl_sol": 165.0502,
+      "total_failures": 48,
+      "failure_types": {
+        "rug": 5,
+        "tx_fail": 5,
+        "slippage": 3,
+        "market_impact": 34,
+        "mev": 1
+      }
+    },
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 91,
+      "losses": 8,
+      "win_rate": 91.91919191919192,
+      "avg_win_pct": 24.891776906842246,
+      "avg_loss_pct": -84.99999999999999,
+      "balance_sol": 45.3305,
+      "total_pnl_sol": 44.3305,
+      "total_failures": 27,
+      "failure_types": {
+        "tx_fail": 4,
+        "rug": 8,
+        "slippage": 1,
+        "mev": 1,
+        "market_impact": 13
+      }
+    },
+    {
+      "total": 100,
+      "closed": 99,
+      "wins": 96,
+      "losses": 3,
+      "win_rate": 96.96969696969697,
+      "avg_win_pct": 25.42220845569931,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 200.2406,
+      "total_pnl_sol": 199.2406,
+      "total_failures": 51,
+      "failure_types": {
+        "mev": 2,
+        "tx_fail": 3,
+        "rug": 3,
+        "slippage": 1,
+        "market_impact": 41,
+        "latency": 1
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 91,
+      "losses": 9,
+      "win_rate": 91.0,
+      "avg_win_pct": 27.15992810865074,
+      "avg_loss_pct": -84.99999999999999,
+      "balance_sol": 81.3223,
+      "total_pnl_sol": 80.3223,
+      "total_failures": 48,
+      "failure_types": {
+        "rug": 9,
+        "mev": 5,
+        "slippage": 3,
+        "tx_fail": 3,
+        "market_impact": 28
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 97,
+      "losses": 3,
+      "win_rate": 97.0,
+      "avg_win_pct": 23.779736108533704,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 160.209,
+      "total_pnl_sol": 159.209,
+      "total_failures": 54,
+      "failure_types": {
+        "mev": 2,
+        "rug": 3,
+        "slippage": 1,
+        "tx_fail": 7,
+        "market_impact": 41
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 96,
+      "losses": 4,
+      "win_rate": 96.0,
+      "avg_win_pct": 23.77498143854243,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 60.0337,
+      "total_pnl_sol": 59.0337,
+      "total_failures": 34,
+      "failure_types": {
+        "tx_fail": 7,
+        "rug": 4,
+        "latency": 1,
+        "market_impact": 21,
+        "mev": 1
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 92,
+      "losses": 8,
+      "win_rate": 92.0,
+      "avg_win_pct": 26.25491032309014,
+      "avg_loss_pct": -65.63444741119137,
+      "balance_sol": 68.8132,
+      "total_pnl_sol": 67.8132,
+      "total_failures": 49,
+      "failure_types": {
+        "tx_fail": 7,
+        "latency": 4,
+        "rug": 6,
+        "slippage": 3,
+        "market_impact": 28,
+        "mev": 1
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 93,
+      "losses": 7,
+      "win_rate": 93.0,
+      "avg_win_pct": 26.206258517326976,
+      "avg_loss_pct": -73.94309602111989,
+      "balance_sol": 77.08,
+      "total_pnl_sol": 76.08,
+      "total_failures": 46,
+      "failure_types": {
+        "slippage": 6,
+        "tx_fail": 4,
+        "rug": 6,
+        "market_impact": 29,
+        "latency": 1
+      }
+    },
+    {
+      "total": 100,
+      "closed": 100,
+      "wins": 95,
+      "losses": 5,
+      "win_rate": 95.0,
+      "avg_win_pct": 27.30597619854853,
+      "avg_loss_pct": -85.0,
+      "balance_sol": 164.579,
+      "total_pnl_sol": 163.579,
+      "total_failures": 47,
+      "failure_types": {
+        "tx_fail": 4,
+        "rug": 5,
+        "latency": 2,
+        "market_impact": 34,
+        "slippage": 2
+      }
+    }
+  ],
+  "summary": {
+    "median_balance": 118.259,
+    "mean_balance": 118.75750799999997,
+    "min_balance": 12.6048,
+    "max_balance": 261.405,
+    "profitable_runs": 50,
+    "profitable_pct": 100.0,
+    "median_win_rate": 96.0,
+    "mean_win_rate": 95.0
+  }
+}

@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Rajdhani:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Cyberpunk Palette - Neon Green & Purple on Deep Black */
+  --background: 240 10% 4%;       /* Almost black #0a0a0b */
+  --foreground: 0 0% 95%;         /* White #f2f2f2 */
+  
+  --card: 240 10% 7%;             /* Dark gray #111113 */
+  --card-foreground: 0 0% 95%;
+
+  --popover: 240 10% 7%;
+  --popover-foreground: 0 0% 95%;
+
+  --primary: 142 70% 50%;         /* Neon Green #26d962 */
+  --primary-foreground: 240 10% 4%;
+
+  --secondary: 270 60% 55%;       /* Neon Purple #8e44ad - adjusted for neon feel */
+  --secondary-foreground: 0 0% 100%;
+
+  --muted: 240 5% 15%;            /* Dark muted #252529 */
+  --muted-foreground: 240 5% 65%;
+
+  --accent: 142 70% 50%;          /* Same as primary for consistency in this theme */
+  --accent-foreground: 240 10% 4%;
+
+  --destructive: 0 84% 60%;       /* Red */
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 240 5% 15%;
+  --input: 240 5% 15%;
+  --ring: 142 70% 50%;
+
+  --radius: 0.25rem; /* Sharp corners for tech feel */
+  
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-display: 'Rajdhani', sans-serif;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-mono antialiased selection:bg-primary/30 selection:text-primary-foreground;
+    background-image: 
+      radial-gradient(circle at 50% 0%, rgba(38, 217, 98, 0.05) 0%, transparent 50%),
+      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 40px 40px, 40px 40px;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    @apply uppercase tracking-wider;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted rounded hover:bg-muted-foreground/50 transition-colors;
+  }
+}
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 10px rgba(38, 217, 98, 0.5);
+  }
+  .border-glow {
+    box-shadow: 0 0 10px rgba(38, 217, 98, 0.2), inset 0 0 5px rgba(38, 217, 98, 0.1);
+  }
+  .glass-panel {
+    @apply bg-card/50 backdrop-blur-md border border-white/5;
+  }
+  .neon-border {
+    @apply border border-primary/50 shadow-[0_0_15px_-3px_rgba(38,217,98,0.3)];
+  }
+}

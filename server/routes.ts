@@ -1447,7 +1447,7 @@ async function checkCircuitBreakers(): Promise<{ canTrade: boolean; reason: stri
     // Without this the UI drawdown display reads a stale DB value (e.g. old paper peak
     // 0.093 SOL) and shows a false 28.6% drawdown even though in-memory peak is correct.
     // Fire-and-forget — canTrade must not block on a DB write.
-    storage.updateBotStats({ peakBalance: peakBalance.toFixed(4) }).catch(() => {});
+    await storage.updateBotStats({ peakBalance: peakBalance.toFixed(4) });
   }
   const drawdownPct = peakBalance > 0 ? ((peakBalance - effectiveBal) / peakBalance) * 100 : 0;
   if (drawdownPct >= engineSettings.maxDrawdownPct) {
@@ -4663,6 +4663,9 @@ async function checkOpenPositions() {
     // Iterates a sorted copy; all per-trade state is keyed by trade.id, so order does not matter.
     const _orderedOpenTrades = [...openTrades].sort((a: any, b: any) => (prevPnlMap.get(a.id) ?? 0) - (prevPnlMap.get(b.id) ?? 0));
     for (const trade of _orderedOpenTrades) {
+      if (!peakPrices.has(trade.id)) {
+        peakPrices.set(trade.id, parseFloat(trade.peakPrice || trade.currentPrice || trade.price));
+      }
       try {
         if (sellingInProgress.has(trade.id)) continue;
         // Bug #2 fix: use fetchTokenPriceForExit (no wash-trade filter) so that
@@ -5673,10 +5676,10 @@ async function checkOpenPositions() {
                 const soldPnlPct = _capturedSizeSol > 0 ? ((sellResult.solReceived - _capturedSizeSol) / _capturedSizeSol) * 100 : 0;
                 dailyPnlSol += sellResult.solReceived - _capturedSizeSol;
                 liveTokenBalances.delete(_capturedTrade.id);
-                jupiterService!.getWalletBalance().then((liveBalAfterSell) => {
+                jupiterService!.getWalletBalance().then(async (liveBalAfterSell) => {
                   if (liveBalAfterSell > peakBalance) {
                     peakBalance = liveBalAfterSell;
-                    storage.updateBotStats({ peakBalance: peakBalance.toFixed(4) }).catch(() => {});
+                    await storage.updateBotStats({ peakBalance: peakBalance.toFixed(4) });
                   }
                 }).catch(() => {});
                 const sellFeesSol = sellResult.feesSol ?? 0;
@@ -6411,7 +6414,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       }
       // Sync the new peak to DB immediately so the UI reflects the correct
       // drawdown from the very first scan cycle (not the stale paper value).
-      storage.updateBotStats({ peakBalance: peakBalance.toFixed(4), dailyStartBalance: dailyStartBalance.toFixed(4) }).catch(() => {});
+      await storage.updateBotStats({ peakBalance: peakBalance.toFixed(4), dailyStartBalance: dailyStartBalance.toFixed(4) });
       console.log("[ENGINE] Switched to LIVE mode — streak counters + circuit breaker + dailyPnlSol reset");
     }
     res.json(await storage.updateTradingMode(mode));
