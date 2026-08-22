@@ -382,7 +382,7 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {engineStats?.bestTrade && (
-            <Card className="bg-card/40 border-primary/20 backdrop-blur-sm">
+            <Card className="glass-panel glass-panel-hover border-primary/30">
               <CardContent className="pt-3 pb-2 flex items-center gap-3">
                 <div className="h-9 w-9 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0">
                   <TrendingUp className="h-4 w-4 text-primary" />
@@ -397,7 +397,7 @@ export default function Dashboard() {
             </Card>
           )}
           {engineStats?.worstTrade && (
-            <Card className="bg-card/40 border-destructive/20 backdrop-blur-sm">
+            <Card className="glass-panel glass-panel-hover border-destructive/30">
               <CardContent className="pt-3 pb-2 flex items-center gap-3">
                 <div className="h-9 w-9 rounded-lg bg-destructive/20 flex items-center justify-center flex-shrink-0">
                   <AlertCircle className="h-4 w-4 text-destructive" />
@@ -411,7 +411,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           )}
-          <Card className="bg-card/40 border-border/30 backdrop-blur-sm">
+          <Card className="glass-panel glass-panel-hover">
             <CardContent className="pt-3 pb-2 flex items-center gap-3">
               <div className={cn(
                 "h-9 w-9 rounded-lg flex items-center justify-center flex-shrink-0",
@@ -493,7 +493,7 @@ export default function Dashboard() {
           </TabsList>
 
           <TabsContent value="live-scanner" className="space-y-4">
-            <Card className="bg-card/40 border-border/50 backdrop-blur-sm">
+            <Card className="glass-panel glass-panel-hover">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg font-display uppercase tracking-wider flex items-center gap-2">
                   <RefreshCw className={cn("h-5 w-5 text-primary", liveLoading && "animate-spin")} />
@@ -631,7 +631,7 @@ export default function Dashboard() {
           </TabsContent>
 
           <TabsContent value="trades" className="space-y-4">
-            <Card className="bg-card/40 border-border/50 backdrop-blur-sm">
+            <Card className="glass-panel glass-panel-hover">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg font-display uppercase tracking-wider flex items-center gap-2">
                   <BarChart3 className="h-5 w-5 text-primary" />
@@ -654,7 +654,7 @@ export default function Dashboard() {
           </TabsContent>
 
           <TabsContent value="candidates" className="space-y-4">
-            <Card className="bg-card/40 border-border/50 backdrop-blur-sm">
+            <Card className="glass-panel glass-panel-hover">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg font-display uppercase tracking-wider flex items-center gap-2">
                   <Flame className="h-5 w-5 text-secondary" />

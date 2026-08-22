@@ -38,7 +38,7 @@ export function LiveFeedTable({ trades }: { trades: Trade[] }) {
   }
 
   return (
-    <div className="rounded-lg border border-border/50 bg-black/20 backdrop-blur-sm overflow-hidden">
+    <div className="glass-panel rounded-lg overflow-hidden">
       <Table>
         <TableHeader className="bg-white/5">
           <TableRow className="border-border/50 hover:bg-transparent">
@@ -85,7 +85,7 @@ export function LiveFeedTable({ trades }: { trades: Trade[] }) {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.03 }}
                 className={cn(
-                  "border-border/40 hover:bg-white/5 transition-colors group",
+                  "border-border/40 hover:bg-primary/10 hover:shadow-[inset_0_0_15px_rgba(38,217,98,0.2)] transition-all duration-300 group",
                   isOpen && "bg-primary/5",
                   !isOpen && pnlNum > 10 && "bg-primary/3"
                 )}

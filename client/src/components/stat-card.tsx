@@ -42,7 +42,7 @@ export function StatCard({
       initial={animate ? { opacity: 0, y: 20 } : undefined}
       animate={animate ? { opacity: 1, y: 0 } : undefined}
       className={cn(
-        "rounded-lg p-5 border backdrop-blur-md transition-all duration-300 hover:bg-white/5",
+        "glass-panel glass-panel-hover rounded-lg p-5",
         colorMap[color],
         bgMap[color],
         className
